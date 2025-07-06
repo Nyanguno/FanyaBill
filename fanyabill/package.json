@@ -1,8 +1,18 @@
 {
   "name": "fanyabill",
   "version": "1.0.0",
+  "description": "AI Business Assistant - FanyaBill Pro",
+  "main": "script.js",
+  "scripts": {
+    "start": "netlify dev",
+    "build": "echo 'No specific build command needed for static site with Netlify functions'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
-    "puppeteer-core": "^10.1.0"
+    "chrome-aws-lambda": "^10.0.0",
+    "node-fetch": "^2.6.1",
+    "puppeteer-core": "^10.0.0"
   }
 }
