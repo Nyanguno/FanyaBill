@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade to FanyaBill Pro - Payment</title>
+    <link rel="stylesheet" href="app-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAN-6uTeFePPlFBTb2KRwscuk_CN958_Dp1xPe78I33ZlxbgpQfjilAnXMcrm02M5iYbM9Xr2EnqAwPXs&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-receipt"></i>
+                <span>FanyaBill</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="app.html">Back to App</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Payment Section -->
+    <section class="payment-section">
+        <div class="container">
+            <div class="payment-container">
+                <div class="payment-header">
+                    <div class="payment-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h1>Upgrade to FanyaBill Pro</h1>
+                    <p>Unlock unlimited invoices and premium features</p>
+                </div>
+
+                <div class="pricing-summary">
+                    <div class="plan-details">
+                        <h2>FanyaBill Pro</h2>
+                        <div class="price-display">
+                            <span class="currency">$</span>
+                            <span class="amount">7.99</span>
+                            <span class="period">/month</span>
+                        </div>
+                    </div>
+
+                    <div class="features-included">
+                        <h3>What's Included:</h3>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Unlimited invoice generation</li>
+                            <li><i class="fas fa-check"></i> Advanced sales analytics</li>
+                            <li><i class="fas fa-check"></i> Priority customer support</li>
+                            <li><i class="fas fa-check"></i> Pro badge and branding</li>
+                            <li><i class="fas fa-check"></i> Future premium features</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="payment-methods">
+                    <h3>Choose Your Payment Method</h3>
+                    
+                    <!-- PayPal Hosted Button -->
+                    <div class="payment-option">
+                        <h4>PayPal Checkout</h4>
+                        <p>Secure payment with PayPal or credit/debit card</p>
+                        <div id="paypal-container-MVK35P3ZKYQLY"></div>
+                    </div>
+
+                    <!-- Backup Styled Button -->
+                    <div class="payment-option backup-payment">
+                        <h4>Alternative Payment</h4>
+                        <p>If the above button doesn't work, use this direct link</p>
+                        <form action="https://www.paypal.com/ncp/payment/MVK35P3ZKYQLY" method="post" target="_blank">
+                            <input class="pp-MVK35P3ZKYQLY" type="submit" value="Pay Now" />
+                            <div class="payment-cards">
+                                <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
+                            </div>
+                            <div class="powered-by">
+                                Powered by
+                                <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="security-info">
+                    <div class="security-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure SSL Encryption</span>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-lock"></i>
+                        <span>PayPal Buyer Protection</span>
+                    </div>
+                    <div class="security-item">
+                        <i class="fas fa-undo"></i>
+                        <span>Cancel Anytime</span>
+                    </div>
+                </div>
+
+                <div class="payment-footer">
+                    <p>By proceeding with payment, you agree to our Terms of Service and Privacy Policy.</p>
+                    <p>Your subscription will automatically renew monthly until cancelled.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .payment-section {
+            padding: 8rem 0 4rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+        }
+
+        .payment-header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: var(--white);
+        }
+
+        .payment-icon {
+            width: 4rem;
+            height: 4rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .payment-header h1 {
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .payment-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.125rem;
+        }
+
+        .pricing-summary {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .plan-details {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .plan-details h2 {
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+        }
+
+        .price-display {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .price-display .currency {
+            font-size: 1.5rem;
+            color: var(--gray-500);
+        }
+
+        .price-display .amount {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .price-display .period {
+            color: var(--gray-500);
+            margin-left: 0.25rem;
+        }
+
+        .features-included h3 {
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+        }
+
+        .features-included ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .features-included li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: var(--gray-700);
+        }
+
+        .features-included i {
+            color: var(--success-color);
+            font-size: 0.875rem;
+        }
+
+        .payment-methods {
+            padding: 2rem;
+        }
+
+        .payment-methods h3 {
+            color: var(--gray-800);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .payment-option {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .payment-option h4 {
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-option p {
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+        }
+
+        .backup-payment {
+            background: var(--gray-50);
+        }
+
+        .pp-MVK35P3ZKYQLY {
+            text-align: center;
+            border: none;
+            border-radius: 0.25rem;
+            min-width: 11.625rem;
+            padding: 0 2rem;
+            height: 2.625rem;
+            font-weight: bold;
+            background-color: #FFD140;
+            color: #000000;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-size: 1rem;
+            line-height: 1.25rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .pp-MVK35P3ZKYQLY:hover {
+            background-color: #e6bc00;
+        }
+
+        .payment-cards {
+            margin: 1rem 0;
+        }
+
+        .payment-cards img {
+            height: 1.5rem;
+        }
+
+        .powered-by {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .powered-by img {
+            height: 0.875rem;
+            vertical-align: middle;
+        }
+
+        .security-info {
+            display: flex;
+            justify-content: space-around;
+            padding: 1.5rem 2rem;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .security-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .security-item i {
+            color: var(--success-color);
+            font-size: 1.25rem;
+        }
+
+        .security-item span {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .payment-footer {
+            padding: 2rem;
+            text-align: center;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .payment-footer p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .payment-container {
+                margin: 1rem;
+            }
+
+            .payment-header {
+                padding: 2rem 1rem 1.5rem;
+            }
+
+            .pricing-summary,
+            .payment-methods,
+            .payment-footer {
+                padding: 1.5rem;
+            }
+
+            .security-info {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+
+            .price-display .amount {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Initialize PayPal hosted button
+        paypal.HostedButtons({
+            hostedButtonId: "MVK35P3ZKYQLY",
+        }).render("#paypal-container-MVK35P3ZKYQLY");
+
+        // Handle successful payment (this would be called from PayPal)
+        function handlePaymentSuccess() {
+            localStorage.setItem("fanyabill_pro", "true");
+            window.location.href = "pro-success.html";
+        }
+    </script>
+</body>
+</html>
+
