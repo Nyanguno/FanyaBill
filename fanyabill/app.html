@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FanyaBill Pro - AI Business Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=AVetgrGryV2vI9648Mi4ht0JhoOn599N4W706O0yxuo33KaC0dJFa_U2xxSUt1aqelv3QnHwpNs_4hU5&currency=USD"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Enhanced App-Specific Styles */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            /* REMOVED: background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); */
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--gray-900); /* Dark sidebar background */
+            color: var(--gray-50);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 99;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 80px; /* Adjust as needed for collapsed state */
+        }
+
+        .sidebar.collapsed .sidebar-header h2,
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .pro-status,
+        .sidebar.collapsed .sidebar-footer .user-info {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center; /* Center icons when collapsed */
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-700);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 80px; /* Adjust size as needed */
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        .logo-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            border: 2px solid var(--gray-900);
+        }
+
+        .sidebar-header h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: var(--white);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-header h2 span {
+            color: var(--primary-color);
+        }
+
+        .pro-status {
+            font-size: 0.8rem;
+            background-color: var(--secondary-color);
+            color: var(--gray-900);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1; /* Allows navigation to take available space */
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-300);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            background: var(--primary-dark);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+            transform: translateX(0); /* Remove transform for active state */
+        }
+
+        .nav-item:hover:not(.active) {
+            background: var(--gray-800);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar-footer {
+            margin-top: auto; /* Pushes content to the bottom */
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-700);
+            text-align: center;
+        }
+
+        .user-info {
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .user-name {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            color: var(--gray-400);
+            font-size: 0.8rem;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 250px; /* Compensate for sidebar width */
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 80px; /* Adjust margin when sidebar is collapsed */
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 2.2rem;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem; /* Space for icon */
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            color: var(--gray-400);
+        }
+
+        /* Dashboard Specific Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            background: var(--primary-color); /* Corrected: Should be a light background for the icon container */
+            padding: 0.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Specific icon background colors for dashboard cards */
+        .stat-card.sales .icon {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-card.inventory .icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-card.invoices .icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .stat-card .info h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--gray-900);
+        }
+
+        .stat-card .info p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        .chart-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            overflow-x: auto; /* Ensure charts are scrollable if too wide */
+        }
+
+        .chart-container h3 {
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        .recent-activity {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .recent-activity h3 {
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--gray-200);
+        }
+
+        .activity-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .activity-item .icon {
+            font-size: 1.2rem;
+            margin-right: 1rem;
+            color: var(--primary-color);
+        }
+
+        .activity-item .details p {
+            margin: 0;
+            color: var(--gray-700);
+        }
+
+        .activity-item .details .timestamp {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        /* Table Styles (for Inventory, Invoices, Sales History) */
+        .table-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow-x: auto; /* Make table horizontally scrollable on small screens */
+        }
+
+        .table-full-width {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table-full-width th,
+        .table-full-width td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table-full-width th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .table-full-width tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-full-width tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .action-buttons .btn {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .action-buttons .btn:last-child {
+            margin-right: 0;
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group input[type="email"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--gray-800);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Modals */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close-button {
+            color: var(--gray-500);
+            font-size: 1.8rem;
+            font-weight: bold;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: var(--gray-800);
+            text-decoration: none;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            color: var(--gray-700);
+        }
+
+        .modal-content .btn {
+            margin-top: 1rem;
+        }
+
+        /* Alerts/Banners */
+        .alert-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            left: unset; /* Override left:0 from app.html snippet if it exists */
+            width: auto; /* Adjust width based on content */
+            max-width: 400px;
+            z-index: 1500;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInRight 0.5s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-banner.success {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+
+        .alert-banner.warning {
+            background-color: var(--secondary-color);
+            color: var(--gray-900);
+        }
+
+        .alert-banner.danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+
+        .alert-banner .close-button {
+            position: static; /* Reset absolute positioning */
+            color: inherit;
+            margin-left: 1rem;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        /* Invoice Specific Styles (for the invoice modal/preview) */
+        .invoice-details {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .invoice-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed var(--gray-200);
+        }
+
+        .invoice-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .invoice-section h4 {
+            color: var(--gray-800);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .invoice-header-details,
+        .invoice-addresses,
+        .invoice-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .invoice-header-details > div,
+        .invoice-addresses > div {
+            padding: 0.5rem 0;
+        }
+
+        .invoice-header-details label,
+        .invoice-addresses label {
+            font-weight: 600;
+            color: var(--gray-800);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .invoice-header-details span,
+        .invoice-addresses p {
+            color: var(--gray-600);
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-table th,
+        .invoice-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .invoice-table th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .invoice-table tfoot td {
+            font-weight: 600;
+            background: var(--gray-50);
+        }
+
+        .invoice-summary {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .invoice-summary-table {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .invoice-summary-table td {
+            padding: 0.5rem 1rem;
+            text-align: right;
+        }
+
+        .invoice-summary-table .total-row {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .invoice-summary-table .total-row td {
+            border-top: 2px solid var(--primary-color);
+        }
+
+        .invoice-notes {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--gray-200);
+        }
+
+        .invoice-notes h4 {
+            margin-bottom: 0.75rem;
+        }
+
+        .invoice-notes p {
+            font-style: italic;
+            color: var(--gray-600);
+        }
+
+        .invoice-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Sales History and Breakdown */
+        .breakdown-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .breakdown-content {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .chart-placeholder {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+        }
+
+        /* AI Assistant */
+        .ai-chat-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            height: 600px; /* Fixed height for chat window */
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message.ai .avatar {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .chat-message.user .avatar {
+            background: var(--gray-300);
+            color: var(--gray-800);
+        }
+
+        .chat-message .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 0.75rem;
+        }
+
+        .chat-message.user .avatar {
+            order: 2;
+            margin-left: 0.75rem;
+            margin-right: 0;
+        }
+
+        .chat-bubble {
+            background: var(--gray-100);
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            max-width: 70%;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: var(--primary-color);
+            color: var(--white);
+            border-bottom-right-radius: 0;
+        }
+
+        .chat-message.ai .chat-bubble {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border-bottom-left-radius: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 1rem;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1.2rem;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Settings */
+        .settings-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+        }
+
+        .settings-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--gray-800);
+            border-bottom: 1px dashed var(--gray-200);
+            padding-bottom: 1rem;
+        }
+
+        .settings-section .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Utility Classes */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--gray-500);
+            font-size: 0.85rem;
+        }
+
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-5 { margin-top: 1.25rem; }
+        .mt-6 { margin-top: 1.5rem; }
+
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-5 { margin-bottom: 1.25rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+
+        .p-4 { padding: 1rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-4 { gap: 1rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.75em;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.success {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+
+        .badge.warning {
+            background-color: var(--secondary-color);
+            color: var(--gray-900);
+        }
+
+        .badge.danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+
+        /* Responsive adjustments for specific elements */
+        @media (max-width: 1024px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+                border-bottom: 1px solid var(--gray-700);
+                padding: 1rem;
+            }
+
+            .sidebar.collapsed {
+                width: 100%; /* No collapse effect on mobile */
+            }
+
+            .sidebar.collapsed .sidebar-header h2,
+            .sidebar.collapsed .nav-text,
+            .sidebar.collapsed .pro-status,
+            .sidebar.collapsed .sidebar-footer .user-info {
+                display: block; /* Show on mobile */
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .main-content.sidebar-collapsed {
+                margin-left: 0;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                width: 100%;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stat-card .icon {
+                margin-bottom: 0.5rem;
+            }
+
+            .invoice-preview {
+                transform: rotate(0deg); /* No rotation on small screens */
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .alert-banner {
+                flex-direction: column;
+                text-align: center;
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+                max-width: unset;
+            }
+            .alert-banner .close-button {
+                margin-top: 0.5rem;
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .cta-title {
+                font-size: 2rem;
+            }
+
+            .chat-bubble {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="images.jpg" alt="FanyaBill Logo" class="logo-image">
+                    <span class="logo-badge" id="invoiceCountBadge">0</span>
+                </div>
+                <h2>Fanya<span>Bill</span></h2>
+                <span class="pro-status" id="proStatus">Free Tier</span>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item active" onclick="showSection('dashboard')" href="#dashboard"><i class="fas fa-home"></i> <span class="nav-text">Dashboard</span></li>
+                <li class="nav-item" onclick="showSection('inventory')" href="#inventory"><i class="fas fa-boxes"></i> <span class="nav-text">Inventory</span></li>
+                <li class="nav-item" onclick="showSection('invoice')" href="#invoice"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">Invoice</span></li>
+                <li class="nav-item" onclick="showSection('sales-summary')" href="#sales-summary"><i class="fas fa-history"></i> <span class="nav-text">Sales History</span></li>
+                <li class="nav-item" onclick="showSection('fanyabot')" href="#fanyabot"><i class="fas fa-robot"></i> <span class="nav-text">AI Assistant</span></li>
+                <li class="nav-item" onclick="showSection('settings')" href="#settings"><i class="fas fa-cog"></i> <span class="nav-text">Settings</span></li>
+            </ul>
+            <div class="invoice-status-section" id="invoiceStatusSection">
+                </div>
+        </aside>
+
+        <main class="main-content" id="mainContent">
+            <section id="dashboard" class="content-section active">
+                <div class="content-header">
+                    <h1>Dashboard</h1>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search..." id="dashboardSearch">
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="stat-card sales">
+                        <div class="icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="info">
+                            <h3 id="totalSales">KES 0.00</h3>
+                            <p>Total Sales</p>
+                        </div>
+                    </div>
+                    <div class="stat-card inventory">
+                        <div class="icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="info">
+                            <h3 id="totalItems">0</h3>
+                            <p>Total Items</p>
+                        </div>
+                    </div>
+                    <div class="stat-card invoices">
+                        <div class="icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="info">
+                            <h3 id="totalInvoices">0</h3>
+                            <p>Invoices Generated</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Revenue Trends</h3>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+
+                <div class="card">
+                    <h3>Recent Sales</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentSalesBody">
+                            <tr>
+                                <td colspan="4" class="text-center">No recent sales. Generate an invoice to see data here.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="inventory" class="content-section">
+                <div class="content-header">
+                    <h1>Inventory</h1>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search inventory..." id="inventorySearch">
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="itemId">Item ID</label>
+                        <input type="text" id="itemId" placeholder="e.g., PROD001">
+                    </div>
+                    <div class="form-group">
+                        <label for="productName">Item Name</label>
+                        <input type="text" id="productName" placeholder="e.g., Laptop Pro">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price (KES)</label>
+                        <input type="number" id="productPrice" min="0" step="0.01" placeholder="e.g., 120000">
+                    </div>
+                    <div class="form-group">
+                        <label for="productStock">Stock Quantity</label>
+                        <input type="number" id="productStock" min="0" step="1" placeholder="e.g., 50">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemCategory">Category</label>
+                        <input type="text" id="itemCategory" placeholder="e.g., Electronics">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescription">Description</label>
+                        <textarea id="itemDescription" placeholder="Brief description of the item..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="addInventoryItem()"><i class="fas fa-plus-circle"></i> Add Item</button>
+                        <button class="btn btn-secondary" onclick="clearInventoryForm()"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3>Current Stock</h3>
+                    <table class="table-full-width">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="invoice" class="content-section">
+                <div class="content-header">
+                    <h1>Create Invoice</h1>
+                    <button class="btn btn-primary" onclick="prepareInvoiceForPreview()"><i class="fas fa-file-export"></i> Preview & Generate PDF</button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" placeholder="e.g., Jane Doe" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Customer Email</label>
+                        <input type="email" id="customerEmail" placeholder="e.g., jane@example.com" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAddress">Customer Address</label>
+                        <input type="text" id="customerAddress" placeholder="e.g., 456 Main St, Anytown" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDate">Invoice Date</label>
+                        <input type="date" id="invoiceDate" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceNotes">Notes/Terms</label>
+                        <textarea id="invoiceNotes" placeholder="e.g., Payment due within 30 days." oninput="renderInvoicePreview()"></textarea>
+                    </div>
+                </div>
+
+                <div class="table-container mb-4">
+                    <h3>Invoice Items</h3>
+                    <p class="text-muted mb-3">Describe your sale (e.g., 2 kg rice, 200; 5 kg sugar, 1000) or add items below</p>
+                    <div class="form-group">
+                        <textarea id="aiDescription" rows="3" placeholder="Describe your sale for AI generation..." class="form-control mb-3"></textarea>
+                        <button class="btn btn-secondary mb-3" onclick="generateItemsFromAI()">Generate Items from Description (AI)</button>
+                    </div>
+
+                    <div class="item-input-grid">
+                        <input type="text" id="itemName" placeholder="Item Name">
+                        <input type="number" id="itemQuantity" placeholder="Qty" min="1">
+                        <input type="number" id="itemPrice" placeholder="Price" step="0.01" min="0">
+                        <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fas fa-plus"></i> Add Item</button>
+                    </div>
+
+                    <table class="table-full-width invoice-items-table mt-4">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th class="action-column">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItemsBody">
+                            </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right">Subtotal</td>
+                                <td id="invoiceSubtotal">KES 0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right">Tax (<span id="invoiceTaxRateDisplay">0</span>%)</td>
+                                <td id="invoiceTaxAmount">KES 0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right total-row">Grand Total</td>
+                                <td id="invoiceGrandTotal" class="total-row">KES 0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="form-actions" style="justify-content: flex-start;">
+                        <button class="btn btn-secondary" onclick="openAddItemModal()"><i class="fas fa-cart-plus"></i> Add Item from Inventory</button>
+                    </div>
+                </div>
+
+                <div id="invoicePreviewModal" class="modal">
+                    <div class="modal-content large-modal-content">
+                        <span class="close-button" onclick="hideInvoicePreviewModal()">&times;</span>
+                        <h2 class="modal-title">Invoice Preview</h2>
+                        <div class="invoice-document-wrapper">
+                            <div id="invoiceDocument" style="display: none; width: 210mm; margin: 0 auto; padding: 20mm; font-family: Arial; background: white;">
+                                <div style="text-align: center; margin-bottom: 30px;">
+                                    <h2 id="previewBusinessName" style="margin: 0; font-size: 24px; font-weight: bold;">{{BUSINESS_NAME}}</h2>
+                                    <p id="previewBusinessAddress" style="margin: 5px 0;">{{BUSINESS_ADDRESS}}</p>
+                                    <p id="previewBusinessCity" style="margin: 5px 0;">{{CITY_STATE_ZIP}}</p>
+                                    <p style="margin: 5px 0;">{{PHONE}} - {{EMAIL}}</p>
+                                </div>
+
+                                <h1 style="text-align: center; font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px;">INVOICE</h1>
+
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                                    <div>
+                                        <p style="margin: 5px 0;"><strong>Invoice No:</strong> <span id="previewInvoiceNumber">INV-001</span></p>
+                                        <p style="margin: 5px 0;"><strong>Invoice Date:</strong> <span id="previewInvoiceDate">{{DATE}}</span></p>
+                                        <p style="margin: 5px 0;"><strong>Due Date:</strong> <span id="previewDueDate">{{DUE_DATE}}</span></p>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                                    <div style="width: 48%;">
+                                        <h3 style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px;">BILL TO</h3>
+                                        <p id="previewCustomerName" style="margin: 5px 0; font-weight: bold;">{{CUSTOMER_NAME}}</p>
+                                        <p id="previewCustomerAddress" style="margin: 5px 0;">{{CUSTOMER_ADDRESS}}</p>
+                                        <p id="previewCustomerCity" style="margin: 5px 0;">{{CUSTOMER_CITY}}</p>
+                                    </div>
+                                    
+                                    <div style="width: 48%;">
+                                        <h3 style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px;">SHIP TO</h3>
+                                        <p id="previewShipToName" style="margin: 5px 0; font-weight: bold;">{{SHIP_NAME}}</p>
+                                        <p id="previewShipToAddress" style="margin: 5px 0;">{{SHIP_ADDRESS}}</p>
+                                        <p id="previewShipToCity" style="margin: 5px 0;">{{SHIP_CITY}}</p>
+                                    </div>
+                                </div>
+
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">QTY</th>
+                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">DESCRIPTION</th>
+                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">UNIT PRICE</th>
+                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">TOTAL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="invoicePdfItemsBody">
+                                        </tbody>
+                                </table>
+
+                                <div style="text-align: right; margin-top: 20px;">
+                                    <div style="display: inline-block; width: 300px; text-align: right;">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                            <strong>SUB TOTAL:</strong>
+                                            <span id="pdfInvoiceSubtotal">{{SUBTOTAL}}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                            <strong>TAX (<span id="pdfInvoiceTaxRate">0</span>%):</strong>
+                                            <span id="pdfInvoiceTax">{{TAX_AMOUNT}}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #000; padding-top: 10px;">
+                                            <strong>GRAND TOTAL:</strong>
+                                            <span id="pdfInvoiceTotal">{{TOTAL}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
+                                    <div style="font-style: italic;">Thank You</div>
+                                    <div style="text-align: right;">
+                                        <p id="pdfInvoiceNotes" style="margin: 5px 0;">{{NOTES}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" onclick="generateAndDownloadInvoice()">Download PDF</button>
+                            <button class="btn btn-secondary" onclick="hideInvoicePreviewModal()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sales-history" class="content-section">
+                <div class="content-header">
+                    <h1>Sales History</h1>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search sales..." id="salesSearch">
+                    </div>
+                </div>
+
+                <div class="breakdown-options">
+                    <button id="monthlyBreakdownBtn" class="btn btn-secondary active" onclick="displaySalesBreakdown('monthly')">Monthly Breakdown</button>
+                    <button id="yearlyBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('yearly')">Yearly Breakdown</button>
+                    <button id="productBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('product')">Product Breakdown</button>
+                </div>
+
+                <div class="breakdown-content" id="monthlyBreakdownContent">
+                    <h3>Monthly Sales Data</h3>
+                    <div class="chart-placeholder" id="monthlySalesChartPlaceholder">
+                        <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="table-container mt-4">
+                        <table class="table-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Total Sales</th>
+                                    <th>Number of Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlySalesTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="breakdown-content" id="yearlyBreakdownContent" style="display: none;">
+                    <h3>Yearly Sales Data</h3>
+                    <div class="chart-placeholder" id="yearlySalesChartPlaceholder">
+                        <canvas id="yearlySalesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="table-container mt-4">
+                        <table class="table-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Total Sales</th>
+                                    <th>Number of Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody id="yearlySalesTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="breakdown-content" id="productBreakdownContent" style="display: none;">
+                    <h3>Product Sales Data</h3>
+                    <div class="chart-placeholder" id="productSalesChartPlaceholder">
+                        <canvas id="productSalesChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="table-container mt-4">
+                        <table class="table-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Quantity Sold</th>
+                                    <th>Total Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productSalesTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container mt-4">
+                    <h3>All Sales Transactions</h3>
+                    <table class="table-full-width">
+                        <thead>
+                            <tr>
+                                <th>Invoice ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total Amount</th>
+                                <th>Items</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesHistoryTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="fanyabot" class="content-section">
+                <div class="content-header">
+                    <h1>AI Assistant</h1>
+                    <button class="btn btn-primary" onclick="clearChat()"><i class="fas fa-sync-alt"></i> Clear Chat</button>
+                </div>
+                <div class="ai-chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message ai">
+                            <div class="avatar">AI</div>
+                            <div class="chat-bubble">Hello! I am your FanyaBill AI Assistant. How can I help you manage your business today?</div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me anything about your business or inventory...">
+                        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="settings" class="content-section">
+                <div class="content-header">
+                    <h1>Settings</h1>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Business Information</h3>
+                    <div class="form-group">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" placeholder="e.g., My Awesome Shop">
+                    </div>
+                    <div class="form-group">
+                        <label for="businessAddress">Business Address</label>
+                        <input type="text" id="businessAddress" placeholder="e.g., P.O Box 1234-00100">
+                    </div>
+                    <div class="form-group">
+                        <label for="businessCity">City</label>
+                        <input type="text" id="businessCity" placeholder="e.g., Nairobi">
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency Symbol</label>
+                        <input type="text" id="currency" placeholder="e.g., KES" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="taxRate">Default Tax Rate (%)</label>
+                        <input type="number" id="taxRate" placeholder="e.g., 16" min="0" max="100" step="0.01">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideMessageModal()">&times;</span>
+            <h3 id="messageTitle"></h3>
+            <p id="messageText"></p>
+            <button class="btn btn-primary" onclick="hideMessageModal()">OK</button>
+        </div>
+    </div>
+
+    <div id="lowStockAlert" class="alert-banner" style="display: none;">
+        <span id="lowStockMessage"></span>
+        <button class="close-button" onclick="hideLowStockAlert()">&times;</button>
+    </div>
+
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideUpgradeModal()">&times;</span>
+            <h3 class="modal-title">Upgrade to FanyaBill Pro!</h3>
+            <p>Unlock unlimited invoices, premium AI features, and advanced reporting by upgrading to Pro!</p>
+            <p>Monthly Price: **$7.99**</p>
+            <div id="paypal-button-container" style="margin-top: 1rem;"></div>
+            <p class="text-muted mt-3">Your financial details are securely processed by PayPal.</p>
+        </div>
+    </div>
+
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAddItemModal()">&times;</span>
+            <h3 class="modal-title">Add Item to Invoice</h3>
+            <div class="form-group">
+                <label for="selectInvoiceItem">Select Item</label>
+                <select id="selectInvoiceItem" onchange="populateInvoiceItemDetails()"></select>
+            </div>
+            <div class="form-group">
+                <label for="invoiceItemQuantity">Quantity</label>
+                <input type="number" id="invoiceItemQuantity" min="1" value="1">
+            </div>
+            <button class="btn btn-primary" onclick="addSelectedItemToInvoice()"><i class="fas fa-plus"></i> Add to Invoice</button>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial active section
+            showSection('dashboard');
+            
+            // Add hover effects to buttons
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.transform = 'translateX(5px)';
+                    }
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    if (!this.classList.contains('active')) {
+                        this.style.transform = '';
+                    }
+                });
+            });
+        });
+        
+        // Section navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+                section.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) {
+                activeSection.classList.add('active');
+                activeSection.style.display = 'block';
+            }
+            
+            document.querySelector(`.nav-item[href="#${sectionId}"]`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
