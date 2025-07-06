@@ -78,36 +78,6 @@ body {
     color: var(--secondary-color);
 }
 
-/* Logo Image Styles */
-.app-logo img {
-    height: 40px; /* Adjust based on your header height */
-    width: auto; /* Maintains aspect ratio */
-    object-fit: contain; /* Ensures the image fits well */
-    transition: transform 0.3s ease; /* Smooth hover effect */
-}
-
-.app-logo img:hover {
-    transform: scale(1.05); /* Slight zoom on hover */
-}
-
-/* Alternative if you're using a logo container */
-.logo-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.logo-container img {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-
-.logo-container img:hover {
-    transform: scale(1.05);
-}
-
 .app-nav-items {
     display: flex;
     gap: 1.5rem;
@@ -824,6 +794,7 @@ textarea {
     }
 }
 
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .main-container {
@@ -925,11 +896,6 @@ textarea {
     .app-logo i {
         font-size: 2rem;
     }
-    /* Responsive logo adjustments */
-    .app-logo img,
-    .logo-container img {
-        height: 32px; /* Smaller on mobile */
-    }
     .app-nav-items {
         gap: 0.8rem;
     }
@@ -978,11 +944,6 @@ textarea {
         width: 100%;
         text-align: center;
         padding: 0.6rem;
-    }
-    /* Responsive logo adjustments */
-    .app-logo img,
-    .logo-container img {
-        height: 28px; /* Even smaller on very small screens */
     }
     .main-container {
         padding: 0.5rem;
