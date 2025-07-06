@@ -78,6 +78,36 @@ body {
     color: var(--secondary-color);
 }
 
+/* Logo Image Styles */
+.app-logo img {
+    height: 40px; /* Adjust based on your header height */
+    width: auto; /* Maintains aspect ratio */
+    object-fit: contain; /* Ensures the image fits well */
+    transition: transform 0.3s ease; /* Smooth hover effect */
+}
+
+.app-logo img:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+/* Alternative if you're using a logo container */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-container img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.logo-container img:hover {
+    transform: scale(1.05);
+}
+
 .app-nav-items {
     display: flex;
     gap: 1.5rem;
@@ -420,51 +450,6 @@ textarea {
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
-
-/*
- =========================================
-  NEW STYLES FOR ADD ITEM FORM
- =========================================
-  Apply the class "add-item-form-container" to the div that wraps
-  the Item Name, Qty, Price inputs and the "Add Item" button.
-*/
-.add-item-form-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: flex-end; /* Aligns button with the bottom of the inputs */
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.add-item-form-container > * {
-    /* Reset margins for direct children, assuming some might be .form-group */
-    margin-bottom: 0 !important;
-}
-
-/* Target the input for the item name to give it more space */
-/* This assumes it's the first input/div in the container */
-.add-item-form-container > *:nth-child(1) {
-    flex: 3 1 200px; /* flex-grow, flex-shrink, flex-basis */
-}
-
-/* Target the inputs for quantity and price */
-.add-item-form-container > *:nth-child(2),
-.add-item-form-container > *:nth-child(3) {
-    flex: 1 1 80px; /* flex-grow, flex-shrink, flex-basis */
-}
-
-/* Ensure inputs inside the container are full width and have proper padding */
-.add-item-form-container input {
-    width: 100%;
-    padding: 0.8rem; /* Making sure the padding is generous */
-    font-size: 1rem; /* Ensuring font size is standard */
-}
-
-.add-item-form-container .btn {
-    flex-shrink: 0;
-}
-
 
 .invoice-parties {
     display: grid;
@@ -839,7 +824,6 @@ textarea {
     }
 }
 
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .main-container {
@@ -941,6 +925,11 @@ textarea {
     .app-logo i {
         font-size: 2rem;
     }
+    /* Responsive logo adjustments */
+    .app-logo img,
+    .logo-container img {
+        height: 32px; /* Smaller on mobile */
+    }
     .app-nav-items {
         gap: 0.8rem;
     }
@@ -989,6 +978,11 @@ textarea {
         width: 100%;
         text-align: center;
         padding: 0.6rem;
+    }
+    /* Responsive logo adjustments */
+    .app-logo img,
+    .logo-container img {
+        height: 28px; /* Even smaller on very small screens */
     }
     .main-container {
         padding: 0.5rem;
