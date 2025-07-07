@@ -981,3 +981,30 @@ textarea {
         font-size: 0.9rem;
     }
 }
+/* New Main Application Header Styles */
+.app-main-header {
+    display: flex;
+    justify-content: center; /* Center the logo and text horizontally */
+    align-items: center;
+    padding: 1.5rem 0; /* Add some vertical padding */
+    background: var(--white); /* White background for the header */
+    box-shadow: var(--shadow-md); /* Subtle shadow */
+    margin-bottom: 2rem; /* Space below the header before content sections */
+    border-radius: var(--border-radius); /* Rounded corners */
+}
+
+.app-logo-main {
+    display: flex;
+    align-items: center;
+    font-family: 'Dancing Script', cursive; /* Use your stylish font for the text */
+    font-size: 2.5rem; /* Larger font size for main logo text */
+    color: var(--gray-900); /* Dark text color */
+}
+
+.app-header-logo-main {
+    height: 60px; /* Larger logo size for the main header */
+    margin-right: 15px; /* Space between logo and text */
+    border-radius: 50%; /* Make the logo circular */
+    object-fit: cover; /* Ensures the image covers the area without distortion */
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); /* Optional: a subtle glow effect */
+}
