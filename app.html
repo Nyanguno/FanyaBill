@@ -3,1433 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanyaBill Pro - AI Business Assistant</title>
+    <title>FanyaBill App - AI Business Assistant</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <script src="https://www.paypal.com/sdk/js?client-id=AVetgrGryV2vI9648Mi4ht0JhoOn599N4W706O0yxuo33KaC0dJFa_U2xxSUt1aqelv3QnHwpNs_4hU5&currency=USD"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <style>
-        /* Enhanced App-Specific Styles */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 250px;
-            background: var(--gray-900);
-            color: var(--gray-50);
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 99;
-            transition: width 0.3s ease;
-        }
-
-        .sidebar.collapsed {
-            width: 80px;
-        }
-
-        .sidebar.collapsed .sidebar-header h2,
-        .sidebar.collapsed .nav-text,
-        .sidebar.collapsed .pro-status,
-        .sidebar.collapsed .sidebar-footer .user-info {
-            display: none;
-        }
-
-        .sidebar.collapsed .nav-item {
-            justify-content: center;
-        }
-
-        .sidebar-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--gray-700);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .logo-container {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
-        }
-
-        .logo-image {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--primary-color);
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
-        }
-
-        .logo-badge {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background-color: var(--secondary-color);
-            color: var(--white);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7em;
-            font-weight: bold;
-            border: 2px solid var(--gray-900);
-        }
-
-        .sidebar-header h2 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.2rem;
-            color: var(--white);
-            margin: 0;
-            line-height: 1;
-            letter-spacing: 1px;
-        }
-
-        .sidebar-header h2 span {
-            color: var(--primary-color);
-        }
-
-        .pro-status {
-            font-size: 0.8rem;
-            background-color: var(--secondary-color);
-            color: var(--gray-900);
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            margin-top: 10px;
-            font-weight: 600;
-        }
-
-        .nav-list {
-            list-style: none;
-            padding: 0;
-            flex-grow: 1;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--gray-300);
-            text-decoration: none;
-            border-radius: 0.5rem;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .nav-item i {
-            margin-right: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            background: var(--primary-dark);
-            color: var(--white);
-            box-shadow: var(--shadow-md);
-            transform: translateX(0);
-        }
-
-        .nav-item:hover:not(.active) {
-            background: var(--gray-800);
-            color: var(--primary-color);
-            transform: translateX(5px);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 1rem;
-            border-top: 1px solid var(--gray-700);
-            text-align: center;
-        }
-
-        .user-info {
-            margin-bottom: 1rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin: 0 auto 0.5rem;
-        }
-
-        .user-name {
-            color: var(--white);
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-email {
-            color: var(--gray-400);
-            font-size: 0.8rem;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            margin-left: 250px;
-            padding: 2rem;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.sidebar-collapsed {
-            margin-left: 80px;
-        }
-
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .content-header h1 {
-            font-size: 2.2rem;
-            color: var(--gray-800);
-            margin: 0;
-        }
-
-        .search-bar {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-bar input {
-            padding: 0.75rem 1rem;
-            padding-left: 2.5rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            width: 250px;
-            transition: all 0.3s ease;
-        }
-
-        .search-bar input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .search-bar i {
-            position: absolute;
-            left: 1rem;
-            color: var(--gray-400);
-        }
-
-        /* Dashboard Specific Styles */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card .icon {
-            font-size: 2rem;
-            color: var(--primary-color);
-            background: var(--primary-color);
-            padding: 0.75rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stat-card.sales .icon {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary-color);
-        }
-
-        .stat-card.inventory .icon {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-        }
-
-        .stat-card.invoices .icon {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--secondary-color);
-        }
-
-        .stat-card .info h3 {
-            font-size: 1.8rem;
-            margin: 0;
-            color: var(--gray-900);
-        }
-
-        .stat-card .info p {
-            font-size: 0.9rem;
-            color: var(--gray-600);
-            margin: 0;
-        }
-
-        .chart-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-            overflow-x: auto;
-        }
-
-        .chart-container h3 {
-            margin-bottom: 1rem;
-            color: var(--gray-800);
-        }
-
-        .recent-activity {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-        }
-
-        .recent-activity h3 {
-            margin-bottom: 1rem;
-            color: var(--gray-800);
-        }
-
-        .activity-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px dashed var(--gray-200);
-        }
-
-        .activity-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .activity-item .icon {
-            font-size: 1.2rem;
-            margin-right: 1rem;
-            color: var(--primary-color);
-        }
-
-        .activity-item .details p {
-            margin: 0;
-            color: var(--gray-700);
-        }
-
-        .activity-item .details .timestamp {
-            font-size: 0.8rem;
-            color: var(--gray-500);
-        }
-
-        /* Table Styles (for Inventory, Invoices, Sales History) */
-        .table-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            overflow-x: auto;
-        }
-
-        .table-full-width {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .table-full-width th,
-        .table-full-width td {
-            padding: 0.8rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .table-full-width th {
-            background: var(--gray-50);
-            color: var(--gray-700);
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        .table-full-width tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .table-full-width tbody tr:hover {
-            background: var(--gray-50);
-        }
-
-        .action-buttons .btn {
-            padding: 0.5rem 0.8rem;
-            font-size: 0.8rem;
-            margin-right: 0.5rem;
-        }
-
-        .action-buttons .btn:last-child {
-            margin-right: 0;
-        }
-
-        /* Form Styles */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--gray-700);
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group input[type="email"],
-        .form-group input[type="date"], /* Added for date input */
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            color: var(--gray-800);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .form-actions {
-            margin-top: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-
-        /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--white);
-            margin: auto;
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .modal-content.large { /* For invoice preview */
-            max-width: 800px;
-        }
-
-        .close-button {
-            color: var(--gray-500);
-            font-size: 1.8rem;
-            font-weight: bold;
-            position: absolute;
-            top: 1rem;
-            right: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .close-button:hover,
-        .close-button:focus {
-            color: var(--gray-800);
-            text-decoration: none;
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            color: var(--gray-800);
-            margin-bottom: 1rem;
-        }
-
-        .modal-content p {
-            margin-bottom: 1.5rem;
-            color: var(--gray-700);
-        }
-
-        .modal-content .btn {
-            margin-top: 1rem;
-        }
-
-        /* Alerts/Banners */
-        .alert-banner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem 1.5rem;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            left: unset;
-            width: auto;
-            max-width: 400px;
-            z-index: 1500;
-            box-shadow: var(--shadow-lg);
-            animation: fadeInRight 0.5s ease-out;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .alert-banner.success {
-            background-color: var(--success-color);
-            color: var(--white);
-        }
-
-        .alert-banner.warning {
-            background-color: var(--secondary-color);
-            color: var(--gray-900);
-        }
-
-        .alert-banner.danger {
-            background-color: var(--danger-color);
-            color: var(--white);
-        }
-
-        .alert-banner .close-button {
-            position: static;
-            color: inherit;
-            margin-left: 1rem;
-            font-size: 1.5rem;
-            background: none;
-            border: none;
-            padding: 0;
-        }
-
-        /* Invoice Specific Styles (for the invoice modal/preview) */
-        .invoice-details {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
-            color: var(--gray-700);
-        }
-
-        .invoice-section {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px dashed var(--gray-200);
-        }
-
-        .invoice-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .invoice-section h4 {
-            color: var(--gray-800);
-            font-size: 1.2rem;
-            margin-bottom: 1rem;
-        }
-
-        .invoice-header-details, .invoice-addresses, .invoice-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .invoice-header-details > div, .invoice-addresses > div {
-            padding: 0.5rem 0;
-        }
-
-        .invoice-header-details label, .invoice-addresses label {
-            font-weight: 600;
-            color: var(--gray-800);
-            display: block;
-            margin-bottom: 0.25rem;
-        }
-
-        .invoice-header-details span, .invoice-addresses p {
-            color: var(--gray-600);
-        }
-
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .invoice-table th, .invoice-table td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .invoice-table th {
-            background: var(--gray-50);
-            color: var(--gray-700);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-        }
-
-        .invoice-table tfoot td {
-            font-weight: 600;
-            background: var(--gray-50);
-        }
-
-        .invoice-summary {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .invoice-summary-table {
-            width: 100%;
-            max-width: 300px;
-        }
-
-        .invoice-summary-table td {
-            padding: 0.5rem 1rem;
-            text-align: right;
-        }
-
-        .invoice-summary-table .total-row {
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .invoice-summary-table .total-row td {
-            border-top: 2px solid var(--primary-color);
-        }
-
-        .invoice-notes {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px dashed var(--gray-200);
-        }
-
-        .invoice-notes h4 {
-            margin-bottom: 0.75rem;
-        }
-
-        .invoice-notes p {
-            font-style: italic;
-            color: var(--gray-600);
-        }
-
-        .invoice-actions {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        /* Sales History and Breakdown */
-        .breakdown-options {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .breakdown-content {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-        }
-
-        .chart-placeholder {
-            min-height: 300px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-500);
-            background: var(--gray-50);
-            border-radius: var(--border-radius);
-        }
-
-        /* AI Assistant */
-        .ai-chat-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            display: flex;
-            flex-direction: column;
-            height: 600px;
-        }
-
-        .chat-messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .chat-message {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .chat-message.user {
-            justify-content: flex-end;
-        }
-
-        .chat-message.ai .avatar {
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .chat-message.user .avatar {
-            background: var(--gray-300);
-            color: var(--gray-800);
-        }
-
-        .chat-message .avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: bold;
-            flex-shrink: 0;
-            margin-right: 0.75rem;
-        }
-
-        .chat-message.user .avatar {
-            margin-left: 0.75rem;
-            margin-right: 0;
-            order: 2; /* Puts avatar on the right for user messages */
-        }
-
-        .chat-bubble {
-            background: var(--gray-100);
-            padding: 0.75rem 1rem;
-            border-radius: 1rem;
-            max-width: 75%;
-            color: var(--gray-800);
-            line-height: 1.4;
-        }
-
-        .chat-message.ai .chat-bubble {
-            border-bottom-left-radius: 0.25rem;
-        }
-
-        .chat-message.user .chat-bubble {
-            background: var(--primary-color);
-            color: var(--white);
-            border-bottom-right-radius: 0.25rem;
-        }
-
-        .chat-input-container {
-            display: flex;
-            border-top: 1px solid var(--gray-200);
-            padding-top: 1rem;
-        }
-
-        .chat-input-container input {
-            flex-grow: 1;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius);
-            margin-right: 0.5rem;
-        }
-
-        .chat-input-container button {
-            padding: 0.75rem 1rem;
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .chat-input-container button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        /* Settings Page */
-        .settings-category {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
-        }
-
-        .settings-category h3 {
-            margin-bottom: 1.5rem;
-            color: var(--gray-800);
-            border-bottom: 1px solid var(--gray-200);
-            padding-bottom: 0.75rem;
-        }
-
-        .settings-item {
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px dashed var(--gray-100);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .settings-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .settings-item label {
-            font-weight: 500;
-            color: var(--gray-700);
-            flex-grow: 1;
-        }
-
-        .settings-item .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 24px;
-        }
-
-        .settings-item .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .settings-item .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--gray-300);
-            transition: 0.4s;
-            border-radius: 24px;
-        }
-
-        .settings-item .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: var(--white);
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        .settings-item input:checked + .slider {
-            background-color: var(--success-color);
-        }
-
-        .settings-item input:checked + .slider:before {
-            transform: translateX(16px);
-        }
-
-        /* Responsive Design (continued from style.css) */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 80px;
-                transform: translateX(0); /* Ensure sidebar is visible but collapsed by default */
-            }
-
-            .sidebar:hover { /* Expand on hover for better UX on smaller screens */
-                width: 250px;
-            }
-
-            .sidebar:hover .sidebar-header h2,
-            .sidebar:hover .nav-text,
-            .sidebar:hover .pro-status,
-            .sidebar:hover .sidebar-footer .user-info {
-                display: block;
-            }
-
-            .sidebar:hover .nav-item {
-                justify-content: flex-start;
-            }
-
-            .main-content {
-                margin-left: 80px; /* Always start with collapsed margin */
-            }
-
-            .content-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .search-bar {
-                width: 100%;
-            }
-
-            .search-bar input {
-                width: 100%;
-            }
-
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-content {
-                width: 95%;
-                margin: 1rem;
-                padding: 1.5rem;
-            }
-
-            .modal-content.large {
-                width: 95%;
-                margin: 1rem;
-                padding: 1.5rem;
-            }
-        }
-    </style>
+    
+    <script src="api-config.js"></script>
 </head>
 <body class="app-body">
+    <header class="app-header">
+        <div class="app-nav">
+            <div class="app-logo">
+                <img src="images/logo.png" alt="FanyaBill Logo" style="height: 40px; margin-right: 10px;">
+                <span>FanyaBill</span>
+            </div>
+            <div class="app-status">
+                <div id="invoiceStatus" class="invoice-counter">
+                    <i class="fas fa-file-invoice"></i>
+                    <span id="invoiceCount">0</span> / <span id="invoiceLimit">3</span> invoices
+                </div>
+                <div id="proBanner" class="pro-banner" style="display: none;">
+                    <i class="fas fa-crown"></i>
+                    Pro Unlocked
+                </div>
+                <button id="upgradeBtn" class="btn-upgrade" onclick="showUpgradeModal()" style="display: none;">
+                    <i class="fas fa-star"></i>
+                    Upgrade to Pro
+                </button>
+            </div>
+        </div>
+    </header>
+
     <div class="app-container">
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="logo-container">
-                    <img src="https://via.placeholder.com/80/6366f1/ffffff?text=FB" alt="FanyaBill Logo" class="logo-image">
-                    <span class="logo-badge">AI</span>
-                </div>
-                <h2>FanyaBill <span>Pro</span></h2>
-                <span class="pro-status">PREMIUM USER</span>
-            </div>
-            <nav class="nav-list">
+            <nav class="sidebar-nav">
                 <a href="#dashboard" class="nav-item active" onclick="showSection('dashboard')">
-                    <i class="fas fa-th-large"></i>
-                    <span class="nav-text">Dashboard</span>
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
                 </a>
-                <a href="#invoices" class="nav-item" onclick="showSection('invoices')">
-                    <i class="fas fa-file-invoice-dollar"></i>
-                    <span class="nav-text">Invoices</span>
+                <a href="#invoice" class="nav-item" onclick="showSection('invoice')">
+                    <i class="fas fa-file-invoice"></i>
+                    Generate Invoice
                 </a>
                 <a href="#inventory" class="nav-item" onclick="showSection('inventory')">
                     <i class="fas fa-boxes"></i>
-                    <span class="nav-text">Inventory</span>
+                    Inventory
                 </a>
                 <a href="#sales" class="nav-item" onclick="showSection('sales')">
                     <i class="fas fa-chart-line"></i>
-                    <span class="nav-text">Sales History</span>
+                    Sales Summary
                 </a>
-                <a href="#ai-assistant" class="nav-item" onclick="showSection('ai-assistant')">
+                <a href="#chat" class="nav-item" onclick="showSection('chat')">
                     <i class="fas fa-robot"></i>
-                    <span class="nav-text">AI Assistant</span>
+                    FanyaBot
                 </a>
                 <a href="#settings" class="nav-item" onclick="showSection('settings')">
                     <i class="fas fa-cog"></i>
-                    <span class="nav-text">Settings</span>
-                </a>
-                <a href="#upgrade" class="nav-item" onclick="showUpgradeModal()">
-                    <i class="fas fa-rocket"></i>
-                    <span class="nav-text">Upgrade</span>
+                    Settings
                 </a>
             </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">JM</div>
-                    <div class="user-name">Jane Mwangi</div>
-                    <div class="user-email">jane.mwangi@example.com</div>
-                </div>
-                <button class="btn btn-secondary btn-block">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </button>
-            </div>
         </aside>
 
         <main class="main-content">
             <section id="dashboard" class="content-section active">
-                <div class="content-header">
+                <div class="section-header">
                     <h1>Dashboard</h1>
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search anything...">
-                    </div>
+                    <p>Welcome to your AI-powered business assistant</p>
                 </div>
+                
                 <div class="dashboard-grid">
-                    <div class="stat-card sales">
-                        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="info">
-                            <h3>$12,500</h3>
-                            <p>Total Sales</p>
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Invoices Generated</h3>
+                            <div class="card-value" id="dashboardInvoiceCount">0</div>
                         </div>
                     </div>
-                    <div class="stat-card inventory">
-                        <div class="icon"><i class="fas fa-cubes"></i></div>
-                        <div class="info">
-                            <h3>850</h3>
-                            <p>Items in Stock</p>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Total Revenue</h3>
+                            <div class="card-value" id="dashboardRevenue">$0</div>
                         </div>
                     </div>
-                    <div class="stat-card invoices">
-                        <div class="icon"><i class="fas fa-file-invoice"></i></div>
-                        <div class="info">
-                            <h3>120</h3>
-                            <p>Invoices Generated</p>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Products in Stock</h3>
+                            <div class="card-value" id="dashboardProducts">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Low Stock Items</h3>
+                            <div class="card-value" id="dashboardLowStock">0</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="chart-container">
-                    <h3>Sales Performance</h3>
-                    <canvas id="salesChart"></canvas>
-                </div>
-
-                <div class="recent-activity">
-                    <h3>Recent Activity</h3>
-                    <ul class="activity-list">
-                        <li class="activity-item">
-                            <i class="fas fa-file-invoice-dollar icon"></i>
-                            <div class="details">
-                                <p>Invoice #FB-2023-001 generated for John Doe</p>
-                                <span class="timestamp">2 hours ago</span>
-                            </div>
-                        </li>
-                        <li class="activity-item">
-                            <i class="fas fa-boxes icon"></i>
-                            <div class="details">
-                                <p>50 units of "Premium Widget" added to inventory</p>
-                                <span class="timestamp">Yesterday</span>
-                            </div>
-                        </li>
-                        <li class="activity-item">
-                            <i class="fas fa-chart-line icon"></i>
-                            <div class="details">
-                                <p>Monthly sales report viewed</p>
-                                <span class="timestamp">3 days ago</span>
-                            </div>
-                        </li>
-                    </ul>
+                <div class="quick-actions">
+                    <h2>Quick Actions</h2>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="showSection('invoice')">
+                            <i class="fas fa-plus"></i>
+                            Generate Invoice
+                        </button>
+                        <button class="action-btn" onclick="showSection('inventory')">
+                            <i class="fas fa-box"></i>
+                            Add Product
+                        </button>
+                        <button class="action-btn" onclick="showSection('sales')">
+                            <i class="fas fa-chart-bar"></i>
+                            View Sales
+                        </button>
+                    </div>
                 </div>
             </section>
 
-            <section id="invoices" class="content-section">
-                <div class="content-header">
+            <section id="invoice" class="content-section">
+                <div class="section-header">
                     <h1>Generate Invoice</h1>
-                    <button class="btn btn-primary" onclick="showInvoiceHistory()">
-                        <i class="fas fa-history"></i> Invoice History
-                    </button>
+                    <p>Describe your sale in natural language and let AI create a professional invoice</p>
                 </div>
 
-                <div class="form-grid invoice-form">
-                    <div class="form-group">
-                        <label for="fromBusinessName">Business Name (From)</label>
-                        <input type="text" id="fromBusinessName" placeholder="Your Business Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fromAddress">Address (From)</label>
-                        <input type="text" id="fromAddress" placeholder="Your Business Address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fromCity">City (From)</label>
-                        <input type="text" id="fromCity" placeholder="Your City" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="fromTelephone">Telephone (From)</label>
-                        <input type="text" id="fromTelephone" placeholder="Your Telephone Number" required>
+                <div class="invoice-generator">
+                    <div class="input-section">
+                        <label for="saleDescription">Describe your sale:</label>
+                        <textarea 
+                            id="saleDescription" 
+                            placeholder="Example: 2kg rice at 150, 3 sugar at 120, 1 cooking oil at 200"
+                            rows="4"
+                        ></textarea>
+                        <button id="generateBtn" class="btn-primary" onclick="generateInvoice()">
+                            <i class="fas fa-magic"></i>
+                            Generate Invoice
+                        </button>
                     </div>
 
-                    <div class="form-group">
-                        <label for="billToName">Bill to Name (Customer)</label>
-                        <input type="text" id="billToName" placeholder="Customer Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="billToAddress">Address (Customer)</label>
-                        <input type="text" id="billToAddress" placeholder="Customer Address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="billToPhone">Phone Number (Customer)</label>
-                        <input type="text" id="billToPhone" placeholder="Customer Phone Number" required>
-                    </div>
+                    <div id="invoicePreview" class="invoice-preview" style="display: none;">
+                        <div class="invoice-header">
+                            <div class="invoice-title">
+                                <h2>INVOICE</h2>
+                                <div class="invoice-details">
+                                    <div class="invoice-number">Invoice #<span id="invoiceNumber"></span></div>
+                                    <div class="invoice-date">Date: <span id="invoiceDate"></span></div>
+                                    <div class="invoice-due-date">Due Date: <span id="invoiceDueDate"></span></div>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="invoiceNumber">Invoice Number</label>
-                        <input type="text" id="invoiceNumber" placeholder="e.g., INV-2023-001" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="invoiceDate">Invoice Date</label>
-                        <input type="date" id="invoiceDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="dueDate">Due Date</label>
-                        <input type="date" id="dueDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="taxRate">Tax Rate (%)</label>
-                        <input type="number" id="taxRate" value="0" min="0" step="0.01" required>
-                    </div>
-                     <div class="form-group full-width">
-                        <label for="invoiceNote">Note</label>
-                        <textarea id="invoiceNote" placeholder="e.g., Payments due in 30 days.">Please pay it in the next 10 days as per the shop's rules.</textarea>
-                    </div>
-                </div>
+                        <div class="invoice-parties">
+                            <div class="invoice-from">
+                                <h3>From:</h3>
+                                <div id="businessInfo">
+                                    <div id="businessName">Your Business</div>
+                                    <div id="businessAddress">Business Address</div>
+                                    <div id="businessCity">City, Country</div>
+                                    <div id="businessPhone">Tel: N/A</div>
+                                </div>
+                            </div>
+                            <div class="invoice-to">
+                                <h3>To:</h3>
+                                <div id="customerInfo">
+                                    <div id="customerName">Customer Name</div>
+                                    <div id="customerAddress">Customer Address</div>
+                                    <div id="customerPhone">Tel: N/A</div>
+                                </div>
+                            </div>
+                        </div>
 
-                <h3>Items</h3>
-                <div class="table-container">
-                    <table class="table-full-width">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoiceItems">
-                            </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="3" style="text-align: right;">Subtotal:</td>
-                                <td id="subTotal">$0.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" style="text-align: right;">Tax (<span id="displayTaxRate">0</span>%):</td>
-                                <td id="taxAmount">$0.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" style="text-align: right; font-weight: bold;">Grand Total:</td>
-                                <td id="grandTotal" style="font-weight: bold;">$0.00</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                <button class="btn btn-secondary" onclick="addItemRow()">Add Item</button>
+                        <div class="invoice-items">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceItemsTable">
+                                    </tbody>
+                            </table>
+                        </div>
 
-                <div class="form-actions">
-                    <button class="btn btn-primary" onclick="generateInvoicePreview()">Generate Invoice</button>
+                        <div class="invoice-total-summary">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span id="invoiceSubtotal">$0.00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax (<span id="taxRateDisplay">0</span>%):</span>
+                                <span id="invoiceTax">$0.00</span>
+                            </div>
+                            <div class="total-row final-total">
+                                <span>TOTAL AMOUNT:</span>
+                                <span id="invoiceTotal">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="invoice-note">
+                            <p id="invoicePaymentNote">Note: Please pay it in the next 10 days as per the shop's rules.</p>
+                        </div>
+                        
+                        <div class="invoice-powered-by">
+                            <p>Powered by FanyaBill</p>
+                        </div>
+
+                        <div class="invoice-actions">
+                            <button class="btn-primary" onclick="downloadInvoicePDF()">
+                                <i class="fas fa-download"></i>
+                                Download PDF
+                            </button>
+                            <button class="btn-secondary" onclick="clearInvoice()">
+                                <i class="fas fa-trash"></i>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </section>
 
             <section id="inventory" class="content-section">
-                <div class="content-header">
+                <div class="section-header">
                     <h1>Inventory Management</h1>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add New Product
+                    <p>Add, edit, and track your products and stock levels</p>
+                </div>
+
+                <div class="inventory-controls">
+                    <button class="btn-primary" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Product
+                    </button>
+                    <button class="btn-secondary" onclick="exportInventory()">
+                        <i class="fas fa-download"></i>
+                        Export CSV
+                    </button>
+                    <input type="file" id="importFile" accept=".csv" style="display: none;" onchange="importInventory()">
+                    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">
+                        <i class="fas fa-upload"></i>
+                        Import CSV
                     </button>
                 </div>
 
-                <div class="table-container">
-                    <table class="table-full-width">
+                <div class="inventory-table">
+                    <table>
                         <thead>
                             <tr>
                                 <th>Product Name</th>
-                                <th>SKU</th>
-                                <th>Category</th>
-                                <th>Stock</th>
                                 <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Premium Wireless Earbuds</td>
-                                <td>PWE-001</td>
-                                <td>Electronics</td>
-                                <td>150</td>
-                                <td>$79.99</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
+                        <tbody id="inventoryTableBody">
+                            <tr class="empty-state">
+                                <td colspan="5">
+                                    <div class="empty-message">
+                                        <i class="fas fa-box-open"></i>
+                                        <p>No products added yet. Click "Add Product" to get started.</p>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>Smart Home Hub</td>
-                                <td>SHH-002</td>
-                                <td>Smart Devices</td>
-                                <td>75</td>
-                                <td>$129.00</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
-                                </td>
-                            </tr>
-                             <tr>
-                                <td>Ergonomic Office Chair</td>
-                                <td>EOC-003</td>
-                                <td>Office Furniture</td>
-                                <td>30</td>
-                                <td>$249.99</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
-                                </td>
-                            </tr>
-                             <tr>
-                                <td>Portable Bluetooth Speaker</td>
-                                <td>PBS-004</td>
-                                <td>Audio</td>
-                                <td>200</td>
-                                <td>$49.99</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-edit"></i> Edit</button>
-                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </section>
 
             <section id="sales" class="content-section">
-                <div class="content-header">
-                    <h1>Sales History</h1>
-                    <div class="breakdown-options">
-                        <button class="btn btn-secondary">Daily</button>
-                        <button class="btn btn-secondary">Weekly</button>
-                        <button class="btn btn-primary">Monthly</button>
-                        <button class="btn btn-secondary">Annually</button>
+                <div class="section-header">
+                    <h1>Sales Summary</h1>
+                    <p>Track your sales performance and top-selling products</p>
+                </div>
+
+                <div class="sales-overview">
+                    <div class="sales-card">
+                        <h3>Total Sales</h3>
+                        <div class="sales-value" id="totalSales">$0.00</div>
+                    </div>
+                    <div class="sales-card">
+                        <h3>Items Sold</h3>
+                        <div class="sales-value" id="totalItemsSold">0</div>
+                    </div>
+                    <div class="sales-card">
+                        <h3>Average Sale</h3>
+                        <div class="sales-value" id="averageSale">$0.00</div>
                     </div>
                 </div>
 
-                <div class="breakdown-content">
-                    <h3>Monthly Sales Overview</h3>
-                    <canvas id="monthlySalesChart"></canvas>
+                <div class="sales-filters">
+                    <button class="filter-btn active" onclick="filterSales('daily')">Daily</button>
+                    <button class="filter-btn" onclick="filterSales('weekly')">Weekly</button>
+                    <button class="filter-btn" onclick="filterSales('monthly')">Monthly</button>
+                    <button class="filter-btn" onclick="filterSales('annually')">Annually</button>
                 </div>
 
-                <div class="table-container">
-                    <table class="table-full-width">
+                <div class="top-products">
+                    <h2>Top Selling Products</h2>
+                    <div id="topProductsList" class="products-list">
+                        <div class="empty-message">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No sales data yet. Generate some invoices to see your top products!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Sales History</h2>
+                <div class="sales-table">
+                    <table>
                         <thead>
                             <tr>
-                                <th>Invoice No.</th>
-                                <th>Customer</th>
+                                <th>Invoice ID</th>
                                 <th>Date</th>
-                                <th>Total Amount</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>INV-2023-001</td>
-                                <td>John Doe</td>
-                                <td>2023-04-01</td>
-                                <td>$150.00</td>
-                                <td>Paid</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</button>
+                        <tbody id="salesTableBody">
+                            <tr class="empty-state">
+                                <td colspan="6">
+                                    <div class="empty-message">
+                                        <i class="fas fa-history"></i>
+                                        <p>No sales history yet. Generate invoices to populate this section.</p>
+                                    </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>INV-2023-002</td>
-                                <td>Jane Smith</td>
-                                <td>2023-04-03</td>
-                                <td>$230.50</td>
-                                <td>Paid</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</button>
-                                </td>
-                            </tr>
-                             <tr>
-                                <td>INV-2023-003</td>
-                                <td>Robert Brown</td>
-                                <td>2023-04-05</td>
-                                <td>$75.00</td>
-                                <td>Pending</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</button>
-                                </td>
-                            </tr>
-                             <tr>
-                                <td>INV-2023-004</td>
-                                <td>Emily White</td>
-                                <td>2023-04-07</td>
-                                <td>$320.00</td>
-                                <td>Paid</td>
-                                <td class="action-buttons">
-                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i> View</button>
-                                </td>
-                            </tr>
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="ai-assistant" class="content-section">
-                <div class="content-header">
-                    <h1>AI Business Assistant</h1>
+            <section id="chat" class="content-section">
+                <div class="section-header">
+                    <h1>FanyaBot Assistant</h1>
+                    <p>AI assistant to help answer customer questions about your inventory</p>
                 </div>
 
-                <div class="ai-chat-container">
+                <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="chat-message ai">
-                            <div class="avatar">AI</div>
-                            <div class="chat-bubble">Hello! How can I assist your business today?</div>
+                        <div class="bot-message">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-content">
+                                <p>Hello! I'm FanyaBot, your AI assistant. I can help answer questions about your inventory. Try asking me something like "Do you have rice?" or "How much is cooking oil?"</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="chat-input-container">
-                        <input type="text" id="chatInput" placeholder="Ask me anything...">
-                        <button id="sendMessageButton"><i class="fas fa-paper-plane"></i> Send</button>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask about your inventory..." onkeypress="handleChatKeyPress(event)">
+                        <button onclick="sendChatMessage()" class="btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
             </section>
 
             <section id="settings" class="content-section">
-                <div class="content-header">
+                <div class="section-header">
                     <h1>Settings</h1>
+                    <p>Configure your business information and preferences</p>
                 </div>
 
-                <div class="settings-category">
-                    <h3>General Settings</h3>
-                    <div class="settings-item">
-                        <label for="darkModeToggle">Dark Mode</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                    <div class="settings-item">
-                        <label for="notificationsToggle">Email Notifications</label>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="notificationsToggle" checked>
-                            <span class="slider round"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="settings-category">
-                    <h3>Invoice Settings</h3>
+                <div class="settings-form">
                     <div class="form-group">
-                        <label for="defaultTaxRate">Default Tax Rate (%)</label>
-                        <input type="number" id="defaultTaxRate" value="8" min="0" step="0.01">
+                        <label for="businessNameInput">Business Name</label>
+                        <input type="text" id="businessNameInput" placeholder="Your Business Name">
                     </div>
                     <div class="form-group">
-                        <label for="currencySymbol">Currency Symbol</label>
-                        <input type="text" id="currencySymbol" value="$">
+                        <label for="businessAddressInput">Business Address</label>
+                        <input type="text" id="businessAddressInput" placeholder="123 Business Street">
                     </div>
-                    <div class="form-actions">
-                        <button class="btn btn-primary">Save Settings</button>
+                    <div class="form-group">
+                        <label for="businessCityInput">City</label>
+                        <input type="text" id="businessCityInput" placeholder="City, Country">
                     </div>
+                    <div class="form-group">
+                        <label for="businessPhoneInput">Business Phone Number</label>
+                        <input type="tel" id="businessPhoneInput" placeholder="+1234567890">
+                    </div>
+                    <div class="form-group">
+                        <label for="currencySelect">Currency</label>
+                        <select id="currencySelect">
+                            <option value="$">USD ($)</option>
+                            <option value="€">EUR (€)</option>
+                            <option value="£">GBP (£)</option>
+                            <option value="KES">KES</option>
+                            <option value="₹">INR (₹)</option>
+                        </select>
+                    </div>
+                     <div class="form-group">
+                        <label for="taxRateInput">Default Tax Rate (%)</label>
+                        <input type="number" id="taxRateInput" placeholder="0" min="0" max="100" step="0.1">
+                    </div>
+                    <button class="btn-primary" onclick="saveSettings()">
+                        <i class="fas fa-save"></i>
+                        Save Settings
+                    </button>
                 </div>
             </section>
         </main>
     </div>
 
-    <div id="invoicePreviewModal" class="modal" style="display: none;">
-        <div class="modal-content large">
-            <span class="close-button" onclick="hideInvoicePreviewModal()">&times;</span>
-            <h2 class="modal-title">Invoice Preview</h2>
-            <div id="invoicePdfPreview" class="invoice-details">
+    <div id="addProductModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Product</h2>
+                <button class="modal-close" onclick="hideAddProductModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="productName">Product Name</label>
+                    <input type="text" id="productName" placeholder="e.g., Rice 2kg">
                 </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" onclick="downloadInvoicePdf()">Download as PDF</button>
+                <div class="form-group">
+                    <label for="productPrice">Price</label>
+                    <input type="number" id="productPrice" placeholder="0.00" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Stock Quantity</label>
+                    <input type="number" id="productStock" placeholder="0" min="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="hideAddProductModal()">Cancel</button>
+                <button class="btn-primary" onclick="addProduct()">Add Product</button>
             </div>
         </div>
     </div>
 
     <div id="upgradeModal" class="modal" style="display: none;">
         <div class="modal-content">
-            <span class="close-button" onclick="hideUpgradeModal()">&times;</span>
-            <h2 class="modal-title">Upgrade to FanyaBill Pro</h2>
-            <p>Unlock powerful features and take your business to the next level!</p>
-            <div class="feature-list">
-                <div class="feature">✅ Unlimited invoice generation</div>
-                <div class="feature">✅ Advanced analytics</div>
-                <div class="feature">✅ Priority support</div>
-                <div class="feature">✅ Future premium features</div>
+            <div class="modal-header">
+                <h2>🚀 Upgrade to FanyaBill Pro</h2>
+                <button class="modal-close" onclick="hideUpgradeModal()">&times;</button>
             </div>
-            <div id="paypal-button-container"></div>
+            <div class="modal-body">
+                <p>Get unlimited invoices and premium features for just $7.99/month</p>
+                <div class="upgrade-features">
+                    <div class="feature">✅ Unlimited invoice generation</div>
+                    <div class="feature">✅ Advanced analytics</div>
+                    <div class="feature">✅ Priority support</div>
+                    <div class="feature">✅ Future premium features</div>
+                </div>
+                <div id="paypal-button-container"></div>
+            </div>
             <div class="modal-footer">
                 <button class="btn-secondary" onclick="hideUpgradeModal()">Maybe Later</button>
             </div>
@@ -1437,7 +474,7 @@
     </div>
 
     <div id="messageModal" class="modal" style="display: none;">
-        <div class="modal-content">
+        <div class="modal-content">\
             <div class="modal-header">
                 <h2 id="messageTitle">Message</h2>
                 <button class="modal-close" onclick="hideMessageModal()">&times;</button>
@@ -1451,471 +488,14 @@
         </div>
     </div>
 
-    <div id="lowStockAlert" class="alert-banner warning" style="display: none;">
-        <i class="fas fa-exclamation-triangle"></i>
-        <span id="lowStockMessage">Some products are running low on stock!</span>
-        <button class="close-button" onclick="hideLowStockAlert()">&times;</button>
+    <div id="lowStockAlert" class="alert" style="display: none;">
+        <div class="alert-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="lowStockMessage"></span>
+            <button onclick="hideLowStockAlert()">&times;</button>
+        </div>
     </div>
 
-
-    <script>
-        // DOM Elements
-        const sidebar = document.querySelector('.sidebar');
-        const mainContent = document.querySelector('.main-content');
-
-        // Initial setup for current date
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-            const dd = String(today.getDate()).padStart(2, '0');
-            const formattedDate = `${yyyy}-${mm}-${dd}`;
-            document.getElementById('invoiceDate').value = formattedDate;
-
-            // Set a default due date (e.g., 10 days from now)
-            const dueDate = new Date();
-            dueDate.setDate(today.getDate() + 10);
-            const due_yyyy = dueDate.getFullYear();
-            const due_mm = String(dueDate.getMonth() + 1).padStart(2, '0');
-            const due_dd = String(dueDate.getDate()).padStart(2, '0');
-            document.getElementById('dueDate').value = `${due_yyyy}-${due_mm}-${due_dd}`;
-
-            // Set initial active section
-            showSection('dashboard');
-
-            // Load saved shop details from localStorage
-            loadShopDetails();
-
-            // Add hover effects to buttons
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.addEventListener('mouseenter', function() {
-                    if (!this.classList.contains('active')) {
-                        this.style.transform = 'translateX(5px)';
-                    }
-                });
-
-                item.addEventListener('mouseleave', function() {
-                    if (!this.classList.contains('active')) {
-                        this.style.transform = '';
-                    }
-                });
-            });
-
-            // Initial item row for invoice
-            addItemRow();
-            calculateGrandTotal(); // Initial calculation
-
-            // Event listeners for invoice item changes
-            document.getElementById('invoiceItems').addEventListener('input', (event) => {
-                if (event.target.classList.contains('item-quantity') || event.target.classList.contains('item-unit-price')) {
-                    updateItemTotal(event.target.closest('tr'));
-                    calculateGrandTotal();
-                }
-            });
-
-            // Event listener for tax rate changes
-            document.getElementById('taxRate').addEventListener('input', calculateGrandTotal);
-        });
-
-        // Section navigation
-        function showSection(sectionId) {
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-                section.style.display = 'none';
-            });
-
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            const activeSection = document.getElementById(sectionId);
-            if (activeSection) {
-                activeSection.classList.add('active');
-                activeSection.style.display = 'block';
-            }
-
-            document.querySelector(`.nav-item[href="#${sectionId}"]`).classList.add('active');
-        }
-
-        // Invoice Functions
-        function addItemRow() {
-            const invoiceItems = document.getElementById('invoiceItems');
-            const newRow = document.createElement('tr');
-            newRow.innerHTML = `
-                <td><input type="text" class="item-description" placeholder="Description" required></td>
-                <td><input type="number" class="item-quantity" value="1" min="1" required></td>
-                <td><input type="number" class="item-unit-price" value="0.00" min="0" step="0.01" required></td>
-                <td class="item-total">$0.00</td>
-                <td><button class="btn btn-sm btn-danger" onclick="removeItemRow(this)"><i class="fas fa-trash"></i></button></td>
-            `;
-            invoiceItems.appendChild(newRow);
-            updateItemTotal(newRow); // Calculate total for the new row
-            calculateGrandTotal(); // Recalculate grand total
-        }
-
-        function removeItemRow(button) {
-            const row = button.closest('tr');
-            row.remove();
-            calculateGrandTotal(); // Recalculate grand total
-        }
-
-        function updateItemTotal(row) {
-            const quantity = parseFloat(row.querySelector('.item-quantity').value);
-            const unitPrice = parseFloat(row.querySelector('.item-unit-price').value);
-            const total = (quantity * unitPrice) || 0;
-            row.querySelector('.item-total').textContent = `$${total.toFixed(2)}`;
-        }
-
-        function calculateGrandTotal() {
-            let subtotal = 0;
-            document.querySelectorAll('#invoiceItems tr').forEach(row => {
-                const totalText = row.querySelector('.item-total').textContent;
-                subtotal += parseFloat(totalText.replace('$', '')) || 0;
-            });
-
-            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-            const taxAmount = subtotal * (taxRate / 100);
-            const grandTotal = subtotal + taxAmount;
-
-            document.getElementById('subTotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('taxAmount').textContent = `$${taxAmount.toFixed(2)}`;
-            document.getElementById('displayTaxRate').textContent = taxRate.toFixed(2);
-            document.getElementById('grandTotal').textContent = `$${grandTotal.toFixed(2)}`;
-        }
-
-        function saveShopDetails() {
-            const shopDetails = {
-                businessName: document.getElementById('fromBusinessName').value,
-                address: document.getElementById('fromAddress').value,
-                city: document.getElementById('fromCity').value,
-                telephone: document.getElementById('fromTelephone').value
-            };
-            localStorage.setItem('fanyabillShopDetails', JSON.stringify(shopDetails));
-        }
-
-        function loadShopDetails() {
-            const shopDetails = JSON.parse(localStorage.getItem('fanyabillShopDetails'));
-            if (shopDetails) {
-                document.getElementById('fromBusinessName').value = shopDetails.businessName || '';
-                document.getElementById('fromAddress').value = shopDetails.address || '';
-                document.getElementById('fromCity').value = shopDetails.city || '';
-                document.getElementById('fromTelephone').value = shopDetails.telephone || '';
-            }
-        }
-
-        function generateInvoicePreview() {
-            // Save shop details before generating invoice
-            saveShopDetails();
-
-            const fromBusinessName = document.getElementById('fromBusinessName').value;
-            const fromAddress = document.getElementById('fromAddress').value;
-            const fromCity = document.getElementById('fromCity').value;
-            const fromTelephone = document.getElementById('fromTelephone').value;
-
-            const billToName = document.getElementById('billToName').value;
-            const billToAddress = document.getElementById('billToAddress').value;
-            const billToPhone = document.getElementById('billToPhone').value;
-
-            const invoiceNumber = document.getElementById('invoiceNumber').value;
-            const invoiceDate = document.getElementById('invoiceDate').value;
-            const dueDate = document.getElementById('dueDate').value;
-            const invoiceNote = document.getElementById('invoiceNote').value;
-            const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
-
-            if (!fromBusinessName || !fromAddress || !fromCity || !fromTelephone ||
-                !billToName || !billToAddress || !billToPhone ||
-                !invoiceNumber || !invoiceDate || !dueDate) {
-                showMessageModal('Error', 'Please fill in all mandatory invoice details (Your Shop & Customer details, Invoice Number, Date, Due Date).');
-                return;
-            }
-
-            let itemsHtml = '';
-            let subtotal = 0;
-            const itemRows = document.querySelectorAll('#invoiceItems tr');
-            if (itemRows.length === 0) {
-                showMessageModal('Error', 'Please add at least one item to the invoice.');
-                return;
-            }
-
-            itemRows.forEach(row => {
-                const description = row.querySelector('.item-description').value;
-                const quantity = parseFloat(row.querySelector('.item-quantity').value);
-                const unitPrice = parseFloat(row.querySelector('.item-unit-price').value);
-                const itemTotal = (quantity * unitPrice) || 0;
-
-                if (!description || isNaN(quantity) || isNaN(unitPrice) || quantity <= 0 || unitPrice < 0) {
-                    showMessageModal('Error', 'Please ensure all item details (description, quantity, unit price) are valid and filled.');
-                    throw new Error('Invalid item details'); // Stop execution
-                }
-
-                subtotal += itemTotal;
-                itemsHtml += `
-                    <tr>
-                        <td>${description}</td>
-                        <td>${quantity}</td>
-                        <td>$${unitPrice.toFixed(2)}</td>
-                        <td>$${itemTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            const taxAmount = subtotal * (taxRate / 100);
-            const grandTotal = subtotal + taxAmount;
-
-            const invoiceContentHtml = `
-                <div class="invoice-section">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
-                        <div>
-                            <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">INVOICE</h2>
-                            <p style="font-size: 0.9em; color: var(--gray-500);">#${invoiceNumber}</p>
-                        </div>
-                        <img src="https://via.placeholder.com/80/6366f1/ffffff?text=FB" alt="Logo" style="width: 60px; height: 60px; border-radius: 50%;">
-                    </div>
-                    <div class="invoice-header-details">
-                        <div>
-                            <label>Invoice Date:</label>
-                            <span>${invoiceDate}</span>
-                        </div>
-                        <div>
-                            <label>Due Date:</label>
-                            <span>${dueDate}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="invoice-section invoice-addresses">
-                    <div>
-                        <h4>From:</h4>
-                        <p><strong>${fromBusinessName}</strong></p>
-                        <p>${fromAddress}</p>
-                        <p>${fromCity}</p>
-                        <p>Tel: ${fromTelephone}</p>
-                    </div>
-                    <div>
-                        <h4>Bill To:</h4>
-                        <p><strong>${billToName}</strong></p>
-                        <p>${billToAddress}</p>
-                        <p>Tel: ${billToPhone}</p>
-                    </div>
-                </div>
-
-                <div class="invoice-section">
-                    <table class="invoice-table">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${itemsHtml}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="3" style="text-align: right;">Subtotal:</td>
-                                <td>$${subtotal.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="3" style="text-align: right;">Tax (${taxRate}%):</td>
-                                <td>$${taxAmount.toFixed(2)}</td>
-                            </tr>
-                            <tr class="total-row">
-                                <td colspan="3" style="text-align: right;">Grand Total:</td>
-                                <td>$${grandTotal.toFixed(2)}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <div class="invoice-notes invoice-section">
-                    <h4>Note:</h4>
-                    <p>${invoiceNote}</p>
-                </div>
-                <div style="text-align: center; margin-top: 2rem; font-size: 0.8em; color: var(--gray-500);">
-                    Powered by FanyaBill
-                </div>
-            `;
-
-            document.getElementById('invoicePdfPreview').innerHTML = invoiceContentHtml;
-            document.getElementById('invoicePreviewModal').style.display = 'flex';
-        }
-
-        function downloadInvoicePdf() {
-            const element = document.getElementById('invoicePdfPreview');
-            const opt = {
-                margin: 0.5,
-                filename: `invoice-${document.getElementById('invoiceNumber').value}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        }
-
-        function hideInvoicePreviewModal() {
-            document.getElementById('invoicePreviewModal').style.display = 'none';
-        }
-
-
-        // Modals Functions
-        function showUpgradeModal() {
-            document.getElementById('upgradeModal').style.display = 'flex';
-            // Render PayPal buttons inside the modal if it's the first time
-            if (!document.getElementById('paypal-button-container').hasChildNodes()) {
-                paypal.Buttons({
-                    createOrder: function(data, actions) {
-                        return actions.order.create({
-                            purchase_units: [{
-                                amount: {
-                                    value: '19.99' // Example price for upgrade
-                                }
-                            }]
-                        });
-                    },
-                    onApprove: function(data, actions) {
-                        return actions.order.capture().then(function(details) {
-                            showMessageModal('Payment Successful', 'Thank you for upgrading, ' + details.payer.name.given_name + '!');
-                            hideUpgradeModal();
-                        });
-                    },
-                    onError: function(err) {
-                        showMessageModal('Payment Error', 'An error occurred during the PayPal payment: ' + err);
-                    }
-                }).render('#paypal-button-container');
-            }
-        }
-
-        function hideUpgradeModal() {
-            document.getElementById('upgradeModal').style.display = 'none';
-        }
-
-        function showMessageModal(title, message) {
-            document.getElementById('messageTitle').textContent = title;
-            document.getElementById('messageText').textContent = message;
-            document.getElementById('messageModal').style.display = 'flex';
-        }
-
-        function hideMessageModal() {
-            document.getElementById('messageModal').style.display = 'none';
-        }
-
-        function hideLowStockAlert() {
-            document.getElementById('lowStockAlert').style.display = 'none';
-        }
-
-        function showInvoiceHistory() {
-            // Placeholder for showing invoice history
-            showMessageModal('Invoice History', 'This feature is under development.');
-        }
-
-
-        // Chart.js (dummy data for demonstration)
-        // Ensure Chart.js library is included if using this (e.g., via CDN in <head>)
-        // <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-        const salesCtx = document.getElementById('salesChart');
-        if (salesCtx) {
-            new Chart(salesCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Revenue',
-                        data: [3000, 4500, 5000, 4000, 6000, 7500],
-                        borderColor: 'rgb(99, 102, 241)',
-                        tension: 0.1,
-                        fill: false
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    }
-                }
-            });
-        }
-
-        const monthlySalesCtx = document.getElementById('monthlySalesChart');
-        if (monthlySalesCtx) {
-            new Chart(monthlySalesCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                        label: 'Sales',
-                        data: [2000, 2200, 2500, 2300, 2800, 3000, 2900, 3100, 3300, 3000, 3500, 3800],
-                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
-                        borderColor: 'rgb(99, 102, 241)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        // AI Assistant Chat Logic
-        const chatInput = document.getElementById('chatInput');
-        const sendMessageButton = document.getElementById('sendMessageButton');
-        const chatMessages = document.getElementById('chatMessages');
-
-        if (sendMessageButton) {
-            sendMessageButton.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-        }
-
-        function sendMessage() {
-            const messageText = chatInput.value.trim();
-            if (messageText === '') return;
-
-            // Add user message
-            const userMessageDiv = document.createElement('div');
-            userMessageDiv.classList.add('chat-message', 'user');
-            userMessageDiv.innerHTML = `
-                <div class="chat-bubble">${messageText}</div>
-                <div class="avatar">You</div>
-            `;
-            chatMessages.appendChild(userMessageDiv);
-
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            // Simulate AI response (replace with actual AI API call)
-            chatInput.value = ''; // Clear input immediately
-            setTimeout(() => {
-                const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.classList.add('chat-message', 'ai');
-                aiMessageDiv.innerHTML = `
-                    <div class="avatar">AI</div>
-                    <div class="chat-bubble">Thank you for your message. I am currently under development and can answer general business questions. What specifically would you like to know about your business data?</div>
-                `;
-                chatMessages.appendChild(aiMessageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 1000);
-        }
-
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
