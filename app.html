@@ -506,8 +506,7 @@
             transition: color 0.2s ease;
         }
 
-        .close-button:hover,
-        .close-button:focus {
+        .close-button:hover, .close-button:focus {
             color: var(--gray-800);
             text-decoration: none;
         }
@@ -611,29 +610,24 @@
             margin-bottom: 1rem;
         }
 
-        .invoice-header-details,
-        .invoice-addresses,
-        .invoice-summary-grid {
+        .invoice-header-details, .invoice-addresses, .invoice-summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
         }
 
-        .invoice-header-details > div,
-        .invoice-addresses > div {
+        .invoice-header-details > div, .invoice-addresses > div {
             padding: 0.5rem 0;
         }
 
-        .invoice-header-details label,
-        .invoice-addresses label {
+        .invoice-header-details label, .invoice-addresses label {
             font-weight: 600;
             color: var(--gray-800);
             display: block;
             margin-bottom: 0.25rem;
         }
 
-        .invoice-header-details span,
-        .invoice-addresses p {
+        .invoice-header-details span, .invoice-addresses p {
             color: var(--gray-600);
         }
 
@@ -644,8 +638,7 @@
             margin-bottom: 1.5rem;
         }
 
-        .invoice-table th,
-        .invoice-table td {
+        .invoice-table th, .invoice-table td {
             padding: 0.75rem 1rem;
             text-align: left;
             border-bottom: 1px solid var(--gray-200);
@@ -655,172 +648,158 @@
             background: var(--gray-50);
             color: var(--gray-700);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
         }
 
-        .invoice-table tfoot td {
-            font-weight: 600;
+        .invoice-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .invoice-table tbody tr:hover {
             background: var(--gray-50);
         }
 
-        .invoice-summary {
+        .invoice-summary-item {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-100);
         }
 
-        .invoice-summary-table {
-            width: 100%;
-            max-width: 300px;
+        .invoice-summary-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: var(--gray-900);
+            font-size: 1.1rem;
         }
 
-        .invoice-summary-table td {
-            padding: 0.5rem 1rem;
+        .invoice-footer {
             text-align: right;
-        }
-
-        .invoice-summary-table .total-row {
-            font-size: 1.2rem;
-            font-weight: 700;
-            background: var(--primary-color);
-            color: var(--white);
-        }
-
-        .invoice-summary-table .total-row td {
-            border-top: 2px solid var(--primary-color);
-        }
-
-        .invoice-notes {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px dashed var(--gray-200);
-        }
-
-        .invoice-notes h4 {
-            margin-bottom: 0.75rem;
-        }
-
-        .invoice-notes p {
-            font-style: italic;
-            color: var(--gray-600);
+            margin-top: 1.5rem;
         }
 
         .invoice-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
             margin-top: 2rem;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
         }
 
-        /* Sales History and Breakdown */
-        .breakdown-options {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .breakdown-content {
+        .invoice-preview-container {
             background: var(--white);
-            padding: 1.5rem;
+            padding: 2rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            margin-bottom: 2rem;
         }
 
-        .chart-placeholder {
-            min-height: 300px;
+        /* New Main Application Header Styles */
+        .app-main-header {
+            display: flex;
+            justify-content: center; /* Center the logo and text horizontally */
+            align-items: center;
+            padding: 1.5rem 0; /* Add some vertical padding */
+            background: var(--white); /* White background for the header */
+            box-shadow: var(--shadow-md); /* Subtle shadow */
+            margin-bottom: 2rem; /* Space below the header before content sections */
+            border-radius: var(--border-radius); /* Rounded corners */
+        }
+
+        .app-logo-main {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: var(--gray-500);
-            background: var(--gray-50);
-            border-radius: var(--border-radius);
+            font-family: 'Dancing Script', cursive; /* Use your stylish font for the text */
+            font-size: 2.5rem; /* Larger font size for main logo text */
+            color: var(--gray-900); /* Dark text color */
         }
 
-        /* AI Assistant */
-        .ai-chat-container {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
+        .app-header-logo-main {
+            height: 60px; /* Larger logo size for the main header */
+            margin-right: 15px; /* Space between logo and text */
+            border-radius: 50%; /* Make the logo circular */
+            object-fit: cover; /* Ensures the image covers the area without distortion */
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); /* Optional: a subtle glow effect */
+        }
+
+        /* FanyaBot specific styles */
+        .chat-container {
             display: flex;
             flex-direction: column;
-            height: 600px; /* Fixed height for chat window */
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            height: 70vh; /* Adjust height as needed */
+            overflow: hidden;
         }
 
         .chat-messages {
             flex-grow: 1;
+            padding: 1.5rem;
             overflow-y: auto;
-            padding-right: 0.5rem;
-            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .chat-message {
-            margin-bottom: 1rem;
+        .message {
             display: flex;
             align-items: flex-start;
+            gap: 0.75rem;
         }
 
-        .chat-message.user {
+        .message.user {
             justify-content: flex-end;
         }
 
-        .chat-message.ai .avatar {
-            background: var(--primary-color);
-            color: var(--white);
+        .message.bot {
+            justify-content: flex-start;
         }
 
-        .chat-message.user .avatar {
-            background: var(--gray-300);
-            color: var(--gray-800);
-        }
-
-        .chat-message .avatar {
-            width: 30px;
-            height: 30px;
+        .message-avatar {
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.8rem;
             font-weight: bold;
-            flex-shrink: 0;
-            margin-right: 0.75rem;
-        }
-
-        .chat-message.user .avatar {
-            order: 2;
-            margin-left: 0.75rem;
-            margin-right: 0;
-        }
-
-        .chat-bubble {
-            background: var(--gray-100);
-            padding: 0.8rem 1.2rem;
-            border-radius: 1rem;
-            max-width: 70%;
-            word-wrap: break-word;
-            line-height: 1.6;
-        }
-
-        .chat-message.user .chat-bubble {
-            background: var(--primary-color);
+            font-size: 0.9rem;
             color: var(--white);
-            border-bottom-right-radius: 0;
         }
 
-        .chat-message.ai .chat-bubble {
-            background: var(--gray-100);
-            color: var(--gray-800);
-            border-bottom-left-radius: 0;
+        .message.user .message-avatar {
+            background-color: var(--primary-color);
+        }
+
+        .message.bot .message-avatar {
+            background-color: var(--success-color);
+        }
+
+        .message-bubble {
+            padding: 0.8rem 1.2rem;
+            border-radius: 1.2rem;
+            max-width: 70%;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-bottom-right-radius: 0.2rem;
+        }
+
+        .message.bot .message-bubble {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+            border-bottom-left-radius: 0.2rem;
         }
 
         .chat-input {
             display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
+            padding: 1rem 1.5rem;
             border-top: 1px solid var(--gray-200);
-            padding-top: 1rem;
+            background: var(--gray-50);
         }
 
         .chat-input input {
@@ -828,138 +807,198 @@
             padding: 0.75rem 1rem;
             border: 1px solid var(--gray-300);
             border-radius: var(--border-radius);
+            margin-right: 1rem;
+            font-size: 1rem;
+        }
+
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .chat-input button {
-            padding: 0.75rem 1.2rem;
-            border-radius: var(--border-radius);
-            background: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
             color: var(--white);
             border: none;
+            border-radius: var(--border-radius);
             cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease;
         }
 
-        /* Settings */
-        .settings-section {
+        .chat-input button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Settings specific styles */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .settings-card {
             background: var(--white);
             padding: 1.5rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
         }
 
-        .settings-section h3 {
-            margin-bottom: 1.5rem;
+        .settings-card h3 {
             color: var(--gray-800);
-            border-bottom: 1px dashed var(--gray-200);
-            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .settings-section .form-group {
-            margin-bottom: 1.5rem;
+        .settings-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed var(--gray-100);
         }
 
-        /* Utility Classes */
-        .text-center {
-            text-align: center;
+        .settings-option:last-child {
+            border-bottom: none;
         }
 
-        .text-muted {
-            color: var(--gray-500);
-            font-size: 0.85rem;
+        .settings-option label {
+            color: var(--gray-700);
+            font-weight: 500;
         }
 
-        .mt-1 { margin-top: 0.25rem; }
-        .mt-2 { margin-top: 0.5rem; }
-        .mt-3 { margin-top: 0.75rem; }
-        .mt-4 { margin-top: 1rem; }
-        .mt-5 { margin-top: 1.25rem; }
-        .mt-6 { margin-top: 1.5rem; }
-
-        .mb-1 { margin-bottom: 0.25rem; }
-        .mb-2 { margin-bottom: 0.5rem; }
-        .mb-3 { margin-bottom: 0.75rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-5 { margin-bottom: 1.25rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
-
-        .p-4 { padding: 1rem; }
-        .px-4 { padding-left: 1rem; padding-right: 1rem; }
-        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
-
-        .flex { display: flex; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .gap-4 { gap: 1rem; }
-
-        .badge {
+        .toggle-switch {
+            position: relative;
             display: inline-block;
-            padding: 0.25em 0.75em;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            width: 45px;
+            height: 25px;
         }
 
-        .badge.success {
-            background-color: var(--success-color);
-            color: var(--white);
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
-        .badge.warning {
-            background-color: var(--secondary-color);
-            color: var(--gray-900);
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: 0.4s;
+            border-radius: 25px;
         }
 
-        .badge.danger {
-            background-color: var(--danger-color);
-            color: var(--white);
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3.5px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
         }
 
-        /* Responsive adjustments for specific elements */
+        input:checked + .toggle-slider {
+            background-color: var(--primary-color);
+        }
+
+        input:focus + .toggle-slider {
+            box-shadow: 0 0 1px var(--primary-color);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .setting-description {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Responsive Design for App */
         @media (max-width: 1024px) {
-            .hero-title {
-                font-size: 3rem;
+            .sidebar {
+                width: 200px;
+            }
+
+            .main-content {
+                margin-left: 200px;
+            }
+
+            .app-main-header {
+                padding: 1rem 0;
+            }
+
+            .app-logo-main {
+                font-size: 2rem;
+            }
+
+            .app-header-logo-main {
+                height: 50px;
             }
         }
 
         @media (max-width: 768px) {
-            .app-container {
-                flex-direction: column;
-            }
-
             .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                box-shadow: none;
-                border-bottom: 1px solid var(--gray-700);
-                padding: 1rem;
+                width: 80px; /* Collapsed by default on smaller screens */
+                padding: 1.5rem 0.5rem;
             }
 
-            .sidebar.collapsed {
-                width: 100%; /* No collapse effect on mobile */
+            .sidebar .sidebar-header h2,
+            .sidebar .nav-text,
+            .sidebar .pro-status,
+            .sidebar .sidebar-footer .user-info {
+                display: none;
             }
 
-            .sidebar.collapsed .sidebar-header h2,
-            .sidebar.collapsed .nav-text,
-            .sidebar.collapsed .pro-status,
-            .sidebar.collapsed .sidebar-footer .user-info {
-                display: block; /* Show on mobile */
+            .sidebar .nav-item {
+                justify-content: center; /* Center icons when collapsed */
+                padding: 0.8rem 0.5rem;
+            }
+
+            .sidebar .nav-item i {
+                margin-right: 0;
             }
 
             .main-content {
-                margin-left: 0;
-                padding: 1rem;
+                margin-left: 80px; /* Adjust margin when sidebar is collapsed */
+                padding: 1.5rem;
             }
 
-            .main-content.sidebar-collapsed {
-                margin-left: 0;
+            .dashboard-grid,
+            .form-grid {
+                grid-template-columns: 1fr; /* Stack cards/forms on small screens */
             }
 
             .content-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 1rem;
+            }
+
+            .app-main-header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .app-logo-main {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .app-header-logo-main {
+                height: 45px;
+                margin-right: 10px;
             }
 
             .search-bar {
@@ -970,497 +1009,423 @@
                 width: 100%;
             }
 
-            .stat-card {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .stat-card .icon {
-                margin-bottom: 0.5rem;
-            }
-
-            .invoice-preview {
-                transform: rotate(0deg); /* No rotation on small screens */
-            }
-
             .modal-content {
                 width: 95%;
+                margin: 1rem;
                 padding: 1.5rem;
             }
 
-            .alert-banner {
-                flex-direction: column;
-                text-align: center;
-                bottom: 1rem;
-                right: 1rem;
-                left: 1rem;
-                max-width: unset;
+            .modal-header h2 {
+                font-size: 1.3rem;
             }
-            .alert-banner .close-button {
-                margin-top: 0.5rem;
-                margin-left: 0;
+
+            .modal-close {
+                font-size: 1.8rem;
+            }
+
+            .invoice-items-table th, .invoice-items-table td {
+                padding: 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            .alert {
+                width: calc(100% - 2rem);
+                left: 1rem;
+                right: 1rem;
+                transform: none;
             }
         }
 
         @media (max-width: 480px) {
-            .hero-title {
-                font-size: 2rem;
+            .app-header {
+                padding: 0.8rem;
             }
 
-            .hero-subtitle {
-                font-size: 1rem;
+            .app-nav-items {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .stat-number {
-                font-size: 1.5rem;
+            .app-nav-items .nav-item {
+                width: 100%;
+                text-align: center;
+                padding: 0.6rem;
             }
 
-            .section-title {
-                font-size: 2rem;
+            .main-container {
+                padding: 0.5rem;
             }
 
-            .cta-title {
-                font-size: 2rem;
+            .main-content {
+                padding: 1rem;
             }
 
-            .chat-bubble {
-                max-width: 85%;
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
+
+            /* Further adjustments for smaller screens */
+            .sidebar {
+                width: 100%; /* Full width sidebar on very small screens, perhaps toggleable */
+                position: relative; /* Not fixed anymore */
+                height: auto;
+                padding: 1rem;
+            }
+            .main-content {
+                margin-left: 0; /* No sidebar margin */
+                padding: 1rem;
+            }
+            /* You might need a JS toggle for the sidebar on very small screens */
         }
     </style>
 </head>
-<body>
+<body class="app-body">
     <div class="app-container">
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-container">
                     <img src="assets/images/logo.png.jpg" alt="FanyaBill Logo" class="logo-image">
-                    <span class="logo-badge" id="invoiceCountBadge">0</span>
+                    <span class="logo-badge">AI</span>
                 </div>
                 <h2>Fanya<span>Bill</span></h2>
-                <span class="pro-status" id="proStatus">Free Tier</span>
+                <span class="pro-status">Pro</span>
             </div>
-            <ul class="nav-list">
-                <li class="nav-item active" onclick="showSection('dashboard')" href="#dashboard"><i class="fas fa-home"></i> <span class="nav-text">Dashboard</span></li>
-                <li class="nav-item" onclick="showSection('inventory')" href="#inventory"><i class="fas fa-boxes"></i> <span class="nav-text">Inventory</span></li>
-                <li class="nav-item" onclick="showSection('invoice')" href="#invoice"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">Invoice</span></li>
-                <li class="nav-item" onclick="showSection('sales-summary')" href="#sales-summary"><i class="fas fa-history"></i> <span class="nav-text">Sales History</span></li>
-                <li class="nav-item" onclick="showSection('fanyabot')" href="#fanyabot"><i class="fas fa-robot"></i> <span class="nav-text">AI Assistant</span></li>
-                <li class="nav-item" onclick="showSection('settings')" href="#settings"><i class="fas fa-cog"></i> <span class="nav-text">Settings</span></li>
-            </ul>
-            <div class="invoice-status-section" id="invoiceStatusSection">
+            <nav class="nav-list">
+                <ul>
+                    <li class="nav-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('invoice-generator')">
+                        <i class="fas fa-file-invoice"></i>
+                        <span class="nav-text">Generate Invoice</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('inventory')">
+                        <i class="fas fa-boxes"></i>
+                        <span class="nav-text">Inventory</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('clients')">
+                        <i class="fas fa-users"></i>
+                        <span class="nav-text">Clients</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('sales-summary')">
+                        <i class="fas fa-chart-line"></i>
+                        <span class="nav-text">Sales Summary</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('fanyabot')">
+                        <i class="fas fa-robot"></i>
+                        <span class="nav-text">FanyaBot</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i>
+                        <span class="nav-text">Settings</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">AD</div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-email">admin@fanyabill.com</div>
                 </div>
+                <button class="btn btn-primary btn-block">Log Out</button>
+            </div>
         </aside>
 
         <main class="main-content" id="mainContent">
-            <main class="main-content" id="mainContent">
-    <header class="app-main-header">
-        <div class="app-logo-main">
-            <img src="assets/images/logo.png.jpg" alt="FanyaBill Pro Logo" class="app-header-logo-main">
-            FanyaBill Pro
-        </div>
-    </header>
-    <section id="dashboard" class="content-section active">
+            <header class="app-main-header">
+                <div class="app-logo-main">
+                    <img src="assets/images/logo.png.jpg" alt="FanyaBill Pro Logo" class="app-header-logo-main">
+                    FanyaBill Pro
+                </div>
+            </header>
+
             <section id="dashboard" class="content-section active">
                 <div class="content-header">
                     <h1>Dashboard</h1>
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search..." id="dashboardSearch">
+                        <input type="text" placeholder="Search...">
                     </div>
                 </div>
 
                 <div class="dashboard-grid">
                     <div class="stat-card sales">
-                        <div class="icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
+                        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
                         <div class="info">
-                            <h3 id="totalSales">KES 0.00</h3>
+                            <h3>$12,500</h3>
                             <p>Total Sales</p>
                         </div>
                     </div>
                     <div class="stat-card inventory">
-                        <div class="icon">
-                            <i class="fas fa-boxes"></i>
-                        </div>
+                        <div class="icon"><i class="fas fa-boxes"></i></div>
                         <div class="info">
-                            <h3 id="totalItems">0</h3>
-                            <p>Total Items</p>
+                            <h3>500</h3>
+                            <p>Items in Stock</p>
                         </div>
                     </div>
                     <div class="stat-card invoices">
-                        <div class="icon">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
+                        <div class="icon"><i class="fas fa-file-invoice"></i></div>
                         <div class="info">
-                            <h3 id="totalInvoices">0</h3>
+                            <h3>120</h3>
                             <p>Invoices Generated</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3>Revenue Trends</h3>
-                    <canvas id="revenueChart"></canvas>
+                <div class="chart-container">
+                    <h3>Sales Overview</h3>
+                    <canvas id="salesChart"></canvas>
                 </div>
 
-                <div class="card">
-                    <h3>Recent Sales</h3>
-                    <table class="table">
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                            <div class="details">
+                                <p>Invoice #001 generated for John Doe</p>
+                                <span class="timestamp">2 hours ago</span>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="icon"><i class="fas fa-boxes"></i></div>
+                            <div class="details">
+                                <p>5 units of Product X added to inventory</p>
+                                <span class="timestamp">Yesterday</span>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="icon"><i class="fas fa-chart-line"></i></div>
+                            <div class="details">
+                                <p>Sales report for May generated</p>
+                                <span class="timestamp">3 days ago</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="invoice-generator" class="content-section">
+                <div class="content-header">
+                    <h1>Generate Invoice</h1>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> New Invoice</button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" id="clientName" placeholder="Enter client name">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDate">Invoice Date</label>
+                        <input type="date" id="invoiceDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="KES">KES</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3>Items</h3>
+                    <table class="table-full-width invoice-items-table">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Customer</th>
+                                <th>Item Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
                                 <th>Total</th>
-                                <th>Details</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="recentSalesBody">
+                        <tbody>
                             <tr>
-                                <td colspan="4" class="text-center">No recent sales. Generate an invoice to see data here.</td>
+                                <td>Service A</td>
+                                <td>1</td>
+                                <td>50.00</td>
+                                <td>50.00</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
+                    <button class="btn btn-secondary"><i class="fas fa-plus"></i> Add Item</button>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-secondary">Save Draft</button>
+                    <button class="btn btn-primary">Generate Invoice</button>
                 </div>
             </section>
 
             <section id="inventory" class="content-section">
                 <div class="content-header">
                     <h1>Inventory</h1>
-                    <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search inventory..." id="inventorySearch">
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="itemId">Item ID</label>
-                        <input type="text" id="itemId" placeholder="e.g., PROD001">
-                    </div>
-                    <div class="form-group">
-                        <label for="productName">Item Name</label>
-                        <input type="text" id="productName" placeholder="e.g., Laptop Pro">
-                    </div>
-                    <div class="form-group">
-                        <label for="productPrice">Price (KES)</label>
-                        <input type="number" id="productPrice" min="0" step="0.01" placeholder="e.g., 120000">
-                    </div>
-                    <div class="form-group">
-                        <label for="productStock">Stock Quantity</label>
-                        <input type="number" id="productStock" min="0" step="1" placeholder="e.g., 50">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemCategory">Category</label>
-                        <input type="text" id="itemCategory" placeholder="e.g., Electronics">
-                    </div>
-                    <div class="form-group">
-                        <label for="itemDescription">Description</label>
-                        <textarea id="itemDescription" placeholder="Brief description of the item..."></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-primary" onclick="addInventoryItem()"><i class="fas fa-plus-circle"></i> Add Item</button>
-                        <button class="btn btn-secondary" onclick="clearInventoryForm()"><i class="fas fa-redo"></i> Reset</button>
-                    </div>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> Add New Product</button>
                 </div>
 
                 <div class="table-container">
-                    <h3>Current Stock</h3>
                     <table class="table-full-width">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Price</th>
+                                <th>Product Name</th>
+                                <th>SKU</th>
                                 <th>Stock</th>
-                                <th>Category</th>
-                                <th>Description</th>
+                                <th>Unit Price</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="inventoryTableBody">
-                            </tbody>
+                        <tbody>
+                            <tr>
+                                <td>Product X</td>
+                                <td>SKU001</td>
+                                <td>150</td>
+                                <td>$25.00</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Product Y</td>
+                                <td>SKU002</td>
+                                <td>75</td>
+                                <td>$12.50</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
 
-            <section id="invoice" class="content-section">
+            <section id="clients" class="content-section">
                 <div class="content-header">
-                    <h1>Create Invoice</h1>
-                    <button class="btn btn-primary" onclick="prepareInvoiceForPreview()"><i class="fas fa-file-export"></i> Preview & Generate PDF</button>
+                    <h1>Clients</h1>
+                    <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Add New Client</button>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="customerName">Customer Name</label>
-                        <input type="text" id="customerName" placeholder="e.g., Jane Doe" oninput="renderInvoicePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label for="customerEmail">Customer Email</label>
-                        <input type="email" id="customerEmail" placeholder="e.g., jane@example.com" oninput="renderInvoicePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label for="customerAddress">Customer Address</label>
-                        <input type="text" id="customerAddress" placeholder="e.g., 456 Main St, Anytown" oninput="renderInvoicePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label for="invoiceDate">Invoice Date</label>
-                        <input type="date" id="invoiceDate" oninput="renderInvoicePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label for="dueDate">Due Date</label>
-                        <input type="date" id="dueDate" oninput="renderInvoicePreview()">
-                    </div>
-                    <div class="form-group">
-                        <label for="invoiceNotes">Notes/Terms</label>
-                        <textarea id="invoiceNotes" placeholder="e.g., Payment due within 30 days." oninput="renderInvoicePreview()"></textarea>
-                    </div>
-                </div>
-
-                <div class="table-container mb-4">
-                    <h3>Invoice Items</h3>
-                    <p class="text-muted mb-3">Describe your sale (e.g., 2 kg rice, 200; 5 kg sugar, 1000) or add items below</p>
-                    <div class="form-group">
-                        <textarea id="aiDescription" rows="3" placeholder="Describe your sale for AI generation..." class="form-control mb-3"></textarea>
-                        <button class="btn btn-secondary mb-3" onclick="generateItemsFromAI()">Generate Items from Description (AI)</button>
-                    </div>
-
-                    <div class="item-input-grid">
-                        <input type="text" id="itemName" placeholder="Item Name">
-                        <input type="number" id="itemQuantity" placeholder="Qty" min="1">
-                        <input type="number" id="itemPrice" placeholder="Price" step="0.01" min="0">
-                        <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fas fa-plus"></i> Add Item</button>
-                    </div>
-
-                    <table class="table-full-width invoice-items-table mt-4">
+                <div class="table-container">
+                    <table class="table-full-width">
                         <thead>
                             <tr>
-                                <th>Item</th>
-                                <th>Qty</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                                <th class="action-column">Actions</th>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Total Invoices</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="invoiceItemsBody">
-                            </tbody>
-                        <tfoot>
+                        <tbody>
                             <tr>
-                                <td colspan="3" class="text-right">Subtotal</td>
-                                <td id="invoiceSubtotal">KES 0.00</td>
-                                <td></td>
+                                <td>John Doe</td>
+                                <td>john.doe@example.com</td>
+                                <td>+1 (555) 123-4567</td>
+                                <td>5</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
                             </tr>
                             <tr>
-                                <td colspan="3" class="text-right">Tax (<span id="invoiceTaxRateDisplay">0</span>%)</td>
-                                <td id="invoiceTaxAmount">KES 0.00</td>
-                                <td></td>
+                                <td>Jane Smith</td>
+                                <td>jane.smith@example.com</td>
+                                <td>+1 (555) 987-6543</td>
+                                <td>3</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">Edit</button>
+                                    <button class="btn btn-danger btn-sm">Delete</button>
+                                </td>
                             </tr>
-                            <tr>
-                                <td colspan="3" class="text-right total-row">Grand Total</td>
-                                <td id="invoiceGrandTotal" class="total-row">KES 0.00</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
+                        </tbody>
                     </table>
-                    <div class="form-actions" style="justify-content: flex-start;">
-                        <button class="btn btn-secondary" onclick="openAddItemModal()"><i class="fas fa-cart-plus"></i> Add Item from Inventory</button>
-                    </div>
-                </div>
-
-                <div id="invoicePreviewModal" class="modal">
-                    <div class="modal-content large-modal-content">
-                        <span class="close-button" onclick="hideInvoicePreviewModal()">&times;</span>
-                        <h2 class="modal-title">Invoice Preview</h2>
-                        <div class="invoice-document-wrapper">
-                            <div id="invoiceDocument" style="display: none; width: 210mm; margin: 0 auto; padding: 20mm; font-family: Arial; background: white;">
-                                <div style="text-align: center; margin-bottom: 30px;">
-                                    <h2 id="previewBusinessName" style="margin: 0; font-size: 24px; font-weight: bold;">{{BUSINESS_NAME}}</h2>
-                                    <p id="previewBusinessAddress" style="margin: 5px 0;">{{BUSINESS_ADDRESS}}</p>
-                                    <p id="previewBusinessCity" style="margin: 5px 0;">{{CITY_STATE_ZIP}}</p>
-                                    <p style="margin: 5px 0;">{{PHONE}} - {{EMAIL}}</p>
-                                </div>
-
-                                <h1 style="text-align: center; font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px;">INVOICE</h1>
-
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                                    <div>
-                                        <p style="margin: 5px 0;"><strong>Invoice No:</strong> <span id="previewInvoiceNumber">INV-001</span></p>
-                                        <p style="margin: 5px 0;"><strong>Invoice Date:</strong> <span id="previewInvoiceDate">{{DATE}}</span></p>
-                                        <p style="margin: 5px 0;"><strong>Due Date:</strong> <span id="previewDueDate">{{DUE_DATE}}</span></p>
-                                    </div>
-                                </div>
-
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                                    <div style="width: 48%;">
-                                        <h3 style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px;">BILL TO</h3>
-                                        <p id="previewCustomerName" style="margin: 5px 0; font-weight: bold;">{{CUSTOMER_NAME}}</p>
-                                        <p id="previewCustomerAddress" style="margin: 5px 0;">{{CUSTOMER_ADDRESS}}</p>
-                                        <p id="previewCustomerCity" style="margin: 5px 0;">{{CUSTOMER_CITY}}</p>
-                                    </div>
-                                    
-                                    <div style="width: 48%;">
-                                        <h3 style="border-bottom: 1px solid #000; padding-bottom: 5px; margin-bottom: 10px;">SHIP TO</h3>
-                                        <p id="previewShipToName" style="margin: 5px 0; font-weight: bold;">{{SHIP_NAME}}</p>
-                                        <p id="previewShipToAddress" style="margin: 5px 0;">{{SHIP_ADDRESS}}</p>
-                                        <p id="previewShipToCity" style="margin: 5px 0;">{{SHIP_CITY}}</p>
-                                    </div>
-                                </div>
-
-                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-                                    <thead>
-                                        <tr>
-                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">QTY</th>
-                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">DESCRIPTION</th>
-                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">UNIT PRICE</th>
-                                            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #000;">TOTAL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="invoicePdfItemsBody">
-                                        </tbody>
-                                </table>
-
-                                <div style="text-align: right; margin-top: 20px;">
-                                    <div style="display: inline-block; width: 300px; text-align: right;">
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                            <strong>SUB TOTAL:</strong>
-                                            <span id="pdfInvoiceSubtotal">{{SUBTOTAL}}</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                            <strong>TAX (<span id="pdfInvoiceTaxRate">0</span>%):</strong>
-                                            <span id="pdfInvoiceTax">{{TAX_AMOUNT}}</span>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #000; padding-top: 10px;">
-                                            <strong>GRAND TOTAL:</strong>
-                                            <span id="pdfInvoiceTotal">{{TOTAL}}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-end;">
-                                    <div style="font-style: italic;">Thank You</div>
-                                    <div style="text-align: right;">
-                                        <p id="pdfInvoiceNotes" style="margin: 5px 0;">{{NOTES}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" onclick="generateAndDownloadInvoice()">Download PDF</button>
-                            <button class="btn btn-secondary" onclick="hideInvoicePreviewModal()">Cancel</button>
-                        </div>
-                    </div>
                 </div>
             </section>
 
-            <section id="sales-history" class="content-section">
+            <section id="sales-summary" class="content-section">
                 <div class="content-header">
-                    <h1>Sales History</h1>
+                    <h1>Sales Summary</h1>
                     <div class="search-bar">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search sales..." id="salesSearch">
+                        <i class="fas fa-filter"></i>
+                        <input type="text" placeholder="Filter by date, client...">
                     </div>
                 </div>
 
-                <div class="breakdown-options">
-                    <button id="monthlyBreakdownBtn" class="btn btn-secondary active" onclick="displaySalesBreakdown('monthly')">Monthly Breakdown</button>
-                    <button id="yearlyBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('yearly')">Yearly Breakdown</button>
-                    <button id="productBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('product')">Product Breakdown</button>
+                <div class="chart-container">
+                    <h3>Monthly Sales Trend</h3>
+                    <canvas id="monthlySalesChart"></canvas>
                 </div>
 
-                <div class="breakdown-content" id="monthlyBreakdownContent">
-                    <h3>Monthly Sales Data</h3>
-                    <div class="chart-placeholder" id="monthlySalesChartPlaceholder">
-                        <canvas id="monthlySalesChart" width="400" height="200"></canvas>
-                    </div>
-                    <div class="table-container mt-4">
-                        <table class="table-full-width">
-                            <thead>
-                                <tr>
-                                    <th>Month</th>
-                                    <th>Total Sales</th>
-                                    <th>Number of Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody id="monthlySalesTableBody">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="breakdown-content" id="yearlyBreakdownContent" style="display: none;">
-                    <h3>Yearly Sales Data</h3>
-                    <div class="chart-placeholder" id="yearlySalesChartPlaceholder">
-                        <canvas id="yearlySalesChart" width="400" height="200"></canvas>
-                    </div>
-                    <div class="table-container mt-4">
-                        <table class="table-full-width">
-                            <thead>
-                                <tr>
-                                    <th>Year</th>
-                                    <th>Total Sales</th>
-                                    <th>Number of Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody id="yearlySalesTableBody">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="breakdown-content" id="productBreakdownContent" style="display: none;">
-                    <h3>Product Sales Data</h3>
-                    <div class="chart-placeholder" id="productSalesChartPlaceholder">
-                        <canvas id="productSalesChart" width="400" height="200"></canvas>
-                    </div>
-                    <div class="table-container mt-4">
-                        <table class="table-full-width">
-                            <thead>
-                                <tr>
-                                    <th>Product Name</th>
-                                    <th>Quantity Sold</th>
-                                    <th>Total Revenue</th>
-                                </tr>
-                            </thead>
-                            <tbody id="productSalesTableBody">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="table-container mt-4">
-                    <h3>All Sales Transactions</h3>
+                <div class="table-container">
+                    <h3>Recent Sales Transactions</h3>
                     <table class="table-full-width">
                         <thead>
                             <tr>
                                 <th>Invoice ID</th>
+                                <th>Client</th>
                                 <th>Date</th>
-                                <th>Customer</th>
-                                <th>Total Amount</th>
-                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="salesHistoryTableBody">
-                            </tbody>
+                        <tbody>
+                            <tr>
+                                <td>INV001</td>
+                                <td>John Doe</td>
+                                <td>2024-06-25</td>
+                                <td>$150.00</td>
+                                <td>Paid</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">View</button>
+                                    <button class="btn btn-primary btn-sm">Download</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>INV002</td>
+                                <td>Jane Smith</td>
+                                <td>2024-06-20</td>
+                                <td>$200.00</td>
+                                <td>Pending</td>
+                                <td class="action-buttons">
+                                    <button class="btn btn-info btn-sm">View</button>
+                                    <button class="btn btn-primary btn-sm">Download</button>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </section>
 
             <section id="fanyabot" class="content-section">
                 <div class="content-header">
-                    <h1>AI Assistant</h1>
-                    <button class="btn btn-primary" onclick="clearChat()"><i class="fas fa-sync-alt"></i> Clear Chat</button>
+                    <h1>FanyaBot - AI Assistant</h1>
+                    <p>Chat with your AI to get business insights and assistance.</p>
                 </div>
-                <div class="ai-chat-container">
+
+                <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
-                        <div class="chat-message ai">
-                            <div class="avatar">AI</div>
-                            <div class="chat-bubble">Hello! I am your FanyaBill AI Assistant. How can I help you manage your business today?</div>
+                        <div class="message bot">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-bubble">Hello! How can I assist you with your business today?</div>
                         </div>
                     </div>
                     <div class="chat-input">
-                        <input type="text" id="chatInput" placeholder="Ask me anything about your business or inventory...">
-                        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+                        <input type="text" id="chatInput" placeholder="Ask FanyaBot anything...">
+                        <button id="sendMessageBtn"><i class="fas fa-paper-plane"></i> Send</button>
                     </div>
                 </div>
             </section>
@@ -1468,93 +1433,82 @@
             <section id="settings" class="content-section">
                 <div class="content-header">
                     <h1>Settings</h1>
+                    <p>Manage your account preferences and application settings.</p>
                 </div>
 
-                <div class="settings-section">
-                    <h3>Business Information</h3>
-                    <div class="form-group">
-                        <label for="businessName">Business Name</label>
-                        <input type="text" id="businessName" placeholder="e.g., My Awesome Shop">
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>General Settings</h3>
+                        <div class="settings-option">
+                            <label for="darkModeToggle">Dark Mode</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="settings-option">
+                            <label for="currencySelect">Default Currency</label>
+                            <select id="currencySelect">
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="KES">KES</option>
+                            </select>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <label>Notification Preferences</label>
+                                <div class="setting-description">Control what notifications you receive.</div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm">Manage</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="businessAddress">Business Address</label>
-                        <input type="text" id="businessAddress" placeholder="e.g., P.O Box 1234-00100">
+
+                    <div class="settings-card">
+                        <h3>Account Management</h3>
+                        <div class="settings-option">
+                            <div>
+                                <label>Change Password</label>
+                                <div class="setting-description">Update your login password.</div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm">Change</button>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <label>Update Profile</label>
+                                <div class="setting-description">Edit your personal and business information.</div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm">Edit</button>
+                        </div>
+                        <div class="settings-option">
+                            <div>
+                                <label>Two-Factor Authentication</label>
+                                <div class="setting-description">Add an extra layer of security to your account.</div>
+                            </div>
+                            <button class="btn btn-secondary btn-sm">Enable</button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="businessCity">City</label>
-                        <input type="text" id="businessCity" placeholder="e.g., Nairobi">
-                    </div>
-                    <div class="form-group">
-                        <label for="currency">Currency Symbol</label>
-                        <input type="text" id="currency" placeholder="e.g., KES" maxlength="5">
-                    </div>
-                    <div class="form-group">
-                        <label for="taxRate">Default Tax Rate (%)</label>
-                        <input type="number" id="taxRate" placeholder="e.g., 16" min="0" max="100" step="0.01">
-                    </div>
-                    <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
                 </div>
             </section>
+
         </main>
     </div>
 
-    <div id="messageModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="hideMessageModal()">&times;</span>
-            <h3 id="messageTitle"></h3>
-            <p id="messageText"></p>
-            <button class="btn btn-primary" onclick="hideMessageModal()">OK</button>
-        </div>
-    </div>
-
-    <div id="lowStockAlert" class="alert-banner" style="display: none;">
-        <span id="lowStockMessage"></span>
-        <button class="close-button" onclick="hideLowStockAlert()">&times;</button>
-    </div>
-
-    <div id="upgradeModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="hideUpgradeModal()">&times;</span>
-            <h3 class="modal-title">Upgrade to FanyaBill Pro!</h3>
-            <p>Unlock unlimited invoices, premium AI features, and advanced reporting by upgrading to Pro!</p>
-            <p>Monthly Price: **$7.99**</p>
-            <div id="paypal-button-container" style="margin-top: 1rem;"></div>
-            <p class="text-muted mt-3">Your financial details are securely processed by PayPal.</p>
-        </div>
-    </div>
-
-    <div id="addItemModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeAddItemModal()">&times;</span>
-            <h3 class="modal-title">Add Item to Invoice</h3>
-            <div class="form-group">
-                <label for="selectInvoiceItem">Select Item</label>
-                <select id="selectInvoiceItem" onchange="populateInvoiceItemDetails()"></select>
-            </div>
-            <div class="form-group">
-                <label for="invoiceItemQuantity">Quantity</label>
-                <input type="number" id="invoiceItemQuantity" min="1" value="1">
-            </div>
-            <button class="btn btn-primary" onclick="addSelectedItemToInvoice()"><i class="fas fa-plus"></i> Add to Invoice</button>
-        </div>
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Set initial active section
             showSection('dashboard');
-            
+
             // Add hover effects to buttons
+            // The original code tried to add hover effects to .nav-item, but didn't handle clicks
+            // We now add specific click handlers to each nav item in the HTML directly
+            // This loop is still useful for initial setup or if you want to generalize hover
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('mouseenter', function() {
                     if (!this.classList.contains('active')) {
                         this.style.transform = 'translateX(5px)';
                     }
                 });
-                
+
                 item.addEventListener('mouseleave', function() {
                     if (!this.classList.contains('active')) {
                         this.style.transform = '';
@@ -1562,25 +1516,36 @@
                 });
             });
         });
-        
-        // Section navigation
+
+        // Section navigation function
         function showSection(sectionId) {
+            // Hide all content sections
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.remove('active');
                 section.style.display = 'none';
             });
-            
+
+            // Remove active class from all nav items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            
+
+            // Show the active section
             const activeSection = document.getElementById(sectionId);
             if (activeSection) {
                 activeSection.classList.add('active');
                 activeSection.style.display = 'block';
             }
-            
-            document.querySelector(`.nav-item[href="#${sectionId}"]`).classList.add('active');
+
+            // Set the active class on the corresponding nav item
+            // This looks for the nav-item based on its onclick attribute or text content,
+            // but directly targeting the clicked item or its parent li is more robust.
+            // For now, we rely on the onclick being directly on the LI.
+            // If you later change to <a> tags with href, this line would also work.
+            const navItemToActivate = document.querySelector(`.nav-list li[onclick*="showSection('${sectionId}')"]`);
+            if (navItemToActivate) {
+                navItemToActivate.classList.add('active');
+            }
         }
     </script>
 </body>
