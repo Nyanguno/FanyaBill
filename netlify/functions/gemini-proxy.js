@@ -1,155 +1,179 @@
-// netlify/functions/gemini-proxy.js
-// This function acts as a secure proxy for your Google Gemini API calls.
-// Your GEMINI_API_KEY is stored as an environment variable in Netlify,
-// preventing it from being exposed on the client-side.
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const fetch = require('node-fetch'); // Required for Netlify Functions to use fetch
+exports.handler = async (event, context) => {
+    // Handle CORS
+    const headers = {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Content-Type': 'application/json'
+    };
 
-exports.handler = async function(event, context) {
-    // Only allow POST requests
+    // Handle preflight requests
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers,
+            body: ''
+        };
+    }
+
     if (event.httpMethod !== 'POST') {
         return {
             statusCode: 405,
-            body: 'Method Not Allowed',
+            headers,
+            body: JSON.stringify({ error: 'Method not allowed' })
         };
     }
 
     try {
-        // Parse the request body sent from your frontend
-        const { type, message, description, inventory } = JSON.parse(event.body);
-
-        // Retrieve the API key from Netlify environment variables
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY; 
-        if (!GEMINI_API_KEY) {
-            console.error('Gemini Proxy Error: GEMINI_API_KEY not configured.');
+        // Get the API key from environment variables
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: 'Google Gemini API Key not configured in Netlify environment variables.' }),
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.' 
+                })
             };
         }
 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-        const headers = {
-            'Content-Type': 'application/json',
-        };
+        const { type, description, inventory, message, settings, salesData } = JSON.parse(event.body);
 
-        let payload;
-        let aiResponseContent;
+        // Initialize Gemini AI
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
-        switch (type) {
-            case 'generateItems':
-                // Construct a detailed prompt for generating invoice items
-                const itemGenerationPrompt = `Generate a list of invoice items in JSON format based on the following description and existing inventory.
-                Each item should have 'name', 'quantity', 'unitPrice' (number), and 'description'.
-                Ensure quantities are reasonable. If a unitPrice is not specified, estimate a reasonable value.
-                Do NOT include tax, just the base unit price.
-                If description is empty, suggest common items.
-                Existing inventory (for reference, do not necessarily use if not relevant to description): ${JSON.stringify(inventory)}
-                Description: "${description}".
-                
-                Example JSON output:
-                [
-                    { "name": "Web Design Service", "quantity": 1, "unitPrice": 1200, "description": "Complete website redesign" },
-                    { "name": "Hosting Fee", "quantity": 1, "unitPrice": 50, "description": "Monthly hosting" }
-                ]
-                
-                If the description is empty or vague, provide a few common business items.
-                For example, if description is "office supplies", output:
-                [
-                    { "name": "Pens", "quantity": 10, "unitPrice": 1.50, "description": "Blue ballpoint pens" },
-                    { "name": "Notebooks", "quantity": 5, "unitPrice": 5.00, "description": "A4 ruled notebooks" }
-                ]
-                `;
+        let prompt = '';
+        let response = '';
 
-                payload = {
-                    contents: [{ parts: [{ text: itemGenerationPrompt }] }],
-                    // Optionally add generation config for more structured output if needed
-                    // generationConfig: { responseMimeType: "application/json" } // Not supported by all models or versions
-                };
+        if (type === 'invoice_items_generator') {
+            // Invoice items generation
+            prompt = `
+You are an AI assistant for FanyaBill, an invoice generation system. Parse the following natural language description into structured invoice items.
 
-                const itemApiRes = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(payload),
-                });
-                const itemData = await itemApiRes.json();
-                
-                // Detailed logging for debugging
-                console.log('Gemini API Item Generation Response:', JSON.stringify(itemData, null, 2));
+Description: "${description}"
 
-                if (itemData.candidates && itemData.candidates.length > 0 && 
-                    itemData.candidates[0].content && itemData.candidates[0].content.parts && 
-                    itemData.candidates[0].content.parts.length > 0) {
-                    aiResponseContent = itemData.candidates[0].content.parts[0].text;
-                } else {
-                    console.error('Gemini Proxy Error: Invalid response structure for item generation.', JSON.stringify(itemData));
-                    throw new Error('Invalid response structure from Gemini API for item generation.');
-                }
-                break;
+Available Inventory:
+${inventory.map(item => `- ${item.name}: ${item.price} ${settings?.currency || 'KES'} (Stock: ${item.stock})`).join('\n')}
 
-            case 'chat':
-                const chatPrompt = `You are a helpful business assistant. User message: ${message}`;
-                payload = {
-                    contents: [{ parts: [{ text: chatPrompt }] }],
-                };
+Instructions:
+1. Extract items, quantities, and prices from the description
+2. If an item exists in inventory, use the inventory price
+3. If an item doesn't exist in inventory, use the price mentioned in the description
+4. Return ONLY a JSON array of objects with this exact format:
+[
+  {
+    "name": "Item Name",
+    "quantity": 1,
+    "price": 100.00
+  }
+]
 
-                const chatApiRes = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify(payload),
-                });
-                const chatData = await chatApiRes.json();
+Examples:
+- "3 sugar at 120" → [{"name": "Sugar", "quantity": 3, "price": 120.00}]
+- "2 kg maize flour at 180, 1 cooking oil at 350" → [{"name": "Maize Flour 2kg", "quantity": 1, "price": 180.00}, {"name": "Cooking Oil", "quantity": 1, "price": 350.00}]
 
-                // Detailed logging for debugging
-                console.log('Gemini API Chat Response:', JSON.stringify(chatData, null, 2));
-                
-                if (chatData.candidates && chatData.candidates.length > 0 && 
-                    chatData.candidates[0].content && chatData.candidates[0].content.parts && 
-                    chatData.candidates[0].content.parts.length > 0) {
-                    aiResponseContent = chatData.candidates[0].content.parts[0].text;
-                } else {
-                    console.error('Gemini Proxy Error: Invalid response structure for chat.', JSON.stringify(chatData));
-                    throw new Error('Invalid response structure from Gemini API for chat.');
-                }
-                break;
+Return only the JSON array, no other text.
+            `;
 
-            default:
-                return {
-                    statusCode: 400,
-                    body: JSON.stringify({ error: 'Invalid AI request type.' }),
-                };
-        }
+            const result = await model.generateContent(prompt);
+            response = result.response.text();
 
-        // Attempt to parse the AI response content as JSON if it's for generateItems
-        if (type === 'generateItems') {
-            try {
-                // Gemini sometimes includes markdown, so strip it before parsing
-                const jsonString = aiResponseContent.replace(/```json\n|\n```/g, '').trim();
-                aiResponseContent = JSON.parse(jsonString);
-            } catch (jsonError) {
-                console.error('Gemini Proxy Error: Failed to parse AI response as JSON.', jsonError);
-                // If parsing fails, send the raw text, the frontend can handle the error
-                // or you might want to throw an error here depending on strictness.
-                throw new Error('AI response was not valid JSON: ' + aiResponseContent);
+            // Clean up the response to ensure it's valid JSON
+            let cleanResponse = response.trim();
+            if (cleanResponse.startsWith('```json')) {
+                cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
             }
-        }
+            if (cleanResponse.startsWith('```')) {
+                cleanResponse = cleanResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
+            }
 
+            // Validate JSON
+            try {
+                JSON.parse(cleanResponse);
+                response = cleanResponse;
+            } catch (e) {
+                // If JSON parsing fails, return a fallback format
+                console.error('JSON parsing failed:', e);
+                response = '[]';
+            }
+
+        } else if (type === 'chat') {
+            // FanyaBot chat assistant
+            const inventoryList = inventory.map(item => 
+                `- ${item.name}: ${settings?.currency || 'KES'} ${item.price} (Stock: ${item.stock}, Category: ${item.category || 'N/A'})`
+            ).join('\n');
+
+            const recentSales = salesData?.slice(-5).map(sale => 
+                `- ${sale.date}: ${sale.customerName} - ${settings?.currency || 'KES'} ${sale.totalAmount.toFixed(2)}`
+            ).join('\n') || 'No recent sales';
+
+            prompt = `
+You are FanyaBot, an AI customer service assistant for ${settings?.businessName || 'a business'} using FanyaBill. 
+You help customers with inventory inquiries, pricing, and general business questions.
+
+Business Information:
+- Name: ${settings?.businessName || 'Business'}
+- Address: ${settings?.businessAddress || 'Not specified'}
+- City: ${settings?.businessCity || 'Not specified'}
+- Phone: ${settings?.businessPhone || 'Not specified'}
+- Email: ${settings?.businessEmail || 'Not specified'}
+- Industry: ${settings?.industryTemplate || 'general'}
+
+Current Inventory:
+${inventoryList || 'No items in inventory'}
+
+Recent Sales:
+${recentSales}
+
+Customer Question: "${message}"
+
+Instructions:
+1. Be helpful, friendly, and professional
+2. Answer questions about inventory, prices, and availability
+3. If asked about items not in inventory, politely say they're not available
+4. For pricing questions, provide exact prices from inventory
+5. For stock questions, mention current stock levels
+6. Keep responses concise but informative
+7. Use the business currency (${settings?.currency || 'KES'}) in price responses
+8. If asked about business hours, location, or contact info, use the business information provided
+9. For general business questions, be helpful but stay within your role as a customer service assistant
+
+Respond naturally and conversationally.
+            `;
+
+            const result = await model.generateContent(prompt);
+            response = result.response.text();
+        }
 
         return {
             statusCode: 200,
-            body: JSON.stringify({ response: aiResponseContent }),
+            headers,
+            body: JSON.stringify({ response })
         };
 
     } catch (error) {
-        console.error('Gemini Proxy Function Error:', error);
+        console.error('Gemini API Error:', error);
+        
+        let errorMessage = 'Failed to process request with Gemini AI.';
+        if (error.message?.includes('API_KEY')) {
+            errorMessage = 'Invalid Gemini API key. Please check your configuration.';
+        } else if (error.message?.includes('quota')) {
+            errorMessage = 'Gemini API quota exceeded. Please try again later.';
+        } else if (error.message?.includes('safety')) {
+            errorMessage = 'Request blocked by safety filters. Please rephrase your request.';
+        }
+
         return {
             statusCode: 500,
+            headers,
             body: JSON.stringify({ 
-                error: 'Failed to process AI request.', 
-                details: error.message,
-                // Only include stack in development for security
-                stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
-            }),
+                error: errorMessage,
+                details: error.message 
+            })
         };
     }
 };
+
