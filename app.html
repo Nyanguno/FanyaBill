@@ -624,7 +624,6 @@
             font-size: 16px;
             font-weight: 700;
             color: #000;
-            margin-bottom: 10px;
             border-bottom: 2px solid #000;
             padding-bottom: 5px;
         }
@@ -1652,7 +1651,6 @@
             displayInventory();
             updateInvoiceStatus();
             checkProStatus();
-            showSection('dashboard');
             setupPayPalButton();
             
             // Set default dates
@@ -1665,6 +1663,9 @@
             
             // Initialize event listeners
             initializeEventListeners();
+
+            // Show dashboard by default
+            showSection('dashboard');
         });
 
         // --- Core App State ---
@@ -1677,7 +1678,8 @@
             businessEmail: 'info@yourbusiness.com',
             currency: 'KES',
             taxRate: 0,
-            industryTemplate: 'general'
+            industryTemplate: 'general',
+            proStatus: 'free' // Default to free
         };
         let invoiceCount = parseInt(localStorage.getItem('fanyabill_invoice_count')) || 0;
         const INVOICE_LIMIT = 3;
@@ -2137,7 +2139,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -2155,7 +2158,7 @@
 
             } catch (error) {
                 console.error('Error generating items with AI:', error);
-                showMessageModal('AI Error', 'Failed to generate items using AI. Please try again or add manually.', 'danger');
+                showMessageModal('AI Error', `Failed to generate items using AI: ${error.message}. Please try again or add manually.`, 'danger');
             } finally {
                 displayInvoiceItems();
             }
@@ -2373,23 +2376,21 @@
                 
                 const invoiceElement = document.getElementById('invoiceDocument');
                 
-                // Make all paths absolute for PDF generation
-                const htmlContent = invoiceElement.outerHTML.replace(
-                    /src="assets\//g, 
-                    `src="${window.location.origin}/assets/`
-                ).replace(
-                    /href="style\.css"/g,
-                    `href="${window.location.origin}/style.css"`
-                );
+                // Get the outerHTML of the invoice document, which includes all styles and content
+                const htmlContent = invoiceElement.outerHTML;
                 
                 const response = await fetch('/.netlify/functions/generate-pdf', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ html: htmlContent })
+                    body: JSON.stringify({
+                        html: htmlContent,
+                        baseUrl: window.location.origin // Send the base URL for asset resolution
+                    })
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
                 }
                 
                 const blob = await response.blob();
@@ -2432,7 +2433,7 @@
                 
             } catch (error) {
                 console.error('PDF Generation Error:', error);
-                showMessageModal('Error', 'Failed to generate PDF. Please try again.', 'danger');
+                showMessageModal('Error', `Failed to generate PDF: ${error.message}. Please try again.`, 'danger');
             }
         }
 
@@ -2780,7 +2781,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -2792,7 +2794,7 @@
             } catch (error) {
                 console.error('Error communicating with AI:', error);
                 removeTypingIndicator();
-                appendMessage('ai', 'Sorry, I am having trouble connecting to the AI service. Please try again later.');
+                showMessageModal('AI Error', `Sorry, I am having trouble connecting to the AI service: ${error.message}. Please try again later.`, 'danger');
             }
         }
 
@@ -2997,4 +2999,5 @@
     </script>
 </body>
 </html>
+
 
