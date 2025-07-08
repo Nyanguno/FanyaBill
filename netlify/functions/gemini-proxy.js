@@ -27,23 +27,28 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        console.log("Function started. Event body:", event.body);
         // Get the API key from environment variables
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.GOOGLE_GEMINI_API_KEY; 
         if (!apiKey) {
+            console.error("Gemini API key not configured in environment variables.");
             return {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({ 
-                    error: "Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables." 
+                    error: "Gemini API key not configured. Please add GOOGLE_GEMINI_API_KEY to your environment variables." 
                 })
             };
         }
+        console.log("API Key found.");
 
         const { type, description, inventory, message, settings, salesData } = JSON.parse(event.body);
+        console.log("Parsed event body. Type:", type);
 
-        // Initialize Gemini AI
+        // Initialize Gemini AI with v1.5-pro
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" }); 
+        console.log("Gemini model initialized.");
 
         let prompt = "";
         let response = "";
@@ -53,7 +58,7 @@ exports.handler = async (event, context) => {
             prompt = `
 You are an AI assistant for FanyaBill, an invoice generation system. Your task is to parse a natural language description of a sale into a structured JSON array of invoice items.
 
-Here is the user's description: "${description}"
+Here is the user\"s description: \"${description}\"
 
 Here is the current inventory data (use this for pricing if an item matches):
 ${inventory.map(item => `- ${item.name}: ${item.price} ${settings?.currency || 'KES'} (Stock: ${item.stock})`).join('\n')}
@@ -63,49 +68,56 @@ Instructions:
 2. If an item mentioned in the description exists in the provided inventory, use its price from the inventory. If the quantity is not specified, assume 1.
 3. If an item is not found in the inventory but a price is mentioned in the description, use that price. If the quantity is not specified, assume 1.
 4. If an item is not found in inventory and no price is mentioned, assume a price of 0. If the quantity is not specified, assume 1.
-5. Your output MUST be a JSON array of objects. Each object MUST have the keys "name" (string), "quantity" (number), and "unitPrice" (number).
+5. Your output MUST be a JSON array of objects. Each object MUST have the keys \"name\" (string), \"quantity\" (number), and \"unitPrice\" (number).
 6. Ensure the quantity is an integer and unitPrice is a float.
-7. Do NOT include any other text, explanations, or markdown formatting (like 
-```json
-) outside the JSON array.
+7. Do NOT include any other text, explanations, or markdown formatting (like \`\`\`json\`) outside the JSON array.
 
 Example Output Format:
 [
   {
-    "name": "Sugar",
-    "quantity": 3,
-    "unitPrice": 120.00
+    \"name\": \"Sugar\",
+    \"quantity\": 3,
+    \"unitPrice\": 120.00
   },
   {
-    "name": "Maize Flour 2kg",
-    "quantity": 2,
-    "unitPrice": 180.00
+    \"name\": \"Maize Flour 2kg\",
+    \"quantity\": 2,
+    \"unitPrice\": 180.00
   }
 ]
 
 Begin your response with the JSON array directly.
             `;
-
-            const result = await model.generateContent(prompt);
-            response = result.response.text();
-
-            // Attempt to clean and parse the response to ensure it's valid JSON
-            let cleanResponse = response.trim();
-            // Remove common markdown code block wrappers if present
-            if (cleanResponse.startsWith('```json')) {
-                cleanResponse = cleanResponse.substring(7, cleanResponse.lastIndexOf('```')).trim();
-            } else if (cleanResponse.startsWith('```')) {
-                cleanResponse = cleanResponse.substring(3, cleanResponse.lastIndexOf('```')).trim();
-            }
+            console.log("Invoice generator prompt created.");
 
             try {
-                // Validate and re-serialize to ensure strict JSON format
-                const parsed = JSON.parse(cleanResponse);
-                response = JSON.stringify(parsed); // Ensure it's a compact JSON string
-            } catch (e) {
-                console.error('Failed to parse AI response as JSON:', e);
-                // Fallback to an empty array or a specific error structure if parsing fails
-                response = '[]'; 
+                const result = await model.generateContent(prompt);
+                response = result.response.text();
+                console.log('Raw AI response:', response);
+
+                // Attempt to clean and parse the response to ensure it's valid JSON
+                let cleanResponse = response.trim();
+                // Remove common markdown code block wrappers if present
+                if (cleanResponse.startsWith('```json')) {
+                    cleanResponse = cleanResponse.substring(7, cleanResponse.lastIndexOf('```')).trim();
+                } else if (cleanResponse.startsWith('```')) {
+                    cleanResponse = cleanResponse.substring(3, cleanResponse.lastIndexOf('```')).trim();
+                }
+                console.log('Cleaned AI response:', cleanResponse);
+
+                try {
+                    // Validate and re-serialize to ensure strict JSON format
+                    const parsed = JSON.parse(cleanResponse);
+                    response = JSON.stringify(parsed); // Ensure it's a compact JSON string
+                    console.log('Parsed and stringified AI response:', response);
+                } catch (e) {
+                    console.error('Failed to parse AI response as JSON:', e);
+                    // Fallback to an empty array or a specific error structure if parsing fails
+                    response = '[]'; 
+                }
+            } catch (aiError) {
+                console.error('Error generating content from Gemini API:', aiError);
+                throw aiError; // Re-throw to be caught by the outer catch block
             }
 
         } else if (type === "chat") {
@@ -136,7 +148,7 @@ ${inventoryList || 'No items in inventory'}
 Recent Sales:
 ${recentSales}
 
-Customer Question: "${message}"
+Customer Question: \"${message}\"
 
 Instructions:
 1. Be helpful, friendly, and professional.
@@ -151,11 +163,14 @@ Instructions:
 
 Respond naturally and conversationally.
             `;
+            console.log("Chatbot prompt created.");
 
             const result = await model.generateContent(prompt);
             response = result.response.text();
+            console.log('Raw AI chat response:', response);
         }
 
+        console.log("Returning response.");
         return {
             statusCode: 200,
             headers,
@@ -163,7 +178,7 @@ Respond naturally and conversationally.
         };
 
     } catch (error) {
-        console.error('Gemini API Error:', error);
+        console.error('Gemini API Error caught in main try-catch:', error);
         
         let errorMessage = 'Failed to process request with Gemini AI.';
         if (error.message?.includes('API_KEY')) {
@@ -172,6 +187,10 @@ Respond naturally and conversationally.
             errorMessage = 'Gemini API quota exceeded. Please try again later.';
         } else if (error.message?.includes('safety')) {
             errorMessage = 'Request blocked by safety filters. Please rephrase your request.';
+        } else if (error.message?.includes('500') || error.message?.includes('502') || error.message?.includes('503') || error.message?.includes('504')) {
+            errorMessage = 'Gemini API server error. Please try again later.';
+        } else if (error.message) {
+            errorMessage = `AI service error: ${error.message}`;
         }
 
         return {
