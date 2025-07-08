@@ -1,62 +1,75 @@
-const chromium = require(\'chrome-aws-lambda\');
-const puppeteer = require(\'puppeteer-core\');
+const chromium = require("chrome-aws-lambda");
+const puppeteer = require("puppeteer-core");
 
-exports.handler = async (event) => {
+exports.handler = async (event, context) => {
+    if (event.httpMethod !== "POST") {
+        return {
+            statusCode: 405,
+            body: "Method Not Allowed",
+        };
+    }
+
+    const { html, baseUrl } = JSON.parse(event.body);
+
+    if (!html) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ error: "HTML content is required." }),
+        };
+    }
+
+    let browser = null;
+
     try {
-        const { html, baseUrl } = JSON.parse(event.body);
-
-        console.log(\'PDF Function: Received HTML length:\', html ? html.length : \'0\', \'bytes\');
-        console.log(\'PDF Function: Received Base URL:\', baseUrl);
-
-        if (!html || typeof html !== \'string\' || html.trim().length === 0) {
-            console.error(\'PDF Function: Received empty or invalid HTML content. Status 400.\');
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: \'Empty or invalid HTML content provided to PDF function.\' }),
-            };
-        }
-
-        const browser = await puppeteer.launch({
-            executablePath: await chromium.executablePath,
+        browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
             headless: chromium.headless,
         });
 
         const page = await browser.newPage();
 
-        // Set the base URL for the page content
-        await page.goto(baseUrl, { waitUntil: \'networkidle0\' }); // Navigate to the base URL first
-        await page.setContent(html, { waitUntil: \'networkidle0\' }); // Then set the HTML content
+        // Set the base URL for the page to correctly resolve relative paths (e.g., for images, CSS)
+        await page.goto(baseUrl, { waitUntil: 'networkidle0' });
 
-        const pdf = await page.pdf({
-            format: \'A4\',
-            margin: { top: \'20mm\', right: \'20mm\', bottom: \'20mm\', left: \'20mm\' },
+        // Set the content of the page after setting the base URL
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+
+        // Add a small delay to ensure all content and styles are rendered
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const pdfBuffer = await page.pdf({
+            format: "A4",
             printBackground: true,
-            preferCSSPageSize: true
+            margin: {
+                top: "10mm",
+                right: "10mm",
+                bottom: "10mm",
+                left: "10mm",
+            },
         });
-
-        await browser.close();
 
         return {
             statusCode: 200,
-            headers: { 
-                \'Content-Type\': \'application/pdf\',
+            headers: {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": "attachment; filename=\"invoice.pdf\"",
             },
-            body: pdf.toString(\'base64\'),
-            isBase64Encoded: true
+            body: pdfBuffer.toString("base64"),
+            isBase64Encoded: true,
         };
-
     } catch (error) {
-        console.error(\'PDF Generation Function Error:\', error); // Log the full error
+        console.error("PDF Generation Error:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ 
-                error: \'Failed to generate PDF.\', 
-                details: error.message || \'An unknown error occurred during PDF generation.\',
-                stack: process.env.NODE_ENV === \'development\' ? error.stack : undefined 
-            }),
+            body: JSON.stringify({ error: `Failed to generate PDF: ${error.message}` }),
         };
+    } finally {
+        if (browser !== null) {
+            await browser.close();
+        }
     }
 };
+
 
