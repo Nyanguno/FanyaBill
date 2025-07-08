@@ -1,28 +1,28 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 exports.handler = async (event, context) => {
     // Handle CORS
     const headers = {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Content-Type': 'application/json'
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Content-Type": "application/json"
     };
 
     // Handle preflight requests
-    if (event.httpMethod === 'OPTIONS') {
+    if (event.httpMethod === "OPTIONS") {
         return {
             statusCode: 200,
             headers,
-            body: ''
+            body: ""
         };
     }
 
-    if (event.httpMethod !== 'POST') {
+    if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
             headers,
-            body: JSON.stringify({ error: 'Method not allowed' })
+            body: JSON.stringify({ error: "Method not allowed" })
         };
     }
 
@@ -34,7 +34,7 @@ exports.handler = async (event, context) => {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({ 
-                    error: 'Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables.' 
+                    error: "Gemini API key not configured. Please add GEMINI_API_KEY to your environment variables." 
                 })
             };
         }
@@ -43,64 +43,72 @@ exports.handler = async (event, context) => {
 
         // Initialize Gemini AI
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-        let prompt = '';
-        let response = '';
+        let prompt = "";
+        let response = "";
 
-        if (type === 'invoice_items_generator') {
+        if (type === "invoice_items_generator") {
             // Invoice items generation
             prompt = `
-You are an AI assistant for FanyaBill, an invoice generation system. Parse the following natural language description into structured invoice items.
+You are an AI assistant for FanyaBill, an invoice generation system. Your task is to parse a natural language description of a sale into a structured JSON array of invoice items.
 
-Description: "${description}"
+Here is the user's description: "${description}"
 
-Available Inventory:
+Here is the current inventory data (use this for pricing if an item matches):
 ${inventory.map(item => `- ${item.name}: ${item.price} ${settings?.currency || 'KES'} (Stock: ${item.stock})`).join('\n')}
 
 Instructions:
-1. Extract items, quantities, and prices from the description
-2. If an item exists in inventory, use the inventory price
-3. If an item doesn't exist in inventory, use the price mentioned in the description
-4. Return ONLY a JSON array of objects with this exact format:
+1. Identify each item, its quantity, and its unit price from the description.
+2. If an item mentioned in the description exists in the provided inventory, use its price from the inventory. If the quantity is not specified, assume 1.
+3. If an item is not found in the inventory but a price is mentioned in the description, use that price. If the quantity is not specified, assume 1.
+4. If an item is not found in inventory and no price is mentioned, assume a price of 0. If the quantity is not specified, assume 1.
+5. Your output MUST be a JSON array of objects. Each object MUST have the keys "name" (string), "quantity" (number), and "unitPrice" (number).
+6. Ensure the quantity is an integer and unitPrice is a float.
+7. Do NOT include any other text, explanations, or markdown formatting (like 
+```json
+) outside the JSON array.
+
+Example Output Format:
 [
   {
-    "name": "Item Name",
-    "quantity": 1,
-    "price": 100.00
+    "name": "Sugar",
+    "quantity": 3,
+    "unitPrice": 120.00
+  },
+  {
+    "name": "Maize Flour 2kg",
+    "quantity": 2,
+    "unitPrice": 180.00
   }
 ]
 
-Examples:
-- "3 sugar at 120" → [{"name": "Sugar", "quantity": 3, "price": 120.00}]
-- "2 kg maize flour at 180, 1 cooking oil at 350" → [{"name": "Maize Flour 2kg", "quantity": 1, "price": 180.00}, {"name": "Cooking Oil", "quantity": 1, "price": 350.00}]
-
-Return only the JSON array, no other text.
+Begin your response with the JSON array directly.
             `;
 
             const result = await model.generateContent(prompt);
             response = result.response.text();
 
-            // Clean up the response to ensure it's valid JSON
+            // Attempt to clean and parse the response to ensure it's valid JSON
             let cleanResponse = response.trim();
+            // Remove common markdown code block wrappers if present
             if (cleanResponse.startsWith('```json')) {
-                cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
-            }
-            if (cleanResponse.startsWith('```')) {
-                cleanResponse = cleanResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
+                cleanResponse = cleanResponse.substring(7, cleanResponse.lastIndexOf('```')).trim();
+            } else if (cleanResponse.startsWith('```')) {
+                cleanResponse = cleanResponse.substring(3, cleanResponse.lastIndexOf('```')).trim();
             }
 
-            // Validate JSON
             try {
-                JSON.parse(cleanResponse);
-                response = cleanResponse;
+                // Validate and re-serialize to ensure strict JSON format
+                const parsed = JSON.parse(cleanResponse);
+                response = JSON.stringify(parsed); // Ensure it's a compact JSON string
             } catch (e) {
-                // If JSON parsing fails, return a fallback format
-                console.error('JSON parsing failed:', e);
-                response = '[]';
+                console.error('Failed to parse AI response as JSON:', e);
+                // Fallback to an empty array or a specific error structure if parsing fails
+                response = '[]'; 
             }
 
-        } else if (type === 'chat') {
+        } else if (type === "chat") {
             // FanyaBot chat assistant
             const inventoryList = inventory.map(item => 
                 `- ${item.name}: ${settings?.currency || 'KES'} ${item.price} (Stock: ${item.stock}, Category: ${item.category || 'N/A'})`
@@ -131,15 +139,15 @@ ${recentSales}
 Customer Question: "${message}"
 
 Instructions:
-1. Be helpful, friendly, and professional
-2. Answer questions about inventory, prices, and availability
-3. If asked about items not in inventory, politely say they're not available
-4. For pricing questions, provide exact prices from inventory
-5. For stock questions, mention current stock levels
-6. Keep responses concise but informative
-7. Use the business currency (${settings?.currency || 'KES'}) in price responses
-8. If asked about business hours, location, or contact info, use the business information provided
-9. For general business questions, be helpful but stay within your role as a customer service assistant
+1. Be helpful, friendly, and professional.
+2. Answer questions about inventory, prices, and availability based on the provided inventory list.
+3. If asked about items not in inventory, politely state that they are not currently available.
+4. For pricing questions, provide exact prices from inventory, using the business currency (${settings?.currency || 'KES'}).
+5. For stock questions, mention current stock levels.
+6. Keep responses concise but informative.
+7. If asked about business hours, location, or contact info, use the business information provided.
+8. For general business questions, be helpful but stay within your role as a customer service assistant.
+9. Do not generate or assume any information not explicitly provided in the inventory or business settings.
 
 Respond naturally and conversationally.
             `;
