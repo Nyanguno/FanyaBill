@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://www.paypal.com/sdk/js?client-id=AVetgrGryV2vI9648Mi4ht0JhoOn599N4W706O0yxuo33KaC0dJFa_U2xxSUt1aqelv3QnHwpNs_4hU5&currency=USD"></script>
-    <!-- Client-side PDF generation libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -450,13 +449,56 @@
             resize: vertical;
         }
 
-        /* Item Input Grid */
+        /* Enhanced Item Input Grid */
         .item-input-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
+            grid-template-columns: 2fr 1fr 0.8fr 1fr auto;
             gap: 1rem;
             align-items: end;
             margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--gray-200);
+        }
+
+        .item-input-grid input {
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            min-height: 50px;
+        }
+
+        .item-input-grid input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .item-input-grid button {
+            min-height: 50px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Quantity and Unit Container */
+        .quantity-unit-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: end;
+        }
+
+        .quantity-unit-container input[type="number"] {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .quantity-unit-container input[type="text"] {
+            flex: 1;
+            min-width: 100px;
         }
 
         /* Invoice Items Table */
@@ -666,12 +708,12 @@
         }
 
         .invoice-table .qty-col {
-            width: 10%;
+            width: 15%;
             text-align: center;
         }
 
         .invoice-table .desc-col {
-            width: 50%;
+            width: 45%;
         }
 
         .invoice-table .price-col {
@@ -988,6 +1030,11 @@
                 gap: 0.5rem;
             }
 
+            .quantity-unit-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
             .modal-content {
                 width: 95%;
                 padding: 1.5rem;
@@ -1257,12 +1304,15 @@
                     </div>
                 </div>
 
-                <!-- Manual Item Addition -->
+                <!-- Enhanced Manual Item Addition -->
                 <div class="table-container">
                     <h3>Invoice Items</h3>
                     <div class="item-input-grid">
-                        <input type="text" id="itemName" placeholder="Item Name">
-                        <input type="number" id="itemQuantity" placeholder="Qty" min="1">
+                        <input type="text" id="itemName" placeholder="Item Name (e.g., Sugar 2kg)">
+                        <div class="quantity-unit-container">
+                            <input type="number" id="itemQuantity" placeholder="Qty" min="1" value="1">
+                            <input type="text" id="itemUnit" placeholder="Unit (e.g., kg, litre, pcs)" title="Optional: Specify unit like kg, litre, pcs, etc.">
+                        </div>
                         <input type="number" id="itemPrice" placeholder="Price" step="0.01" min="0">
                         <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fas fa-plus"></i> Add Item</button>
                     </div>
@@ -1271,7 +1321,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>Qty</th>
+                                <th>Qty & Unit</th>
                                 <th>Unit Price</th>
                                 <th>Total</th>
                                 <th>Actions</th>
@@ -1559,7 +1609,7 @@
                     <table class="invoice-table">
                         <thead>
                             <tr>
-                                <th class="qty-col">QTY</th>
+                                <th class="qty-col">QTY & UNIT</th>
                                 <th class="desc-col">DESCRIPTION</th>
                                 <th class="price-col">UNIT PRICE</th>
                                 <th class="total-col">TOTAL</th>
@@ -1613,6 +1663,10 @@
             <div class="form-group">
                 <label for="invoiceItemQuantity">Quantity</label>
                 <input type="number" id="invoiceItemQuantity" min="1" value="1">
+            </div>
+            <div class="form-group">
+                <label for="invoiceItemUnit">Unit (Optional)</label>
+                <input type="text" id="invoiceItemUnit" placeholder="e.g., kg, litre, pcs">
             </div>
             <button class="btn btn-primary" onclick="addSelectedItemToInvoice()">
                 <i class="fas fa-plus"></i> Add to Invoice
