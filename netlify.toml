@@ -20,4 +20,3 @@
 
 [[plugins]]
   package = "@netlify/plugin-functions-install-core"
-
