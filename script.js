@@ -151,8 +151,8 @@ function updateSalesSummary() {
     }
 
     if (averageSale) {
-        const avg = salesData.length > 0 ? salesData.reduce((sum, sale) => sum + sale.total, 0) / salesData.length : 0;
-        averageSale.textContent = `${currency}${avg.toFixed(2)}`;
+        const average = salesData.length > 0 ? salesData.reduce((sum, sale) => sum + sale.total, 0) / salesData.length : 0;
+        averageSale.textContent = `${currency}${average.toFixed(2)}`;
     }
 
     if (topProductsList) {
@@ -171,23 +171,9 @@ function updateSalesSummary() {
             .sort(([,a], [,b]) => b - a)
             .slice(0, 5);
 
-        if (sortedProducts.length === 0) {
-            topProductsList.innerHTML = `
-                <div class="empty-message">
-                    <i class="fas fa-chart-line"></i>
-                    <p>No sales data yet. Generate some invoices to see your top products!</p>
-                </div>
-            `;
-        } else {
-            topProductsList.innerHTML = sortedProducts.map(([name, quantity]) => `
-                <div class="product-item">
-                    <div>
-                        <div class="product-name">${name}</div>
-                        <div class="product-sales">${quantity} sold</div>
-                    </div>
-                </div>
-            `).join("");
-        }
+        topProductsList.innerHTML = sortedProducts.length > 0 
+            ? sortedProducts.map(([name, qty]) => `<li>${name} (${qty} sold)</li>`).join("")
+            : "<li>No sales data available</li>";
     }
 }
 
@@ -195,231 +181,83 @@ function updateBusinessInfo() {
     const businessNameEl = document.getElementById("businessName");
     const businessAddressEl = document.getElementById("businessAddress");
     const businessCityEl = document.getElementById("businessCity");
+    const businessPhoneEl = document.getElementById("businessPhone");
+    const businessEmailEl = document.getElementById("businessEmail");
+    const currencyEl = document.getElementById("currency");
 
-    if (businessNameEl) businessNameEl.textContent = businessInfo.name;
-    if (businessAddressEl) businessAddressEl.textContent = businessInfo.address;
-    if (businessCityEl) businessCityEl.textContent = businessInfo.city;
-
-    // Update form inputs
-    const businessNameInput = document.getElementById("businessNameInput");
-    const businessAddressInput = document.getElementById("businessAddressInput");
-    const businessCityInput = document.getElementById("businessCityInput");
-    const currencySelect = document.getElementById("currencySelect");
-
-    if (businessNameInput) businessNameInput.value = businessInfo.name;
-    if (businessAddressInput) businessAddressInput.value = businessInfo.address;
-    if (businessCityInput) businessCityInput.value = businessInfo.city;
-    if (currencySelect) currencySelect.value = currency;
+    if (businessNameEl) businessNameEl.value = businessInfo.name || "";
+    if (businessAddressEl) businessAddressEl.value = businessInfo.address || "";
+    if (businessCityEl) businessCityEl.value = businessInfo.city || "";
+    if (businessPhoneEl) businessPhoneEl.value = businessInfo.phone || "";
+    if (businessEmailEl) businessEmailEl.value = businessInfo.email || "";
+    if (currencyEl) currencyEl.value = currency || "$";
 }
 
 // Navigation
 function showSection(sectionId) {
     // Hide all sections
-    document.querySelectorAll(".content-section").forEach(section => {
-        section.classList.remove("active");
-    });
-
-    // Remove active class from all nav items
-    document.querySelectorAll(".nav-item").forEach(item => {
-        item.classList.remove("active");
-    });
+    const sections = document.querySelectorAll(".content-section");
+    sections.forEach(section => section.classList.remove("active"));
 
     // Show selected section
-    const section = document.getElementById(sectionId);
-    if (section) section.classList.add("active");
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) targetSection.classList.add("active");
 
-    // Add active class to clicked nav item
-    const navItem = document.querySelector(`[onclick=\"showSection(\\\`${sectionId}\\\`)\"]`);
-    if (navItem) navItem.classList.add("active");
-}
-
-// AI Invoice Generation
-async function generateInvoice() {
-    if (!isProUser() && invoiceCount >= invoiceLimit) {
-        showUpgradeModal();
-        await showMessage("Limit Reached", "🚫 You\"ve reached the free invoice limit. Please upgrade to Pro to continue.");
-        return;
-    }
-
-    const saleDescription = document.getElementById("saleDescription").value.trim();
-    if (!saleDescription) {
-        await showMessage("Input Required", "Please describe your sale to generate an invoice.");
-        return;
-    }
-
-    const generateBtn = document.getElementById("generateBtn");
-    generateBtn.disabled = true;
-    generateBtn.innerHTML = "; Generating...";
-
-    try {
-        // Parse the sale description using AI (simulated for demo)
-        const parsedItems = await parseInvoiceItems(saleDescription);
-        
-        if (parsedItems.length === 0) {
-            await showMessage("Parse Error", "Could not understand the sale description. Please try a different format like \"2kg rice at 150, 3 sugar at 120\".");
-            return;
-        }
-
-        // Create invoice
-        const invoice = {
-            number: currentInvoiceNumber,
-            date: new Date().toLocaleDateString(),
-            items: parsedItems,
-            total: parsedItems.reduce((sum, item) => sum + (item.quantity * item.price), 0)
-        };
-
-        // Display invoice
-        displayInvoice(invoice);
-
-        // Update inventory
-        updateInventoryFromSale(parsedItems);
-
-        // Save sale data
-        salesData.push({
-            date: new Date().toISOString(),
-            items: parsedItems,
-            total: invoice.total
-        });
-
-        // Update counters
-        invoiceCount++;
-        currentInvoiceNumber++;
-
-        // Check for low stock
-        checkLowStock(parsedItems);
-
-        // Save data and update UI
-        saveData();
-        updateUI();
-
-        await showMessage("Invoice Generated", "🎉 Your invoice has been generated successfully!");
-
-    } catch (error) {
-        console.error("Error generating invoice:", error);
-        await showMessage("Generation Error", "There was an error generating your invoice. Please try again.");
-    } finally {
-        generateBtn.disabled = false;
-        generateBtn.innerHTML = "; Generate Invoice";
-    }
-}
-
-async function parseInvoiceItems(description) {
-    try {
-        // Use API service for AI-powered parsing
-        if (window.apiService) {
-            const prompt = window.apiService.generateInvoicePrompt(description);
-            const response = await window.apiService.callGeminiAPI(prompt);
-            
-            try {
-                // Try to parse as JSON first
-                const parsedItems = JSON.parse(response);
-                if (Array.isArray(parsedItems)) {
-                    return parsedItems.filter(item => 
-                        item.name && item.quantity > 0 && item.price > 0
-                    );
-                }
-            } catch (jsonError) {
-                console.log("Response not JSON, falling back to regex parsing");
-            }
-        }
-        
-        // Fallback to regex-based parsing
-        const items = [];
-        const patterns = [
-            /(\d+(?:\.\d+)?)\s*(?:kg|g|l|ml|pcs?|pieces?)?\s*([^,\d]+?)\s*(?:at|@|for)\s*(\d+(?:\.\d+)?)/gi,
-            /(\d+(?:\.\d+)?)\s*([^,\d]+?)\s*(?:at|@|for)\s*(\d+(?:\.\d+)?)/gi
-        ];
-
-        for (const pattern of patterns) {
-            let match;
-            while ((match = pattern.exec(description)) !== null) {
-                const quantity = parseFloat(match[1]);
-                const name = match[2].trim();
-                const price = parseFloat(match[3]);
-
-                if (quantity > 0 && name && price > 0) {
-                    items.push({
-                        name: name,
-                        quantity: quantity,
-                        price: price
-                    });
-                }
-            }
-        }
-
-        return items;
-    } catch (error) {
-        console.error("Error parsing items:", error);
-        return [];
-    }
-}
-
-function displayInvoice(invoice) {
-    const invoicePreview = document.getElementById("invoicePreview");
-    const invoiceNumber = document.getElementById("invoiceNumber");
-    const invoiceDate = document.getElementById("invoiceDate");
-    const invoiceItemsTable = document.getElementById("invoiceItemsTable");
-    const invoiceTotal = document.getElementById("invoiceTotal");
-
-    if (invoiceNumber) invoiceNumber.textContent = invoice.number.toString().padStart(3, "0");
-    if (invoiceDate) invoiceDate.textContent = invoice.date;
-    if (invoiceTotal) invoiceTotal.textContent = `${currency}${invoice.total.toFixed(2)}`;
-
-    if (invoiceItemsTable) {
-        invoiceItemsTable.innerHTML = invoice.items.map(item => `
-            <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${currency}${item.price.toFixed(2)}</td>
-                <td>${currency}${(item.quantity * item.price).toFixed(2)}</td>
-            </tr>
-        `).join("");
-    }
-
-    if (invoicePreview) {
-        invoicePreview.style.display = "block";
-        invoicePreview.scrollIntoView({ behavior: "smooth" });
-    }
-}
-
-function updateInventoryFromSale(items) {
-    items.forEach(saleItem => {
-        const inventoryItem = inventory.find(item => 
-            item.name.toLowerCase().includes(saleItem.name.toLowerCase()) ||
-            saleItem.name.toLowerCase().includes(item.name.toLowerCase())
-        );
-        
-        if (inventoryItem && inventoryItem.stock >= saleItem.quantity) {
-            inventoryItem.stock -= saleItem.quantity;
-        }
-    });
-}
-
-function checkLowStock(items) {
-    items.forEach(saleItem => {
-        const inventoryItem = inventory.find(item => 
-            item.name.toLowerCase().includes(saleItem.name.toLowerCase()) ||
-            saleItem.name.toLowerCase().includes(item.name.toLowerCase())
-        );
-        
-        if (inventoryItem && inventoryItem.stock <= 3 && inventoryItem.stock > 0) {
-            showLowStockAlert(inventoryItem.name, inventoryItem.stock);
-        }
-    });
-}
-
-function showLowStockAlert(productName, stock) {
-    const alert = document.getElementById("lowStockAlert");
-    const message = document.getElementById("lowStockMessage");
+    // Update navigation
+    const navItems = document.querySelectorAll(".nav-item");
+    navItems.forEach(item => item.classList.remove("active"));
     
-    if (alert && message) {
-        message.textContent = `⚠️ ${productName} is running low (${stock} remaining).`;
-        alert.style.display = "block";
+    const activeNavItem = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+    if (activeNavItem) activeNavItem.classList.add("active");
+
+    // Update content based on section
+    if (sectionId === "dashboard") {
+        updateDashboard();
+    } else if (sectionId === "inventory") {
+        updateInventoryTable();
+    } else if (sectionId === "sales-history") {
+        updateSalesHistory();
+    }
+}
+
+// Alert System
+function showAlert(message, type = "success") {
+    const alertBanner = document.createElement("div");
+    alertBanner.className = `alert-banner ${type}`;
+    alertBanner.innerHTML = `
+        <span>${message}</span>
+        <button class="close-button" onclick="this.parentElement.remove()">&times;</button>
+    `;
+    
+    document.body.appendChild(alertBanner);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        if (alertBanner.parentElement) {
+            alertBanner.remove();
+        }
+    }, 5000);
+}
+
+function showLowStockAlert() {
+    const lowStockItems = inventory.filter(item => item.stock <= 3 && item.stock > 0);
+    const outOfStockItems = inventory.filter(item => item.stock === 0);
+    
+    if (lowStockItems.length > 0 || outOfStockItems.length > 0) {
+        let message = "";
+        if (outOfStockItems.length > 0) {
+            message += `${outOfStockItems.length} item(s) out of stock. `;
+        }
+        if (lowStockItems.length > 0) {
+            message += `${lowStockItems.length} item(s) running low.`;
+        }
         
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            alert.style.display = "none";
-        }, 5000);
+        const alert = document.getElementById("lowStockAlert");
+        const messageEl = document.getElementById("lowStockMessage");
+        if (alert && messageEl) {
+            messageEl.textContent = message;
+            alert.style.display = "flex";
+        }
     }
 }
 
@@ -428,18 +266,161 @@ function hideLowStockAlert() {
     if (alert) alert.style.display = "none";
 }
 
-// PDF Generation
-function downloadInvoicePDF() {
-    const invoiceContent = document.getElementById("invoicePreview");
-    const opt = {
-        margin: 0.5,
-        filename: `invoice-${currentInvoiceNumber - 1}.pdf`,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, logging: true, dpi: 192, letterRendering: true },
-        jsPDF: { unit: "in", format: "letter", orientation: "portrait" }
+// Client-side PDF Generation using jsPDF and html2canvas
+function generateAndDownloadInvoice() {
+    try {
+        // Show loading state
+        const downloadBtn = document.querySelector('[onclick="generateAndDownloadInvoice()"]');
+        const originalText = downloadBtn.innerHTML;
+        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+        downloadBtn.disabled = true;
+
+        // Get the invoice document element
+        const invoiceElement = document.getElementById('invoiceDocument');
+        
+        if (!invoiceElement) {
+            throw new Error('Invoice document not found');
+        }
+
+        // Configure html2canvas options for better quality
+        const html2canvasOptions = {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: invoiceElement.scrollWidth,
+            height: invoiceElement.scrollHeight,
+            scrollX: 0,
+            scrollY: 0
+        };
+
+        // Generate canvas from HTML
+        html2canvas(invoiceElement, html2canvasOptions).then(canvas => {
+            try {
+                // Create jsPDF instance
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                // Calculate dimensions to fit A4
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                // Convert canvas to image
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                
+                // Add image to PDF
+                if (imgHeight <= pageHeight) {
+                    // Single page
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                } else {
+                    // Multiple pages if content is too long
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    
+                    while (heightLeft >= 0) {
+                        position = heightLeft - imgHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                }
+
+                // Generate filename
+                const invoiceNumber = document.getElementById('previewInvoiceNumber').textContent || 'invoice';
+                const customerName = document.getElementById('previewCustomerName').textContent || 'customer';
+                const filename = `invoice-${invoiceNumber}-${customerName.replace(/\s+/g, '-').toLowerCase()}.pdf`;
+
+                // Save the PDF
+                pdf.save(filename);
+
+                // Show success message
+                showAlert('PDF downloaded successfully!', 'success');
+
+                // Record the sale if not already recorded
+                recordSale();
+
+            } catch (pdfError) {
+                console.error('PDF generation error:', pdfError);
+                showAlert('Failed to generate PDF. Please try again.', 'danger');
+            } finally {
+                // Restore button state
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }
+        }).catch(canvasError => {
+            console.error('Canvas generation error:', canvasError);
+            showAlert('Failed to capture invoice content. Please try again.', 'danger');
+            
+            // Restore button state
+            downloadBtn.innerHTML = originalText;
+            downloadBtn.disabled = false;
+        });
+
+    } catch (error) {
+        console.error('PDF Generation Error:', error);
+        showAlert('Failed to generate PDF: ' + error.message, 'danger');
+        
+        // Restore button state if button exists
+        const downloadBtn = document.querySelector('[onclick="generateAndDownloadInvoice()"]');
+        if (downloadBtn) {
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
+            downloadBtn.disabled = false;
+        }
+    }
+}
+
+// Record sale when PDF is generated
+function recordSale() {
+    const invoiceItems = getInvoiceItems();
+    if (invoiceItems.length === 0) return;
+
+    const customerName = document.getElementById('customerName').value || 'Walk-in Customer';
+    const invoiceDate = document.getElementById('invoiceDate').value || new Date().toISOString().split('T')[0];
+    
+    const subtotal = invoiceItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const taxAmount = subtotal * (taxRate / 100);
+    const total = subtotal + taxAmount;
+
+    const sale = {
+        id: Date.now(),
+        invoiceNumber: currentInvoiceNumber,
+        date: invoiceDate,
+        customer: customerName,
+        items: invoiceItems,
+        subtotal: subtotal,
+        tax: taxAmount,
+        total: total
     };
 
-    html2pdf().set(opt).from(invoiceContent).save();
+    salesData.push(sale);
+    
+    // Update inventory
+    invoiceItems.forEach(invoiceItem => {
+        const inventoryItem = inventory.find(item => item.name === invoiceItem.name);
+        if (inventoryItem) {
+            inventoryItem.stock = Math.max(0, inventoryItem.stock - invoiceItem.quantity);
+        }
+    });
+
+    // Increment counters
+    invoiceCount++;
+    currentInvoiceNumber++;
+    
+    // Save data
+    saveData();
+    updateUI();
+    
+    // Check for low stock
+    showLowStockAlert();
 }
 
 function clearInvoice() {
@@ -459,268 +440,496 @@ function showAddProductModal() {
 function hideAddProductModal() {
     const modal = document.getElementById("addProductModal");
     if (modal) modal.style.display = "none";
-    
-    // Clear form
-    document.getElementById("productName").value = "";
-    document.getElementById("productPrice").value = "";
-    document.getElementById("productStock").value = "";
 }
 
-function addProduct() {
+function addInventoryItem() {
     const name = document.getElementById("productName").value.trim();
     const price = parseFloat(document.getElementById("productPrice").value);
     const stock = parseInt(document.getElementById("productStock").value);
+    const category = document.getElementById("itemCategory").value.trim();
+    const description = document.getElementById("itemDescription").value.trim();
 
     if (!name || isNaN(price) || isNaN(stock) || price < 0 || stock < 0) {
-        showMessage("Invalid Input", "Please fill in all fields with valid values.");
+        showAlert("Please fill in all required fields with valid values.", "danger");
         return;
     }
 
-    inventory.push({ name, price, stock });
+    // Check if item already exists
+    const existingItem = inventory.find(item => item.name.toLowerCase() === name.toLowerCase());
+    if (existingItem) {
+        showAlert("An item with this name already exists.", "warning");
+        return;
+    }
+
+    const newItem = {
+        id: Date.now(),
+        name: name,
+        price: price,
+        stock: stock,
+        category: category || "General",
+        description: description || ""
+    };
+
+    inventory.push(newItem);
     saveData();
-    updateUI();
-    hideAddProductModal();
-    showMessage("Product Added", `${name} has been added to your inventory.`);
+    updateInventoryTable();
+    clearInventoryForm();
+    showAlert(`${name} added to inventory successfully!`, "success");
+}
+
+function clearInventoryForm() {
+    document.getElementById("productName").value = "";
+    document.getElementById("productPrice").value = "";
+    document.getElementById("productStock").value = "";
+    document.getElementById("itemCategory").value = "";
+    document.getElementById("itemDescription").value = "";
 }
 
 function editProduct(index) {
-    const product = inventory[index];
-    if (!product) return;
+    const item = inventory[index];
+    if (!item) return;
 
-    const newName = prompt("Product Name:", product.name);
-    const newPrice = prompt("Price:", product.price);
-    const newStock = prompt("Stock:", product.stock);
+    document.getElementById("productName").value = item.name;
+    document.getElementById("productPrice").value = item.price;
+    document.getElementById("productStock").value = item.stock;
+    document.getElementById("itemCategory").value = item.category || "";
+    document.getElementById("itemDescription").value = item.description || "";
 
-    if (newName && !isNaN(newPrice) && !isNaN(newStock)) {
-        inventory[index] = {
-            name: newName.trim(),
-            price: parseFloat(newPrice),
-            stock: parseInt(newStock)
-        };
-        saveData();
-        updateUI();
-        showMessage("Product Updated", "Product has been updated successfully.");
-    }
+    // Remove the item temporarily (will be re-added when form is submitted)
+    inventory.splice(index, 1);
+    saveData();
+    updateInventoryTable();
 }
 
 function deleteProduct(index) {
-    const product = inventory[index];
-    if (!product) return;
-
-    if (confirm(`Are you sure you want to delete \"${product.name}\"?`)) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        const item = inventory[index];
         inventory.splice(index, 1);
         saveData();
-        updateUI();
-        showMessage("Product Deleted", "Product has been removed from inventory.");
+        updateInventoryTable();
+        showAlert(`${item.name} removed from inventory.`, "success");
     }
 }
 
-function exportInventory() {
-    if (inventory.length === 0) {
-        showMessage("No Data", "No inventory data to export.");
+// Invoice Management
+let invoiceItems = [];
+
+function getInvoiceItems() {
+    return invoiceItems;
+}
+
+function addInvoiceItem() {
+    const name = document.getElementById("itemName").value.trim();
+    const quantity = parseInt(document.getElementById("itemQuantity").value);
+    const price = parseFloat(document.getElementById("itemPrice").value);
+
+    if (!name || isNaN(quantity) || isNaN(price) || quantity <= 0 || price < 0) {
+        showAlert("Please fill in all item fields with valid values.", "danger");
         return;
     }
 
-    const csvContent = "data:text/csv;charset=utf-8," 
-        + "Name,Price,Stock\n"
-        + inventory.map(item => `\"${item.name}\",${item.price},${item.stock}`).join("\n");
+    const item = {
+        name: name,
+        quantity: quantity,
+        price: price,
+        total: quantity * price
+    };
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "fanyabill-inventory.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    invoiceItems.push(item);
+    updateInvoiceItemsTable();
+    clearInvoiceItemForm();
+    renderInvoicePreview();
 }
 
-function importInventory() {
-    const file = document.getElementById("importFile").files[0];
-    if (!file) return;
+function clearInvoiceItemForm() {
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemQuantity").value = "";
+    document.getElementById("itemPrice").value = "";
+}
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
+function removeInvoiceItem(index) {
+    invoiceItems.splice(index, 1);
+    updateInvoiceItemsTable();
+    renderInvoicePreview();
+}
+
+function updateInvoiceItemsTable() {
+    const tbody = document.getElementById("invoiceItemsBody");
+    if (!tbody) return;
+
+    if (invoiceItems.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center">No items added yet</td>
+            </tr>
+        `;
+    } else {
+        tbody.innerHTML = invoiceItems.map((item, index) => `
+            <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${currency}${item.price.toFixed(2)}</td>
+                <td>${currency}${item.total.toFixed(2)}</td>
+                <td>
+                    <button onclick="removeInvoiceItem(${index})" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join("");
+    }
+
+    updateInvoiceTotals();
+}
+
+function updateInvoiceTotals() {
+    const subtotal = invoiceItems.reduce((sum, item) => sum + item.total, 0);
+    const taxRate = parseFloat(document.getElementById("taxRate").value) || 0;
+    const taxAmount = subtotal * (taxRate / 100);
+    const grandTotal = subtotal + taxAmount;
+
+    const subtotalEl = document.getElementById("invoiceSubtotal");
+    const taxAmountEl = document.getElementById("invoiceTaxAmount");
+    const taxRateDisplayEl = document.getElementById("invoiceTaxRateDisplay");
+    const grandTotalEl = document.getElementById("invoiceGrandTotal");
+
+    if (subtotalEl) subtotalEl.textContent = `${currency}${subtotal.toFixed(2)}`;
+    if (taxAmountEl) taxAmountEl.textContent = `${currency}${taxAmount.toFixed(2)}`;
+    if (taxRateDisplayEl) taxRateDisplayEl.textContent = taxRate.toFixed(1);
+    if (grandTotalEl) grandTotalEl.textContent = `${currency}${grandTotal.toFixed(2)}`;
+}
+
+// Invoice Preview
+function prepareInvoiceForPreview() {
+    if (invoiceItems.length === 0) {
+        showAlert("Please add at least one item to the invoice.", "warning");
+        return;
+    }
+
+    if (!isProUser() && invoiceCount >= invoiceLimit) {
+        showUpgradeModal();
+        return;
+    }
+
+    renderInvoicePreview();
+    showInvoicePreviewModal();
+}
+
+function renderInvoicePreview() {
+    // Update business information
+    document.getElementById("previewBusinessName").textContent = businessInfo.name || "Your Business";
+    document.getElementById("previewBusinessAddress").textContent = businessInfo.address || "Business Address";
+    document.getElementById("previewBusinessCity").textContent = businessInfo.city || "City, Country";
+    document.getElementById("previewBusinessPhone").textContent = businessInfo.phone || "+254 700 123 456";
+    document.getElementById("previewBusinessEmail").textContent = businessInfo.email || "info@yourbusiness.com";
+
+    // Update invoice details
+    document.getElementById("previewInvoiceNumber").textContent = `INV-${String(currentInvoiceNumber).padStart(4, '0')}`;
+    
+    const invoiceDate = document.getElementById("invoiceDate").value || new Date().toISOString().split('T')[0];
+    const dueDate = document.getElementById("dueDate").value || new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+    
+    document.getElementById("previewInvoiceDate").textContent = formatDate(invoiceDate);
+    document.getElementById("previewDueDate").textContent = formatDate(dueDate);
+
+    // Update customer information
+    const customerName = document.getElementById("customerName").value || "Walk-in Customer";
+    const customerAddress = document.getElementById("customerAddress").value || "Customer Address";
+    
+    document.getElementById("previewCustomerName").textContent = customerName;
+    document.getElementById("previewCustomerAddress").textContent = customerAddress;
+    document.getElementById("previewCustomerCity").textContent = customerAddress;
+    
+    // Ship to same as bill to
+    document.getElementById("previewShipToName").textContent = customerName;
+    document.getElementById("previewShipToAddress").textContent = customerAddress;
+    document.getElementById("previewShipToCity").textContent = customerAddress;
+
+    // Update invoice items
+    const itemsBody = document.getElementById("invoicePdfItemsBody");
+    if (itemsBody) {
+        itemsBody.innerHTML = invoiceItems.map(item => `
+            <tr>
+                <td class="qty-col">${item.quantity}</td>
+                <td class="desc-col">${item.name}</td>
+                <td class="price-col">${currency}${item.price.toFixed(2)}</td>
+                <td class="total-col">${currency}${item.total.toFixed(2)}</td>
+            </tr>
+        `).join("");
+    }
+
+    // Update totals
+    const subtotal = invoiceItems.reduce((sum, item) => sum + item.total, 0);
+    const taxRate = parseFloat(document.getElementById("taxRate").value) || 0;
+    const taxAmount = subtotal * (taxRate / 100);
+    const grandTotal = subtotal + taxAmount;
+
+    document.getElementById("pdfInvoiceSubtotal").textContent = `${currency}${subtotal.toFixed(2)}`;
+    document.getElementById("pdfInvoiceTaxRate").textContent = taxRate.toFixed(1);
+    document.getElementById("pdfInvoiceTax").textContent = `${currency}${taxAmount.toFixed(2)}`;
+    document.getElementById("pdfInvoiceTotal").textContent = `${currency}${grandTotal.toFixed(2)}`;
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+        month: '2-digit', 
+        day: '2-digit', 
+        year: '2-digit' 
+    });
+}
+
+function showInvoicePreviewModal() {
+    const modal = document.getElementById("invoicePreviewModal");
+    if (modal) modal.style.display = "flex";
+}
+
+function hideInvoicePreviewModal() {
+    const modal = document.getElementById("invoicePreviewModal");
+    if (modal) modal.style.display = "none";
+}
+
+// Add Item from Inventory Modal
+function openAddItemModal() {
+    const modal = document.getElementById("addItemModal");
+    const select = document.getElementById("selectInvoiceItem");
+    
+    if (!modal || !select) return;
+
+    // Populate select with inventory items
+    select.innerHTML = '<option value="">Select an item...</option>';
+    inventory.forEach((item, index) => {
+        if (item.stock > 0) {
+            select.innerHTML += `<option value="${index}">${item.name} - ${currency}${item.price.toFixed(2)} (Stock: ${item.stock})</option>`;
+        }
+    });
+
+    modal.style.display = "flex";
+}
+
+function closeAddItemModal() {
+    const modal = document.getElementById("addItemModal");
+    if (modal) modal.style.display = "none";
+}
+
+function populateInvoiceItemDetails() {
+    const select = document.getElementById("selectInvoiceItem");
+    const quantityInput = document.getElementById("invoiceItemQuantity");
+    
+    if (select.value === "") {
+        quantityInput.value = 1;
+        return;
+    }
+
+    const item = inventory[parseInt(select.value)];
+    if (item) {
+        quantityInput.max = item.stock;
+        quantityInput.value = Math.min(1, item.stock);
+    }
+}
+
+function addSelectedItemToInvoice() {
+    const select = document.getElementById("selectInvoiceItem");
+    const quantityInput = document.getElementById("invoiceItemQuantity");
+    
+    if (select.value === "") {
+        showAlert("Please select an item.", "warning");
+        return;
+    }
+
+    const item = inventory[parseInt(select.value)];
+    const quantity = parseInt(quantityInput.value);
+
+    if (!item || isNaN(quantity) || quantity <= 0 || quantity > item.stock) {
+        showAlert("Invalid quantity selected.", "danger");
+        return;
+    }
+
+    const invoiceItem = {
+        name: item.name,
+        quantity: quantity,
+        price: item.price,
+        total: quantity * item.price
+    };
+
+    invoiceItems.push(invoiceItem);
+    updateInvoiceItemsTable();
+    closeAddItemModal();
+    renderInvoicePreview();
+    showAlert(`${item.name} added to invoice.`, "success");
+}
+
+// AI Item Generation
+async function generateItemsFromAI() {
+    const description = document.getElementById("aiDescription").value.trim();
+    
+    if (!description) {
+        showAlert("Please enter a description for AI generation.", "warning");
+        return;
+    }
+
+    const button = document.querySelector('[onclick="generateItemsFromAI()"]');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    button.disabled = true;
+
+    try {
+        const response = await fetch('/.netlify/functions/gemini-proxy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: `Parse this sale description and extract items with quantities and prices. Return a JSON array of objects with 'name', 'quantity', and 'price' fields. Description: "${description}"`
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+
+        // Parse the AI response
+        let items;
         try {
-            const csv = e.target.result;
-            const lines = csv.split("\n");
-            const newInventory = [];
+            // Try to extract JSON from the response
+            const jsonMatch = data.response.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+                items = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error("No valid JSON found in AI response");
+            }
+        } catch (parseError) {
+            throw new Error("Failed to parse AI response");
+        }
 
-            // Skip header row
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-
-                const [name, price, stock] = line.split(",").map(item => item.replace(/\"/g, "").trim());
-                
-                if (name && !isNaN(price) && !isNaN(stock)) {
-                    newInventory.push({
-                        name: name,
-                        price: parseFloat(price),
-                        stock: parseInt(stock)
+        // Add items to invoice
+        if (Array.isArray(items) && items.length > 0) {
+            items.forEach(item => {
+                if (item.name && item.quantity && item.price) {
+                    invoiceItems.push({
+                        name: item.name,
+                        quantity: parseInt(item.quantity),
+                        price: parseFloat(item.price),
+                        total: parseInt(item.quantity) * parseFloat(item.price)
                     });
                 }
-            }
-
-            if (newInventory.length > 0) {
-                inventory = newInventory;
-                saveData();
-                updateUI();
-                showMessage("Import Successful", `Imported ${newInventory.length} products.`);
-            } else {
-                showMessage("Import Failed", "No valid products found in the CSV file.");
-            }
-        } catch (error) {
-            console.error("Import error:", error);
-            showMessage("Import Error", "There was an error importing the CSV file.");
+            });
+            
+            updateInvoiceItemsTable();
+            renderInvoicePreview();
+            document.getElementById("aiDescription").value = "";
+            showAlert(`${items.length} items generated successfully!`, "success");
+        } else {
+            throw new Error("No valid items found in AI response");
         }
-    };
-    reader.readAsText(file);
-}
 
-// FanyaBot Chat
-function handleChatKeyPress(event) {
-    if (event.key === "Enter") {
-        sendChatMessage();
-    }
-}
-
-async function sendChatMessage() {
-    const input = document.getElementById("chatInput");
-    const message = input.value.trim();
-    
-    if (!message) return;
-
-    // Add user message
-    addChatMessage(message, "user");
-    input.value = "";
-
-    // Generate bot response
-    const response = await generateBotResponse(message);
-    addChatMessage(response, "bot");
-}
-
-function addChatMessage(message, sender) {
-    const chatMessages = document.getElementById("chatMessages");
-    if (!chatMessages) return;
-
-    const messageDiv = document.createElement("div");
-    messageDiv.className = `${sender}-message`;
-    
-    const avatar = document.createElement("div");
-    avatar.className = "message-avatar";
-    avatar.innerHTML = sender === "bot" ? "<i class=\"fas fa-robot\"></i>" : "<i class=\"fas fa-user\"></i>";
-    
-    const content = document.createElement("div");
-    content.className = "message-content";
-    content.innerHTML = `<p>${message}</p>`;
-    
-    messageDiv.appendChild(avatar);
-    messageDiv.appendChild(content);
-    chatMessages.appendChild(messageDiv);
-    
-    // Scroll to bottom
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-async function generateBotResponse(message) {
-    try {
-        // Use API service for AI-powered responses
-        if (window.apiService) {
-            const response = await window.apiService.generateCustomerServiceResponse(message, inventory);
-            return response;
-        }
-        
-        // Fallback to simple rule-based responses
-        return generateSimpleBotResponse(message);
     } catch (error) {
-        console.error("Error generating bot response:", error);
-        return generateSimpleBotResponse(message);
+        console.error('AI Generation Error:', error);
+        showAlert(`Failed to generate items using AI: ${error.message}. Please try again or add manually.`, "danger");
+    } finally {
+        button.innerHTML = originalText;
+        button.disabled = false;
     }
 }
 
-function generateSimpleBotResponse(message) {
-    const lowerMessage = message.toLowerCase();
-    
-    // Check for product availability
-    for (const item of inventory) {
-        if (lowerMessage.includes(item.name.toLowerCase())) {
-            if (item.stock > 0) {
-                return `Yes, we have ${item.name} available! Price: ${currency}${item.price.toFixed(2)}, Stock: ${item.stock} units.`;
-            } else {
-                return `Sorry, ${item.name} is currently out of stock.`;
-            }
-        }
+// Sales History
+function updateSalesHistory() {
+    const tbody = document.getElementById("salesHistoryTableBody");
+    if (!tbody) return;
+
+    if (salesData.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">No sales recorded yet</td>
+            </tr>
+        `;
+        return;
     }
-    
-    // General responses
-    if (lowerMessage.includes("price") || lowerMessage.includes("cost") || lowerMessage.includes("how much")) {
-        return "I can help you check prices for specific products. Just ask about a product by name!";
-    }
-    
-    if (lowerMessage.includes("stock") || lowerMessage.includes("available") || lowerMessage.includes("have")) {
-        return "I can check our current inventory. What product are you looking for?";
-    }
-    
-    if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {
-        return "Hello! I\"m FanyaBot, your inventory assistant. I can help you check product availability and prices. What would you like to know?";
-    }
-    
-    return "I can help you check product availability and prices from our inventory. Try asking about a specific product!";
+
+    tbody.innerHTML = salesData.slice().reverse().map(sale => `
+        <tr>
+            <td>INV-${String(sale.invoiceNumber).padStart(4, '0')}</td>
+            <td>${formatDate(sale.date)}</td>
+            <td>${sale.customer}</td>
+            <td>${currency}${sale.total.toFixed(2)}</td>
+            <td>${sale.items.length} item(s)</td>
+            <td>
+                <button onclick="viewSaleDetails(${sale.id})" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-eye"></i> View
+                </button>
+            </td>
+        </tr>
+    `).join("");
+}
+
+function viewSaleDetails(saleId) {
+    const sale = salesData.find(s => s.id === saleId);
+    if (!sale) return;
+
+    const itemsList = sale.items.map(item => 
+        `${item.quantity}x ${item.name} @ ${currency}${item.price.toFixed(2)} = ${currency}${item.total.toFixed(2)}`
+    ).join('\n');
+
+    showMessage(
+        `Invoice #${sale.invoiceNumber} Details`,
+        `Customer: ${sale.customer}\nDate: ${formatDate(sale.date)}\n\nItems:\n${itemsList}\n\nSubtotal: ${currency}${sale.subtotal.toFixed(2)}\nTax: ${currency}${sale.tax.toFixed(2)}\nTotal: ${currency}${sale.total.toFixed(2)}`
+    );
 }
 
 // Settings
 function saveSettings() {
-    const businessName = document.getElementById("businessNameInput").value.trim();
-    const businessAddress = document.getElementById("businessAddressInput").value.trim();
-    const businessCity = document.getElementById("businessCityInput").value.trim();
-    const selectedCurrency = document.getElementById("currencySelect").value;
-
-    if (businessName) businessInfo.name = businessName;
-    if (businessAddress) businessInfo.address = businessAddress;
-    if (businessCity) businessInfo.city = businessCity;
-    currency = selectedCurrency;
+    businessInfo.name = document.getElementById("businessName").value.trim() || "Your Business";
+    businessInfo.address = document.getElementById("businessAddress").value.trim() || "Business Address";
+    businessInfo.city = document.getElementById("businessCity").value.trim() || "City, Country";
+    businessInfo.phone = document.getElementById("businessPhone").value.trim() || "+254 700 123 456";
+    businessInfo.email = document.getElementById("businessEmail").value.trim() || "info@yourbusiness.com";
+    
+    currency = document.getElementById("currency").value.trim() || "KES";
+    
+    const taxRateInput = document.getElementById("taxRate");
+    if (taxRateInput) {
+        const taxRate = parseFloat(taxRateInput.value) || 0;
+        localStorage.setItem("fanyabill_tax_rate", taxRate.toString());
+    }
 
     saveData();
     updateUI();
-    showMessage("Settings Saved", "Your business information has been updated.");
+    showAlert("Settings saved successfully!", "success");
 }
 
-// PayPal Integration
-function setupPayPalButton() {
-    if (!isProUser() && window.paypal) {
-        const paypalButtonContainer = document.getElementById("paypal-button-container");
-        if (paypalButtonContainer && paypalButtonContainer.innerHTML === "") {
-            paypal.Buttons({
-                createOrder: function(data, actions) {
-                    return actions.order.create({
-                        purchase_units: [{
-                            amount: {
-                                value: "7.99"
-                            }
-                        }]
-                    });
-                },
-                onApprove: function(data, actions) {
-                    return actions.order.capture().then(function(details) {
-                        unlockProAccess();
-                        console.log("Payment completed:", details);
-                    });
-                },
-                onError: async function(err) {
-                    console.error("Payment error:", err);
-                    await showMessage("Payment Error", "There was an error processing your payment. Please try again.");
-                }
-            }).render("#paypal-button-container");
-        }
+// Pro User Management
+function isProUser() {
+    return localStorage.getItem("fanyabill_pro_user") === "true";
+}
+
+function setProUser(isPro) {
+    localStorage.setItem("fanyabill_pro_user", isPro.toString());
+    updateUI();
+    checkProStatus();
+}
+
+function checkProStatus() {
+    const proStatus = document.getElementById("proStatus");
+    const invoiceCountBadge = document.getElementById("invoiceCountBadge");
+    
+    if (isProUser()) {
+        if (proStatus) proStatus.textContent = "Pro User";
+        if (invoiceCountBadge) invoiceCountBadge.textContent = "∞";
+    } else {
+        if (proStatus) proStatus.textContent = "Free Tier";
+        if (invoiceCountBadge) invoiceCountBadge.textContent = invoiceCount;
     }
 }
 
 function showUpgradeModal() {
     const modal = document.getElementById("upgradeModal");
-    if (modal) {
-        modal.style.display = "flex";
-        setupPayPalButton();
-    }
+    if (modal) modal.style.display = "flex";
 }
 
 function hideUpgradeModal() {
@@ -728,70 +937,48 @@ function hideUpgradeModal() {
     if (modal) modal.style.display = "none";
 }
 
-async function unlockProAccess() {
-    localStorage.setItem("fanyabill_pro", "true");
-    showProBanner();
-    hideUpgradeButton();
-    hideUpgradeModal();
-    invoiceLimit = Infinity;
-    updateInvoiceStatus();
-    await showMessage("Upgrade Successful", "🎉 Thank you for upgrading to FanyaBill Pro! You now have unlimited access.");
-}
-
-function checkProStatus() {
-    if (isProUser()) {
-        showProBanner();
-        hideUpgradeButton();
-        invoiceLimit = Infinity;
-    } else if (invoiceCount >= invoiceLimit) {
-        showUpgradeButton();
+// PayPal Integration
+function setupPayPalButton() {
+    if (typeof paypal !== 'undefined') {
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: '7.99'
+                        }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    setProUser(true);
+                    hideUpgradeModal();
+                    showAlert("Welcome to FanyaBill Pro! You now have unlimited access.", "success");
+                    
+                    // Redirect to success page
+                    window.location.href = 'pro-success.html';
+                });
+            },
+            onError: function(err) {
+                console.error('PayPal Error:', err);
+                showAlert("Payment failed. Please try again.", "danger");
+            }
+        }).render('#paypal-button-container');
     }
 }
 
-function isProUser() {
-    return localStorage.getItem("fanyabill_pro") === "true";
-}
-
-function showProBanner() {
-    const proBanner = document.getElementById("proBanner");
-    if (proBanner) proBanner.style.display = "flex";
-}
-
-function showUpgradeButton() {
-    const upgradeBtn = document.getElementById("upgradeBtn");
-    if (upgradeBtn) upgradeBtn.style.display = "flex";
-}
-
-function hideUpgradeButton() {
-    const upgradeBtn = document.getElementById("upgradeBtn");
-    if (upgradeBtn) upgradeBtn.style.display = "none";
-}
-
-// Modal Management
-async function showMessage(title, message) {
-    return new Promise((resolve) => {
-        const modal = document.getElementById("messageModal");
-        const titleEl = document.getElementById("messageTitle");
-        const textEl = document.getElementById("messageText");
-        
-        if (modal && titleEl && textEl) {
-            titleEl.textContent = title;
-            textEl.textContent = message;
-            modal.style.display = "flex";
-            
-            // Auto-close after 3 seconds for success messages
-            if (title.includes("Success") || title.includes("Generated") || title.includes("Added") || title.includes("Updated") || title.includes("Deleted") || title.includes("Saved")) {
-                setTimeout(() => {
-                    hideMessageModal();
-                    resolve();
-                }, 3000);
-            } else {
-                resolve();
-            }
-        } else {
-            resolve();
-        }
-    });
+// Message Modal
+function showMessage(title, message) {
+    const modal = document.getElementById("messageModal");
+    const titleEl = document.getElementById("messageTitle");
+    const textEl = document.getElementById("messageText");
+    
+    if (modal && titleEl && textEl) {
+        titleEl.textContent = title;
+        textEl.textContent = message;
+        modal.style.display = "flex";
+    }
 }
 
 function hideMessageModal() {
@@ -799,28 +986,305 @@ function hideMessageModal() {
     if (modal) modal.style.display = "none";
 }
 
-// Utility Functions
-function formatCurrency(amount) {
-    return `${currency}${amount.toFixed(2)}`;
+// CSV Import/Export
+function exportInventoryCSV() {
+    if (inventory.length === 0) {
+        showAlert("No inventory data to export.", "warning");
+        return;
+    }
+
+    const headers = ["Name", "Price", "Stock", "Category", "Description"];
+    const csvContent = [
+        headers.join(","),
+        ...inventory.map(item => [
+            `"${item.name}"`,
+            item.price,
+            item.stock,
+            `"${item.category || ""}"`,
+            `"${item.description || ""}"`
+        ].join(","))
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fanyabill-inventory.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
+    
+    showAlert("Inventory exported successfully!", "success");
 }
 
-function generateInvoiceNumber() {
-    return currentInvoiceNumber.toString().padStart(3, "0");
+function importInventoryCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const csv = e.target.result;
+            const lines = csv.split("\n");
+            const headers = lines[0].split(",");
+            
+            let importedCount = 0;
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const values = line.split(",");
+                if (values.length >= 3) {
+                    const name = values[0].replace(/"/g, "").trim();
+                    const price = parseFloat(values[1]);
+                    const stock = parseInt(values[2]);
+                    const category = values[3] ? values[3].replace(/"/g, "").trim() : "General";
+                    const description = values[4] ? values[4].replace(/"/g, "").trim() : "";
+                    
+                    if (name && !isNaN(price) && !isNaN(stock)) {
+                        // Check if item already exists
+                        const existingIndex = inventory.findIndex(item => 
+                            item.name.toLowerCase() === name.toLowerCase()
+                        );
+                        
+                        if (existingIndex >= 0) {
+                            // Update existing item
+                            inventory[existingIndex] = {
+                                ...inventory[existingIndex],
+                                price: price,
+                                stock: stock,
+                                category: category,
+                                description: description
+                            };
+                        } else {
+                            // Add new item
+                            inventory.push({
+                                id: Date.now() + i,
+                                name: name,
+                                price: price,
+                                stock: stock,
+                                category: category,
+                                description: description
+                            });
+                        }
+                        importedCount++;
+                    }
+                }
+            }
+            
+            saveData();
+            updateInventoryTable();
+            showAlert(`Successfully imported ${importedCount} items!`, "success");
+            
+        } catch (error) {
+            console.error("CSV Import Error:", error);
+            showAlert("Failed to import CSV. Please check the file format.", "danger");
+        }
+    };
+    
+    reader.readAsText(file);
+    event.target.value = ""; // Reset file input
 }
 
-// Initialize on page load
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function() {
-        loadData();
-        updateUI();
-        setupPayPalButton();
-        checkProStatus();
+// Sales Breakdown
+function displaySalesBreakdown(type) {
+    // Update button states
+    document.querySelectorAll('.breakdown-options button').forEach(btn => {
+        btn.classList.remove('active');
     });
-} else {
-    loadData();
-    updateUI();
-    setupPayPalButton();
-    checkProStatus();
+    document.getElementById(`${type}BreakdownBtn`).classList.add('active');
+
+    // Hide all breakdown content
+    document.querySelectorAll('.breakdown-content').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // Show selected breakdown
+    document.getElementById(`${type}BreakdownContent`).style.display = 'block';
+
+    // Generate data based on type
+    if (type === 'monthly') {
+        generateMonthlySalesData();
+    } else if (type === 'yearly') {
+        generateYearlySalesData();
+    } else if (type === 'product') {
+        generateProductSalesData();
+    }
 }
 
+function generateMonthlySalesData() {
+    // Implementation for monthly sales data
+    const monthlyData = {};
+    salesData.forEach(sale => {
+        const month = new Date(sale.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+        if (!monthlyData[month]) {
+            monthlyData[month] = { total: 0, count: 0 };
+        }
+        monthlyData[month].total += sale.total;
+        monthlyData[month].count += 1;
+    });
+
+    const tbody = document.getElementById('monthlySalesTableBody');
+    if (tbody) {
+        tbody.innerHTML = Object.entries(monthlyData).map(([month, data]) => `
+            <tr>
+                <td>${month}</td>
+                <td>${currency}${data.total.toFixed(2)}</td>
+                <td>${data.count}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="3" class="text-center">No sales data available</td></tr>';
+    }
+}
+
+function generateYearlySalesData() {
+    // Implementation for yearly sales data
+    const yearlyData = {};
+    salesData.forEach(sale => {
+        const year = new Date(sale.date).getFullYear().toString();
+        if (!yearlyData[year]) {
+            yearlyData[year] = { total: 0, count: 0 };
+        }
+        yearlyData[year].total += sale.total;
+        yearlyData[year].count += 1;
+    });
+
+    const tbody = document.getElementById('yearlySalesTableBody');
+    if (tbody) {
+        tbody.innerHTML = Object.entries(yearlyData).map(([year, data]) => `
+            <tr>
+                <td>${year}</td>
+                <td>${currency}${data.total.toFixed(2)}</td>
+                <td>${data.count}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="3" class="text-center">No sales data available</td></tr>';
+    }
+}
+
+function generateProductSalesData() {
+    // Implementation for product sales data
+    const productData = {};
+    salesData.forEach(sale => {
+        sale.items.forEach(item => {
+            if (!productData[item.name]) {
+                productData[item.name] = { quantity: 0, revenue: 0 };
+            }
+            productData[item.name].quantity += item.quantity;
+            productData[item.name].revenue += item.total;
+        });
+    });
+
+    const tbody = document.getElementById('productSalesTableBody');
+    if (tbody) {
+        tbody.innerHTML = Object.entries(productData).map(([product, data]) => `
+            <tr>
+                <td>${product}</td>
+                <td>${data.quantity}</td>
+                <td>${currency}${data.revenue.toFixed(2)}</td>
+            </tr>
+        `).join('') || '<tr><td colspan="3" class="text-center">No sales data available</td></tr>';
+    }
+}
+
+// AI Chat Assistant
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+
+    // Add user message to chat
+    addMessageToChat(message, 'user');
+    input.value = '';
+
+    // Generate AI response
+    try {
+        const response = await generateAIResponse(message);
+        addMessageToChat(response, 'ai');
+    } catch (error) {
+        addMessageToChat('Sorry, I encountered an error. Please try again.', 'ai');
+    }
+}
+
+function addMessageToChat(message, sender) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender}`;
+    
+    messageDiv.innerHTML = `
+        <div class="avatar">${sender === 'ai' ? 'AI' : 'U'}</div>
+        <div class="chat-bubble">${message}</div>
+    `;
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+async function generateAIResponse(userMessage) {
+    // Create context about inventory for AI
+    const inventoryContext = inventory.map(item => 
+        `${item.name}: ${currency}${item.price.toFixed(2)} (Stock: ${item.stock})`
+    ).join(', ');
+
+    const prompt = `You are a helpful customer service assistant for a business. Here is the current inventory: ${inventoryContext}. 
+    Customer question: "${userMessage}"
+    Please provide a helpful response about product availability, prices, or general business information.`;
+
+    try {
+        const response = await fetch('/.netlify/functions/gemini-proxy', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get AI response');
+        }
+
+        const data = await response.json();
+        return data.response || 'I apologize, but I cannot provide a response at the moment.';
+    } catch (error) {
+        console.error('AI Chat Error:', error);
+        return 'I apologize, but I cannot connect to the AI service right now. Please try again later.';
+    }
+}
+
+function clearChat() {
+    const chatMessages = document.getElementById('chatMessages');
+    chatMessages.innerHTML = `
+        <div class="chat-message ai">
+            <div class="avatar">AI</div>
+            <div class="chat-bubble">Hello! I'm FanyaBot, your AI assistant. I can help customers check your inventory, prices, and availability. Ask me anything like "Do you have BlueBand?" or "How much is 1kg rice?"</div>
+        </div>
+    `;
+}
+
+// Initialize date inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const dueDate = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+    
+    const invoiceDateInput = document.getElementById('invoiceDate');
+    const dueDateInput = document.getElementById('dueDate');
+    const taxRateInput = document.getElementById('taxRate');
+    
+    if (invoiceDateInput) invoiceDateInput.value = today;
+    if (dueDateInput) dueDateInput.value = dueDate;
+    if (taxRateInput) {
+        const savedTaxRate = localStorage.getItem("fanyabill_tax_rate");
+        taxRateInput.value = savedTaxRate || "16";
+    }
+});
+
+// Handle Enter key in chat
+document.addEventListener('DOMContentLoaded', function() {
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    }
+});
 
