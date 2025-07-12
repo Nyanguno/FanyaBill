@@ -554,6 +554,7 @@
             background: white;
             color: #333;
             line-height: 1.4;
+            --custom-primary-color: #3b82f6;
         }
 
         .invoice-header {
@@ -561,7 +562,7 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 30px;
-            border-bottom: 2px solid #000;
+            border-bottom: 2px solid var(--custom-primary-color, #3b82f6);
             padding-bottom: 20px;
         }
 
@@ -573,7 +574,7 @@
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 5px;
-            color: #000;
+            color: var(--custom-primary-color, #3b82f6);
         }
 
         .company-details {
@@ -582,10 +583,17 @@
             line-height: 1.6;
         }
 
+        .company-logo {
+            max-width: 80px;
+            max-height: 80px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
         .invoice-title {
             font-size: 48px;
             font-weight: 800;
-            color: #000;
+            color: var(--custom-primary-color, #3b82f6);
             text-align: right;
             margin: 0;
             letter-spacing: -1px;
@@ -625,8 +633,8 @@
         .section-title {
             font-size: 16px;
             font-weight: 700;
-            color: #000;
-            border-bottom: 2px solid #000;
+            color: var(--custom-primary-color, #3b82f6);
+            border-bottom: 2px solid var(--custom-primary-color, #3b82f6);
             padding-bottom: 5px;
         }
 
@@ -649,13 +657,12 @@
         }
 
         .invoice-table th {
-            background: #f8f9fa;
+            background: var(--custom-primary-color, #3b82f6);
+            color: white;
             padding: 12px;
             text-align: left;
             font-weight: 700;
             font-size: 14px;
-            color: #000;
-            border-bottom: 2px solid #000;
         }
 
         .invoice-table td {
@@ -696,7 +703,7 @@
             font-family: 'Dancing Script', cursive;
             font-size: 48px;
             font-weight: 700;
-            color: #000;
+            color: var(--custom-primary-color, #3b82f6);
             margin: 0;
         }
 
@@ -722,11 +729,11 @@
         }
 
         .total-row.grand-total {
-            border-top: 2px solid #000;
+            border-top: 2px solid var(--custom-primary-color, #3b82f6);
             padding-top: 12px;
             font-size: 18px;
             font-weight: 700;
-            color: #000;
+            color: var(--custom-primary-color, #3b82f6);
         }
 
         .powered-by {
@@ -953,6 +960,138 @@
             font-weight: 600;
         }
 
+        /* Custom Branding Styles */
+        .branding-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .pro-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-upload-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-preview-container {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-50);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .logo-placeholder {
+            color: var(--gray-400);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .logo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .color-picker-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-300);
+            background: #3b82f6;
+        }
+
+        .color-input {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .data-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .disabled-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            z-index: 10;
+        }
+
+        .upgrade-message {
+            text-align: center;
+            padding: 2rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--gray-300);
+        }
+
+        .upgrade-message h4 {
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-message p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .app-container {
@@ -1026,6 +1165,171 @@
             .thank-you {
                 font-size: 36px;
             }
+
+            .logo-upload-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .color-picker-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Template Selector Styles */
+        .template-selector {
+            margin-top: 1rem;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .template-option {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .template-option:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .template-option.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .template-preview {
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .classic-preview {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .modern-preview {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+        }
+
+        .minimal-preview {
+            background: var(--white);
+            border-bottom: 1px solid #059669;
+        }
+
+        .preview-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .classic-preview .preview-title {
+            color: #2563eb;
+        }
+
+        .minimal-preview .preview-title {
+            color: #6b7280;
+            font-weight: 300;
+        }
+
+        .preview-company {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .classic-preview .preview-company {
+            color: #2563eb;
+        }
+
+        .minimal-preview .preview-company {
+            color: #059669;
+        }
+
+        .template-preview-body {
+            padding: 0.5rem;
+        }
+
+        .preview-line {
+            height: 3px;
+            background: var(--gray-300);
+            border-radius: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-line.short {
+            width: 60%;
+        }
+
+        .preview-table {
+            margin-top: 0.5rem;
+        }
+
+        .preview-table-header {
+            height: 8px;
+            background: var(--gray-400);
+            border-radius: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .classic-preview + .template-preview-body .preview-table-header {
+            background: #2563eb;
+        }
+
+        .modern-preview + .template-preview-body .preview-table-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        }
+
+        .minimal-preview + .template-preview-body .preview-table-header {
+            background: #f0fdf4;
+        }
+
+        .preview-table-row {
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            margin-bottom: 0.125rem;
+        }
+
+        .template-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-800);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .template-info p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 0.875rem;
         }
 
         /* Utility Classes */
@@ -1078,8 +1382,8 @@
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="info">
-                            <h3 id="totalSales">KES 0.00</h3>
-                            <p>Total Sales</p>
+                            <h3 id="dashboardRevenue">$0.00</h3>
+                            <p>Total Revenue</p>
                         </div>
                     </div>
                     <div class="stat-card inventory">
@@ -1087,8 +1391,8 @@
                             <i class="fas fa-boxes"></i>
                         </div>
                         <div class="info">
-                            <h3 id="totalItems">0</h3>
-                            <p>Total Items</p>
+                            <h3 id="dashboardProducts">0</h3>
+                            <p>Products</p>
                         </div>
                     </div>
                     <div class="stat-card invoices">
@@ -1096,15 +1400,19 @@
                             <i class="fas fa-file-invoice"></i>
                         </div>
                         <div class="info">
-                            <h3 id="totalInvoices">0</h3>
+                            <h3 id="dashboardInvoiceCount">0</h3>
                             <p>Invoices Generated</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="card">
-                    <h3>Revenue Trends</h3>
-                    <canvas id="revenueChart" width="400" height="200"></canvas>
+                    <div class="stat-card inventory">
+                        <div class="icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="info">
+                            <h3 id="dashboardLowStock">0</h3>
+                            <p>Low Stock Items</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -1156,15 +1464,11 @@
                 <!-- Add/Edit Inventory Form -->
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="itemId">Item ID</label>
-                        <input type="text" id="itemId" placeholder="e.g., PROD001">
-                    </div>
-                    <div class="form-group">
                         <label for="productName">Item Name</label>
                         <input type="text" id="productName" placeholder="e.g., Sugar 2kg">
                     </div>
                     <div class="form-group">
-                        <label for="productPrice">Price (KES)</label>
+                        <label for="productPrice">Price</label>
                         <input type="number" id="productPrice" min="0" step="0.01" placeholder="e.g., 120">
                     </div>
                     <div class="form-group">
@@ -1194,8 +1498,7 @@
                                 <th>Name</th>
                                 <th>Price</th>
                                 <th>Stock</th>
-                                <th>Category</th>
-                                <th>Description</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -1226,6 +1529,82 @@
                         <button class="btn btn-secondary" onclick="generateItemsFromAI()">
                             <i class="fas fa-robot"></i> Generate Items
                         </button>
+                    </div>
+                </div>
+
+                <!-- Invoice Template Selector -->
+                <div class="settings-section">
+                    <h3><i class="fas fa-palette"></i> Invoice Template</h3>
+                    <p class="text-muted">Choose a design template for your invoice</p>
+                    
+                    <div class="template-selector">
+                        <div class="template-grid">
+                            <div class="template-option active" data-template="classic" onclick="selectTemplate('classic')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header classic-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Classic Professional</h4>
+                                    <p>Traditional business invoice with clean lines</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="modern" onclick="selectTemplate('modern')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header modern-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Modern Gradient</h4>
+                                    <p>Contemporary design with gradients and modern typography</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="minimal" onclick="selectTemplate('minimal')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header minimal-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Minimal Clean</h4>
+                                    <p>Clean and simple design focusing on content</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1282,17 +1661,17 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-right">Subtotal</td>
-                                <td id="invoiceSubtotal">KES 0.00</td>
+                                <td id="invoiceSubtotal">$0.00</td>
                                 <td></td>
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-right">Tax (<span id="invoiceTaxRateDisplay">0</span>%)</td>
-                                <td id="invoiceTaxAmount">KES 0.00</td>
+                                <td id="invoiceTaxAmount">$0.00</td>
                                 <td></td>
                             </tr>
                             <tr class="total-row">
                                 <td colspan="3" class="text-right">Grand Total</td>
-                                <td id="invoiceGrandTotal">KES 0.00</td>
+                                <td id="invoiceGrandTotal">$0.00</td>
                                 <td></td>
                             </tr>
                         </tfoot>
@@ -1324,9 +1703,6 @@
 
                 <div class="breakdown-content" id="monthlyBreakdownContent">
                     <h3>Monthly Sales Data</h3>
-                    <div class="chart-container">
-                        <canvas id="monthlySalesChart" width="400" height="200"></canvas>
-                    </div>
                     <div class="table-container">
                         <table class="table">
                             <thead>
@@ -1344,9 +1720,6 @@
 
                 <div class="breakdown-content" id="yearlyBreakdownContent" style="display: none;">
                     <h3>Yearly Sales Data</h3>
-                    <div class="chart-container">
-                        <canvas id="yearlySalesChart" width="400" height="200"></canvas>
-                    </div>
                     <div class="table-container">
                         <table class="table">
                             <thead>
@@ -1364,9 +1737,6 @@
 
                 <div class="breakdown-content" id="productBreakdownContent" style="display: none;">
                     <h3>Product Sales Data</h3>
-                    <div class="chart-container">
-                        <canvas id="productSalesChart" width="400" height="200"></canvas>
-                    </div>
                     <div class="table-container">
                         <table class="table">
                             <thead>
@@ -1459,20 +1829,81 @@
                             <label for="taxRate">Default Tax Rate (%)</label>
                             <input type="number" id="taxRate" placeholder="e.g., 16" min="0" max="100" step="0.01">
                         </div>
-                        <div class="form-group">
-                            <label for="industryTemplate">🌍 Industry Template</label>
-                            <select id="industryTemplate">
-                                <option value="general">General Business</option>
-                                <option value="shopkeeper">Shopkeeper</option>
-                                <option value="gym">Gym Trainer</option>
-                                <option value="photography">Photographer</option>
-                                <option value="catering">Caterer</option>
-                                <option value="salon">Beauty Salon</option>
-                                <option value="repair">Repair Services</option>
-                            </select>
-                        </div>
                     </div>
                     <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
+                </div>
+
+                <!-- Custom Branding Section (Pro Feature) -->
+                <div class="branding-section">
+                    <div class="pro-badge">PRO</div>
+                    <h3><i class="fas fa-palette"></i> Custom Branding</h3>
+                    
+                    <div id="brandingContent">
+                        <!-- Logo Upload -->
+                        <div class="logo-upload-section">
+                            <div class="logo-preview-container">
+                                <img id="logoPreview" class="logo-preview" alt="Logo Preview">
+                                <div class="logo-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <div>Logo Preview</div>
+                                </div>
+                            </div>
+                            <div class="logo-actions">
+                                <button class="btn btn-primary" onclick="uploadLogo()">
+                                    <i class="fas fa-upload"></i> Upload Logo
+                                </button>
+                                <button class="btn btn-secondary" onclick="removeLogo()">
+                                    <i class="fas fa-trash"></i> Remove Logo
+                                </button>
+                                <input type="file" id="logoUpload" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+                            </div>
+                        </div>
+
+                        <!-- Color Picker -->
+                        <div class="color-picker-section">
+                            <label for="invoiceColor">Invoice Color Theme:</label>
+                            <div class="color-preview" id="colorPreview"></div>
+                            <input type="color" id="invoiceColor" class="color-input" value="#3b82f6" onchange="updateInvoiceColor()">
+                            <span class="text-muted">Choose a primary color for your invoices</span>
+                        </div>
+
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle"></i> 
+                            Custom branding allows you to add your business logo and choose custom colors for your invoices.
+                        </p>
+                    </div>
+
+                    <!-- Upgrade overlay for free users -->
+                    <div id="brandingUpgradeOverlay" class="disabled-overlay" style="display: none;">
+                        <div class="upgrade-message">
+                            <h4><i class="fas fa-crown"></i> Upgrade to Pro</h4>
+                            <p>Custom branding is available for Pro users only</p>
+                            <a href="payment-pro.html" class="btn btn-primary">
+                                <i class="fas fa-crown"></i> Upgrade to Pro
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management Section -->
+                <div class="data-section">
+                    <h3><i class="fas fa-database"></i> Data Management</h3>
+                    <p class="text-muted">Export your data for backup or import data from another device.</p>
+                    
+                    <div class="data-actions">
+                        <button class="btn btn-primary" onclick="exportData()">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="importData()">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                        <input type="file" id="dataImport" accept=".json" style="display: none;" onchange="handleDataImport(event)">
+                    </div>
+                    
+                    <p class="text-muted mt-4">
+                        <i class="fas fa-info-circle"></i> 
+                        Export creates a backup file with all your business data. Import allows you to restore data from a backup file.
+                    </p>
                 </div>
 
                 <div class="settings-section">
@@ -1510,6 +1941,7 @@
                     <!-- Invoice Header -->
                     <div class="invoice-header">
                         <div class="company-info">
+                            <img id="previewBusinessLogo" class="company-logo" style="display: none;" alt="Business Logo">
                             <div class="company-name" id="previewBusinessName">Company Name</div>
                             <div class="company-details">
                                 <div id="previewBusinessAddress">Company Address</div>
@@ -1643,6 +2075,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="templates/invoice-templates.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
