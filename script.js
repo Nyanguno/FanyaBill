@@ -275,14 +275,37 @@ function generateAndDownloadInvoice() {
         downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
         downloadBtn.disabled = true;
 
-        // Get the invoice document element
-        const invoiceElement = document.getElementById('invoiceDocument');
+        // Ensure the selected template is applied before PDF generation
+        const selectedTemplate = localStorage.getItem('selectedInvoiceTemplate') || 'classic';
+        if (typeof applyTemplate === 'function') {
+            applyTemplate(selectedTemplate);
+        }
+        
+        // Update the invoice preview with current data and template
+        if (typeof renderInvoicePreview === 'function') {
+            renderInvoicePreview();
+        }
+
+        // Wait a moment for template styles to be applied
+        setTimeout(() => {
+            // Get the invoice document element
+            const invoiceElement = document.getElementById('invoiceDocument');
         
         if (!invoiceElement) {
             throw new Error('Invoice document not found');
         }
 
-        // Configure html2canvas options for better quality
+            // Ensure template CSS is applied
+            const templateCSS = getTemplateCSS(selectedTemplate);
+            if (templateCSS) {
+                // Create a temporary style element for PDF generation
+                const tempStyle = document.createElement('style');
+                tempStyle.id = 'temp-pdf-styles';
+                tempStyle.textContent = templateCSS;
+                document.head.appendChild(tempStyle);
+            }
+
+            // Configure html2canvas options for better quality
         const html2canvasOptions = {
             scale: 2, // Higher scale for better quality
             useCORS: true,
@@ -333,16 +356,17 @@ function generateAndDownloadInvoice() {
                     }
                 }
 
-                // Generate filename
+                // Generate filename with template name
                 const invoiceNumber = document.getElementById('previewInvoiceNumber').textContent || 'invoice';
                 const customerName = document.getElementById('previewCustomerName').textContent || 'customer';
-                const filename = `invoice-${invoiceNumber}-${customerName.replace(/\s+/g, '-').toLowerCase()}.pdf`;
+                const templateName = selectedTemplate.charAt(0).toUpperCase() + selectedTemplate.slice(1);
+                const filename = `invoice-${invoiceNumber}-${customerName.replace(/\s+/g, '-').toLowerCase()}-${templateName}.pdf`;
 
                 // Save the PDF
                 pdf.save(filename);
 
                 // Show success message
-                showAlert('PDF downloaded successfully!', 'success');
+                showAlert(`PDF downloaded successfully with ${templateName} template!`, 'success');
 
                 // Record the sale if not already recorded
                 recordSale();
@@ -351,6 +375,12 @@ function generateAndDownloadInvoice() {
                 console.error('PDF generation error:', pdfError);
                 showAlert('Failed to generate PDF. Please try again.', 'danger');
             } finally {
+                // Clean up temporary styles
+                const tempStyle = document.getElementById('temp-pdf-styles');
+                if (tempStyle) {
+                    tempStyle.remove();
+                }
+                
                 // Restore button state
                 downloadBtn.innerHTML = originalText;
                 downloadBtn.disabled = false;
@@ -359,10 +389,17 @@ function generateAndDownloadInvoice() {
             console.error('Canvas generation error:', canvasError);
             showAlert('Failed to capture invoice content. Please try again.', 'danger');
             
+            // Clean up temporary styles
+            const tempStyle = document.getElementById('temp-pdf-styles');
+            if (tempStyle) {
+                tempStyle.remove();
+            }
+            
             // Restore button state
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
         });
+        }, 300); // Wait 300ms for template styles to apply
 
     } catch (error) {
         console.error('PDF Generation Error:', error);
@@ -375,6 +412,14 @@ function generateAndDownloadInvoice() {
             downloadBtn.disabled = false;
         }
     }
+}
+
+// Get template CSS for PDF generation
+function getTemplateCSS(templateId) {
+    if (typeof invoiceTemplates !== 'undefined' && invoiceTemplates[templateId]) {
+        return invoiceTemplates[templateId].css;
+    }
+    return null;
 }
 
 // Record sale when PDF is generated
