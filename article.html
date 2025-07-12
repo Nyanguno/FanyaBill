@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="articleTitle">Article Title - FanyaBill Blog</title>
+    <meta name="description" id="articleDescription" content="Article description">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="blog-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-receipt"></i>
+                <span>FanyaBill</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#features">Features</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="blog.html">Blog</a>
+                <a href="app.html" class="btn-primary">Launch App</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Article Header -->
+    <section class="article-header">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="blog.html">Blog</a>
+                <span>/</span>
+                <span id="articleBreadcrumb">Article</span>
+            </div>
+            <h1 id="articleHeading">Article Title</h1>
+            <div class="article-meta">
+                <span class="author">By FanyaBill Team</span>
+                <span class="date" id="articleDate">December 7, 2025</span>
+                <span class="read-time" id="articleReadTime">5 min read</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Article Content -->
+    <section class="article-content">
+        <div class="container">
+            <div class="article-layout">
+                <article class="article-main">
+                    <div class="article-image">
+                        <img id="articleImage" src="" alt="Article featured image">
+                    </div>
+                    <div class="article-body" id="articleBody">
+                        <!-- Article content will be loaded here -->
+                    </div>
+                    
+                    <!-- Article Tags -->
+                    <div class="article-tags">
+                        <h4>Tags:</h4>
+                        <div class="tags-list" id="articleTags">
+                            <!-- Tags will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Social Share -->
+                    <div class="social-share">
+                        <h4>Share this article:</h4>
+                        <div class="share-buttons">
+                            <a href="#" class="share-btn twitter" onclick="shareOnTwitter()">
+                                <i class="fab fa-twitter"></i> Twitter
+                            </a>
+                            <a href="#" class="share-btn facebook" onclick="shareOnFacebook()">
+                                <i class="fab fa-facebook"></i> Facebook
+                            </a>
+                            <a href="#" class="share-btn linkedin" onclick="shareOnLinkedIn()">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                            <a href="#" class="share-btn copy" onclick="copyArticleLink()">
+                                <i class="fas fa-link"></i> Copy Link
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- CTA Section -->
+                    <div class="article-cta">
+                        <div class="cta-content">
+                            <h3>Ready to Create Professional Invoices?</h3>
+                            <p>Try FanyaBill's AI-powered invoice generator and streamline your billing process today.</p>
+                            <a href="https://fanyabill.site/" class="btn-primary">Start Creating Invoices</a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Article Sidebar -->
+                <aside class="article-sidebar">
+                    <!-- Table of Contents -->
+                    <div class="sidebar-widget">
+                        <h4>Table of Contents</h4>
+                        <div class="toc" id="tableOfContents">
+                            <!-- TOC will be generated automatically -->
+                        </div>
+                    </div>
+
+                    <!-- Related Articles -->
+                    <div class="sidebar-widget">
+                        <h4>Related Articles</h4>
+                        <div class="related-articles" id="relatedArticles">
+                            <!-- Related articles will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Newsletter Signup -->
+                    <div class="sidebar-widget newsletter-widget">
+                        <h4>Stay Updated</h4>
+                        <p>Get the latest invoicing tips and business insights.</p>
+                        <form class="sidebar-newsletter-form" id="sidebarNewsletterForm">
+                            <input type="email" placeholder="Your email" required>
+                            <button type="submit" class="btn-primary">Subscribe</button>
+                        </form>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Articles Section -->
+    <section class="more-articles">
+        <div class="container">
+            <h2>More Articles You Might Like</h2>
+            <div class="articles-grid" id="moreArticlesGrid">
+                <!-- More articles will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <i class="fas fa-receipt"></i>
+                        <span>FanyaBill</span>
+                    </div>
+                    <p>AI-powered business assistant for small businesses worldwide</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="index.html#features">Features</a>
+                        <a href="index.html#pricing">Pricing</a>
+                        <a href="app.html">Launch App</a>
+                        <a href="blog.html">Blog</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <a href="#help">Help Center</a>
+                        <a href="#contact">Contact</a>
+                        <a href="#privacy">Privacy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FanyaBill. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="blog.js"></script>
+    <script src="article.js"></script>
+</body>
+</html>
+
