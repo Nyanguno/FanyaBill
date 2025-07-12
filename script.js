@@ -1,6 +1,6 @@
 // Global Variables
 let invoiceCount = 0;
-let invoiceLimit = 3;
+let invoiceLimit = 10; // Updated from 3 to 10 for free tier
 let currentInvoiceNumber = 1;
 let inventory = [];
 let salesData = [];
@@ -616,12 +616,33 @@ function prepareInvoiceForPreview() {
 }
 
 function renderInvoicePreview() {
+    // Get custom branding settings
+    const customLogo = localStorage.getItem("fanyabill_custom_logo");
+    const customColor = localStorage.getItem("fanyabill_custom_color") || "#3b82f6";
+    
     // Update business information
     document.getElementById("previewBusinessName").textContent = businessInfo.name || "Your Business";
     document.getElementById("previewBusinessAddress").textContent = businessInfo.address || "Business Address";
     document.getElementById("previewBusinessCity").textContent = businessInfo.city || "City, Country";
     document.getElementById("previewBusinessPhone").textContent = businessInfo.phone || "+254 700 123 456";
     document.getElementById("previewBusinessEmail").textContent = businessInfo.email || "info@yourbusiness.com";
+
+    // Update custom logo if available
+    const logoElement = document.getElementById("previewBusinessLogo");
+    if (logoElement && customLogo && isProUser()) {
+        logoElement.src = customLogo;
+        logoElement.style.display = "block";
+    } else if (logoElement) {
+        logoElement.style.display = "none";
+    }
+
+    // Apply custom colors if Pro user
+    if (isProUser() && customColor) {
+        const invoiceDocument = document.getElementById("invoiceDocument");
+        if (invoiceDocument) {
+            invoiceDocument.style.setProperty('--custom-primary-color', customColor);
+        }
+    }
 
     // Update invoice details
     document.getElementById("previewInvoiceNumber").textContent = `INV-${String(currentInvoiceNumber).padStart(4, '0')}`;
@@ -901,6 +922,157 @@ function saveSettings() {
     saveData();
     updateUI();
     showAlert("Settings saved successfully!", "success");
+}
+
+// Custom Branding Functions
+function uploadLogo() {
+    const input = document.getElementById("logoUpload");
+    if (!input || !isProUser()) {
+        showAlert("Logo upload is available for Pro users only.", "warning");
+        return;
+    }
+    
+    input.click();
+}
+
+function handleLogoUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        showAlert("Please select a valid image file.", "danger");
+        return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) { // 2MB limit
+        showAlert("Image file size must be less than 2MB.", "danger");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const logoData = e.target.result;
+        localStorage.setItem("fanyabill_custom_logo", logoData);
+        
+        // Update logo preview
+        const logoPreview = document.getElementById("logoPreview");
+        if (logoPreview) {
+            logoPreview.src = logoData;
+            logoPreview.style.display = "block";
+        }
+        
+        showAlert("Logo uploaded successfully!", "success");
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function removeLogo() {
+    if (!isProUser()) {
+        showAlert("Logo customization is available for Pro users only.", "warning");
+        return;
+    }
+    
+    localStorage.removeItem("fanyabill_custom_logo");
+    
+    const logoPreview = document.getElementById("logoPreview");
+    if (logoPreview) {
+        logoPreview.style.display = "none";
+    }
+    
+    showAlert("Logo removed successfully!", "success");
+}
+
+function updateInvoiceColor() {
+    const colorInput = document.getElementById("invoiceColor");
+    if (!colorInput || !isProUser()) {
+        showAlert("Color customization is available for Pro users only.", "warning");
+        return;
+    }
+    
+    const selectedColor = colorInput.value;
+    localStorage.setItem("fanyabill_custom_color", selectedColor);
+    showAlert("Invoice color updated successfully!", "success");
+}
+
+// Data Export/Import Functions
+function exportData() {
+    const exportData = {
+        version: "1.0",
+        timestamp: new Date().toISOString(),
+        invoiceCount: invoiceCount,
+        currentInvoiceNumber: currentInvoiceNumber,
+        inventory: inventory,
+        salesData: salesData,
+        businessInfo: businessInfo,
+        currency: currency,
+        customLogo: localStorage.getItem("fanyabill_custom_logo"),
+        customColor: localStorage.getItem("fanyabill_custom_color"),
+        proUser: localStorage.getItem("fanyabill_pro_user"),
+        taxRate: localStorage.getItem("fanyabill_tax_rate")
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `fanyabill-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+    showAlert("Data exported successfully!", "success");
+}
+
+function importData() {
+    const input = document.getElementById("dataImport");
+    if (!input) return;
+    input.click();
+}
+
+function handleDataImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedData = JSON.parse(e.target.result);
+            
+            // Validate data structure
+            if (!importedData.version || !importedData.timestamp) {
+                throw new Error("Invalid backup file format");
+            }
+            
+            // Restore data
+            if (importedData.invoiceCount !== undefined) invoiceCount = importedData.invoiceCount;
+            if (importedData.currentInvoiceNumber !== undefined) currentInvoiceNumber = importedData.currentInvoiceNumber;
+            if (importedData.inventory) inventory = importedData.inventory;
+            if (importedData.salesData) salesData = importedData.salesData;
+            if (importedData.businessInfo) businessInfo = importedData.businessInfo;
+            if (importedData.currency) currency = importedData.currency;
+            
+            // Restore settings
+            if (importedData.customLogo) localStorage.setItem("fanyabill_custom_logo", importedData.customLogo);
+            if (importedData.customColor) localStorage.setItem("fanyabill_custom_color", importedData.customColor);
+            if (importedData.proUser) localStorage.setItem("fanyabill_pro_user", importedData.proUser);
+            if (importedData.taxRate) localStorage.setItem("fanyabill_tax_rate", importedData.taxRate);
+            
+            // Save and update UI
+            saveData();
+            updateUI();
+            
+            showAlert("Data imported successfully!", "success");
+            
+        } catch (error) {
+            console.error("Import error:", error);
+            showAlert("Failed to import data. Please check the file format.", "danger");
+        }
+    };
+    
+    reader.readAsText(file);
+    event.target.value = ""; // Reset file input
 }
 
 // Pro User Management
@@ -1274,7 +1446,28 @@ document.addEventListener('DOMContentLoaded', function() {
         const savedTaxRate = localStorage.getItem("fanyabill_tax_rate");
         taxRateInput.value = savedTaxRate || "16";
     }
+
+    // Initialize custom branding UI
+    initializeCustomBranding();
 });
+
+// Initialize custom branding UI
+function initializeCustomBranding() {
+    // Load saved logo
+    const savedLogo = localStorage.getItem("fanyabill_custom_logo");
+    const logoPreview = document.getElementById("logoPreview");
+    if (logoPreview && savedLogo && isProUser()) {
+        logoPreview.src = savedLogo;
+        logoPreview.style.display = "block";
+    }
+
+    // Load saved color
+    const savedColor = localStorage.getItem("fanyabill_custom_color");
+    const colorInput = document.getElementById("invoiceColor");
+    if (colorInput && savedColor) {
+        colorInput.value = savedColor;
+    }
+}
 
 // Handle Enter key in chat
 document.addEventListener('DOMContentLoaded', function() {
@@ -1287,3 +1480,186 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// Template Selection Functions
+function selectTemplate(templateId) {
+    // Remove active class from all template options
+    document.querySelectorAll('.template-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    
+    // Add active class to selected template
+    const selectedOption = document.querySelector(`[data-template="${templateId}"]`);
+    if (selectedOption) {
+        selectedOption.classList.add('active');
+    }
+    
+    // Apply template styles
+    if (typeof applyTemplate === 'function') {
+        applyTemplate(templateId);
+    }
+    
+    // Update invoice preview if it exists
+    if (typeof renderInvoicePreview === 'function') {
+        renderInvoicePreview();
+    }
+    
+    showMessage('Template Updated', `Invoice template changed to ${templateId.charAt(0).toUpperCase() + templateId.slice(1)}`);
+}
+
+// Initialize templates on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Load saved template or default to classic
+    if (typeof loadSelectedTemplate === 'function') {
+        const template = loadSelectedTemplate();
+        
+        // Update UI to reflect loaded template
+        const templateOption = document.querySelector(`[data-template="${template.id}"]`);
+        if (templateOption) {
+            document.querySelectorAll('.template-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            templateOption.classList.add('active');
+        }
+    }
+});
+
+// Enhanced invoice preview rendering with template support
+function renderInvoicePreview() {
+    // Get current template
+    const selectedTemplate = localStorage.getItem('selectedInvoiceTemplate') || 'classic';
+    
+    // Apply template styles to preview
+    const invoiceDoc = document.getElementById('invoiceDocument');
+    if (invoiceDoc) {
+        // Remove existing template classes
+        invoiceDoc.className = invoiceDoc.className.replace(/invoice-template-\w+/g, '');
+        invoiceDoc.classList.add('invoice-document', `invoice-template-${selectedTemplate}`);
+    }
+    
+    // Update business information
+    const businessName = localStorage.getItem("fanyabill_business_name") || "Your Business Name";
+    const businessAddress = localStorage.getItem("fanyabill_business_address") || "Your Business Address";
+    const businessCity = localStorage.getItem("fanyabill_business_city") || "City, State, ZIP";
+    const businessPhone = localStorage.getItem("fanyabill_business_phone") || "Phone Number";
+    const businessEmail = localStorage.getItem("fanyabill_business_email") || "email@business.com";
+    const currency = localStorage.getItem("fanyabill_currency") || "$";
+    
+    // Update preview elements
+    const elements = {
+        'previewBusinessName': businessName,
+        'previewBusinessAddress': businessAddress,
+        'previewBusinessCity': businessCity,
+        'previewBusinessPhone': businessPhone,
+        'previewBusinessEmail': businessEmail,
+        'previewCustomerName': document.getElementById('customerName')?.value || 'Customer Name',
+        'previewCustomerAddress': document.getElementById('customerAddress')?.value || 'Customer Address',
+        'previewCustomerCity': document.getElementById('customerAddress')?.value || 'Customer City',
+        'previewShipToName': document.getElementById('customerName')?.value || 'Customer Name',
+        'previewShipToAddress': document.getElementById('customerAddress')?.value || 'Customer Address',
+        'previewShipToCity': document.getElementById('customerAddress')?.value || 'Customer City',
+        'previewInvoiceDate': document.getElementById('invoiceDate')?.value || new Date().toLocaleDateString(),
+        'previewDueDate': document.getElementById('dueDate')?.value || new Date().toLocaleDateString(),
+        'previewInvoiceNumber': `INV-${String(invoiceCount + 1).padStart(4, '0')}`
+    };
+    
+    // Update all preview elements
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+    
+    // Update logo if available and user is Pro
+    const savedLogo = localStorage.getItem("fanyabill_custom_logo");
+    const logoElement = document.getElementById("previewBusinessLogo");
+    if (logoElement && savedLogo && isProUser()) {
+        logoElement.src = savedLogo;
+        logoElement.style.display = "block";
+    } else if (logoElement) {
+        logoElement.style.display = "none";
+    }
+    
+    // Update custom color
+    const savedColor = localStorage.getItem("fanyabill_custom_color");
+    if (savedColor) {
+        document.documentElement.style.setProperty('--custom-primary-color', savedColor);
+    }
+    
+    // Update invoice items
+    updateInvoicePreviewItems();
+}
+
+// Update invoice preview items
+function updateInvoicePreviewItems() {
+    const itemsBody = document.getElementById('invoicePdfItemsBody');
+    const currency = localStorage.getItem("fanyabill_currency") || "$";
+    
+    if (itemsBody) {
+        itemsBody.innerHTML = '';
+        
+        if (invoiceItems.length === 0) {
+            itemsBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; color: #666; font-style: italic;">
+                        No items added yet. Add items to see them in the preview.
+                    </td>
+                </tr>
+            `;
+        } else {
+            invoiceItems.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="qty-col">${item.quantity}</td>
+                    <td class="desc-col">${item.name}</td>
+                    <td class="price-col">${currency} ${parseFloat(item.price).toFixed(2)}</td>
+                    <td class="total-col">${currency} ${(item.quantity * item.price).toFixed(2)}</td>
+                `;
+                itemsBody.appendChild(row);
+            });
+        }
+    }
+    
+    // Update totals
+    updateInvoicePreviewTotals();
+}
+
+// Update invoice preview totals
+function updateInvoicePreviewTotals() {
+    const currency = localStorage.getItem("fanyabill_currency") || "$";
+    const taxRate = parseFloat(localStorage.getItem("fanyabill_tax_rate") || "0");
+    
+    const subtotal = invoiceItems.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    const taxAmount = subtotal * (taxRate / 100);
+    const total = subtotal + taxAmount;
+    
+    // Update preview totals
+    const elements = {
+        'pdfInvoiceSubtotal': `${currency} ${subtotal.toFixed(2)}`,
+        'pdfInvoiceTax': `${currency} ${taxAmount.toFixed(2)}`,
+        'pdfInvoiceTotal': `${currency} ${total.toFixed(2)}`,
+        'pdfInvoiceTaxRate': taxRate.toFixed(2)
+    };
+    
+    Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+        }
+    });
+}
+
+// Enhanced prepare invoice for preview with template support
+function prepareInvoiceForPreview() {
+    // Ensure we have the latest template applied
+    renderInvoicePreview();
+    
+    // Show the modal
+    const modal = document.getElementById('invoicePreviewModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
