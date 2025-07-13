@@ -17,6 +17,13 @@ document.addEventListener("DOMContentLoaded", function() {
     updateUI();
     setupPayPalButton();
     checkProStatus();
+    
+    // Load saved template after a short delay to ensure DOM is ready
+    setTimeout(() => {
+        if (typeof loadSelectedTemplate === 'function') {
+            loadSelectedTemplate();
+        }
+    }, 200);
 });
 
 // Data Management
@@ -53,6 +60,7 @@ function updateUI() {
     updateInventoryTable();
     updateSalesSummary();
     updateBusinessInfo();
+    renderInvoicePreview(); // Add this to update invoice preview when UI updates
 }
 
 function updateInvoiceStatus() {
@@ -191,6 +199,26 @@ function updateBusinessInfo() {
     if (businessPhoneEl) businessPhoneEl.value = businessInfo.phone || "";
     if (businessEmailEl) businessEmailEl.value = businessInfo.email || "";
     if (currencyEl) currencyEl.value = currency || "$";
+    
+    // Load custom branding settings
+    loadCustomBrandingSettings();
+}
+
+function loadCustomBrandingSettings() {
+    // Load saved logo
+    const savedLogo = localStorage.getItem("fanyabill_custom_logo");
+    const logoPreview = document.getElementById("logoPreview");
+    if (logoPreview && savedLogo) {
+        logoPreview.src = savedLogo;
+        logoPreview.style.display = "block";
+    }
+    
+    // Load saved color
+    const savedColor = localStorage.getItem("fanyabill_custom_color");
+    const colorInput = document.getElementById("invoiceColor");
+    if (colorInput && savedColor) {
+        colorInput.value = savedColor;
+    }
 }
 
 // Navigation
@@ -999,11 +1027,16 @@ function handleLogoUpload(event) {
         const logoData = e.target.result;
         localStorage.setItem("fanyabill_custom_logo", logoData);
         
-        // Update logo preview
+        // Update logo preview in settings
         const logoPreview = document.getElementById("logoPreview");
         if (logoPreview) {
             logoPreview.src = logoData;
             logoPreview.style.display = "block";
+        }
+        
+        // Update invoice preview
+        if (typeof renderInvoicePreview === 'function') {
+            renderInvoicePreview();
         }
         
         showAlert("Logo uploaded successfully!", "success");
@@ -1037,6 +1070,18 @@ function updateInvoiceColor() {
     
     const selectedColor = colorInput.value;
     localStorage.setItem("fanyabill_custom_color", selectedColor);
+    
+    // Update invoice preview immediately
+    if (typeof renderInvoicePreview === 'function') {
+        renderInvoicePreview();
+    }
+    
+    // Also update the current template if one is applied
+    const currentTemplate = localStorage.getItem('selectedInvoiceTemplate') || 'classic';
+    if (typeof applyTemplate === 'function') {
+        applyTemplate(currentTemplate);
+    }
+    
     showAlert("Invoice color updated successfully!", "success");
 }
 
