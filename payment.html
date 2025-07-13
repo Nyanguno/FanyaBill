@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upgrade to FanyaBill Pro - Payment</title>
+    <title>Upgrade to FanyaBill - Payment</title>
     <link rel="stylesheet" href="app-style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -34,29 +34,50 @@
                     <div class="payment-icon">
                         <i class="fas fa-crown"></i>
                     </div>
-                    <h1>Upgrade to FanyaBill Pro</h1>
-                    <p>Unlock unlimited invoices and premium features</p>
+                    <h1 id="planTitle">Upgrade to FanyaBill Pro</h1>
+                    <p id="planDescription">Unlock unlimited invoices and premium features</p>
+                </div>
+
+                <!-- Plan Selection -->
+                <div class="plan-selection">
+                    <h3>Choose Your Plan</h3>
+                    <div class="plan-options">
+                        <div class="plan-option active" data-plan="pro">
+                            <div class="plan-header">
+                                <h4>Pro Plan</h4>
+                                <div class="plan-price">$7.99/month</div>
+                            </div>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Unlimited invoices</li>
+                                <li><i class="fas fa-check"></i> Custom branding</li>
+                                <li><i class="fas fa-check"></i> Premium templates</li>
+                                <li><i class="fas fa-check"></i> Priority support</li>
+                            </ul>
+                        </div>
+                        <div class="plan-option" data-plan="enterprise">
+                            <div class="plan-header">
+                                <h4>Enterprise Plan</h4>
+                                <div class="plan-price">$29/month</div>
+                            </div>
+                            <ul class="plan-features">
+                                <li><i class="fas fa-check"></i> Everything in Pro</li>
+                                <li><i class="fas fa-check"></i> Multi-user access (5 users )</li>
+                                <li><i class="fas fa-check"></i> API access</li>
+                                <li><i class="fas fa-check"></i> Dedicated support</li>
+                                <li><i class="fas fa-check"></i> Advanced analytics</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="pricing-summary">
                     <div class="plan-details">
-                        <h2>FanyaBill Pro</h2>
+                        <h2 id="selectedPlanName">FanyaBill Pro</h2>
                         <div class="price-display">
                             <span class="currency">$</span>
-                            <span class="amount">7.99</span>
+                            <span class="amount" id="selectedPrice">7.99</span>
                             <span class="period">/month</span>
                         </div>
-                    </div>
-
-                    <div class="features-included">
-                        <h3>What's Included:</h3>
-                        <ul>
-                            <li><i class="fas fa-check"></i> Unlimited invoice generation</li>
-                            <li><i class="fas fa-check"></i> Advanced sales analytics</li>
-                            <li><i class="fas fa-check"></i> Priority customer support</li>
-                            <li><i class="fas fa-check"></i> Pro badge and branding</li>
-                            <li><i class="fas fa-check"></i> Future premium features</li>
-                        </ul>
                     </div>
                 </div>
 
@@ -67,22 +88,19 @@
                     <div class="payment-option">
                         <h4>PayPal Checkout</h4>
                         <p>Secure payment with PayPal or credit/debit card</p>
-                        <div id="paypal-container-MVK35P3ZKYQLY"></div>
+                        <div id="paypal-container-pro" style="display: block;"></div>
+                        <div id="paypal-container-enterprise" style="display: none;"></div>
                     </div>
 
                     <!-- Backup Styled Button -->
                     <div class="payment-option backup-payment">
                         <h4>Alternative Payment</h4>
                         <p>If the above button doesn't work, use this direct link</p>
-                        <form action="https://www.paypal.com/ncp/payment/MVK35P3ZKYQLY" method="post" target="_blank">
-                            <input class="pp-MVK35P3ZKYQLY" type="submit" value="Pay Now" />
-                            <div class="payment-cards">
-                                <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
-                            </div>
-                            <div class="powered-by">
-                                Powered by
-                                <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" />
-                            </div>
+                        <form id="backup-form-pro" action="https://www.paypal.com/ncp/payment/MVK35P3ZKYQLY" method="post" target="_blank" style="display: block;">
+                            <input class="pp-button" type="submit" value="Pay Now - Pro Plan" />
+                        </form>
+                        <form id="backup-form-enterprise" action="#" method="post" target="_blank" style="display: none;">
+                            <input class="pp-button" type="submit" value="Pay Now - Enterprise Plan" />
                         </form>
                     </div>
                 </div>
@@ -113,12 +131,12 @@
     <style>
         .payment-section {
             padding: 8rem 0 4rem;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100% );
             min-height: 100vh;
         }
 
         .payment-container {
-            max-width: 600px;
+            max-width: 700px;
             margin: 0 auto;
             background: var(--white);
             border-radius: var(--border-radius-lg);
@@ -145,14 +163,69 @@
             font-size: 1.5rem;
         }
 
-        .payment-header h1 {
-            margin-bottom: 0.5rem;
-            color: var(--white);
+        .plan-selection {
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .payment-header p {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.125rem;
+        .plan-selection h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--gray-800);
+        }
+
+        .plan-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .plan-option {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .plan-option:hover {
+            border-color: var(--primary-color);
+        }
+
+        .plan-option.active {
+            border-color: var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .plan-header h4 {
+            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+        }
+
+        .plan-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0;
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+
+        .plan-features i {
+            color: var(--success-color);
+            font-size: 0.75rem;
         }
 
         .pricing-summary {
@@ -162,7 +235,6 @@
 
         .plan-details {
             text-align: center;
-            margin-bottom: 2rem;
         }
 
         .plan-details h2 {
@@ -174,7 +246,6 @@
             display: flex;
             align-items: baseline;
             justify-content: center;
-            margin-bottom: 1rem;
         }
 
         .price-display .currency {
@@ -191,29 +262,6 @@
         .price-display .period {
             color: var(--gray-500);
             margin-left: 0.25rem;
-        }
-
-        .features-included h3 {
-            color: var(--gray-800);
-            margin-bottom: 1rem;
-        }
-
-        .features-included ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .features-included li {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 0;
-            color: var(--gray-700);
-        }
-
-        .features-included i {
-            color: var(--success-color);
-            font-size: 0.875rem;
         }
 
         .payment-methods {
@@ -248,7 +296,7 @@
             background: var(--gray-50);
         }
 
-        .pp-MVK35P3ZKYQLY {
+        .pp-button {
             text-align: center;
             border: none;
             border-radius: 0.25rem;
@@ -265,30 +313,8 @@
             transition: var(--transition);
         }
 
-        .pp-MVK35P3ZKYQLY:hover {
+        .pp-button:hover {
             background-color: #e6bc00;
-        }
-
-        .payment-cards {
-            margin: 1rem 0;
-        }
-
-        .payment-cards img {
-            height: 1.5rem;
-        }
-
-        .powered-by {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.25rem;
-        }
-
-        .powered-by img {
-            height: 0.875rem;
-            vertical-align: middle;
         }
 
         .security-info {
@@ -331,6 +357,10 @@
         }
 
         @media (max-width: 768px) {
+            .plan-options {
+                grid-template-columns: 1fr;
+            }
+            
             .payment-container {
                 margin: 1rem;
             }
@@ -341,7 +371,8 @@
 
             .pricing-summary,
             .payment-methods,
-            .payment-footer {
+            .payment-footer,
+            .plan-selection {
                 padding: 1.5rem;
             }
 
@@ -358,17 +389,84 @@
     </style>
 
     <script>
-        // Initialize PayPal hosted button
-        paypal.HostedButtons({
-            hostedButtonId: "MVK35P3ZKYQLY",
-        }).render("#paypal-container-MVK35P3ZKYQLY");
+        // Plan selection functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const planOptions = document.querySelectorAll('.plan-option');
+            const planTitle = document.getElementById('planTitle');
+            const planDescription = document.getElementById('planDescription');
+            const selectedPlanName = document.getElementById('selectedPlanName');
+            const selectedPrice = document.getElementById('selectedPrice');
+            
+            // PayPal containers
+            const paypalProContainer = document.getElementById('paypal-container-pro');
+            const paypalEnterpriseContainer = document.getElementById('paypal-container-enterprise');
+            
+            // Backup forms
+            const backupFormPro = document.getElementById('backup-form-pro');
+            const backupFormEnterprise = document.getElementById('backup-form-enterprise');
 
-        // Handle successful payment (this would be called from PayPal)
-        function handlePaymentSuccess() {
-            localStorage.setItem("fanyabill_pro", "true");
+            planOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    planOptions.forEach(opt => opt.classList.remove('active'));
+                    
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    
+                    const plan = this.dataset.plan;
+                    
+                    if (plan === 'pro') {
+                        planTitle.textContent = 'Upgrade to FanyaBill Pro';
+                        planDescription.textContent = 'Unlock unlimited invoices and premium features';
+                        selectedPlanName.textContent = 'FanyaBill Pro';
+                        selectedPrice.textContent = '7.99';
+                        
+                        // Show Pro payment options
+                        paypalProContainer.style.display = 'block';
+                        paypalEnterpriseContainer.style.display = 'none';
+                        backupFormPro.style.display = 'block';
+                        backupFormEnterprise.style.display = 'none';
+                        
+                    } else if (plan === 'enterprise') {
+                        planTitle.textContent = 'Upgrade to FanyaBill Enterprise';
+                        planDescription.textContent = 'Full business solution with advanced features';
+                        selectedPlanName.textContent = 'FanyaBill Enterprise';
+                        selectedPrice.textContent = '29';
+                        
+                        // Show Enterprise payment options
+                        paypalProContainer.style.display = 'none';
+                        paypalEnterpriseContainer.style.display = 'block';
+                        backupFormPro.style.display = 'none';
+                        backupFormEnterprise.style.display = 'block';
+                    }
+                });
+            });
+
+            // Initialize PayPal hosted button for Pro
+            try {
+                paypal.HostedButtons({
+                    hostedButtonId: "MVK35P3ZKYQLY",
+                }).render("#paypal-container-pro");
+            } catch (error) {
+                console.log('PayPal Pro button initialization failed:', error);
+            }
+
+            // Initialize PayPal hosted button for Enterprise (you'll need to create this)
+            try {
+                // You'll need to create an Enterprise PayPal button and replace this ID
+                paypal.HostedButtons({
+                    hostedButtonId: "ENTERPRISE_BUTTON_ID", // Replace with actual Enterprise button ID
+                }).render("#paypal-container-enterprise");
+            } catch (error) {
+                console.log('PayPal Enterprise button initialization failed:', error);
+            }
+        });
+
+        // Handle successful payment
+        function handlePaymentSuccess(plan) {
+            localStorage.setItem("fanyabill_" + plan, "true");
             window.location.href = "pro-success.html";
         }
     </script>
 </body>
 </html>
-
