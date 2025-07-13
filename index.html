@@ -18,13 +18,13 @@
                 <i class="fas fa-receipt"></i>
                 <span>FanyaBill</span>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="app.html" class="btn-primary">Launch App</a></li>
-            </ul>
+            <div class="nav-menu">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="blog.html" class="nav-link">Blog</a>
+                <a href="app.html" class="nav-link cta-link">Launch App</a>
+            </div>
             <div class="hamburger">
                 <span></span>
                 <span></span>
@@ -39,21 +39,15 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <h1>Create Professional Invoices in <span class="highlight">Seconds</span></h1>
-                    <p>AI-powered invoice generator that helps small businesses get paid faster. Generate beautiful invoices, track inventory, and manage sales with intelligent automation.</p>
+                    <p>FanyaBill's AI-powered invoice generator helps small businesses worldwide create stunning, professional invoices instantly. No design skills required.</p>
                     <div class="hero-buttons">
-                        <a href="app.html" class="btn-primary">
-                            <i class="fas fa-rocket"></i>
-                            Start Free Today
-                        </a>
-                        <button onclick="scrollToWaitlist()" class="btn-secondary">
-                            <i class="fas fa-play"></i>
-                            Watch Demo
-                        </button>
+                        <a href="app.html" class="btn-primary">Start Creating Free</a>
+                        <a href="#features" class="btn-secondary">Learn More</a>
                     </div>
                     <div class="hero-stats">
                         <div class="stat">
                             <span class="stat-number">10K+</span>
-                            <span class="stat-label">Invoices Generated</span>
+                            <span class="stat-label">Invoices Created</span>
                         </div>
                         <div class="stat">
                             <span class="stat-number">500+</span>
@@ -61,7 +55,7 @@
                         </div>
                         <div class="stat">
                             <span class="stat-number">99%</span>
-                            <span class="stat-label">Uptime</span>
+                            <span class="stat-label">Satisfaction Rate</span>
                         </div>
                     </div>
                 </div>
@@ -69,23 +63,28 @@
                     <div class="invoice-preview">
                         <div class="invoice-header">
                             <div class="invoice-logo">
-                                <i class="fas fa-store"></i>
+                                <i class="fas fa-receipt"></i>
                             </div>
-                            <div class="invoice-title">INVOICE</div>
+                            <h3>INVOICE</h3>
                         </div>
                         <div class="invoice-details">
-                            <div class="invoice-line"></div>
-                            <div class="invoice-line short"></div>
-                            <div class="invoice-line"></div>
-                        </div>
-                        <div class="invoice-table">
-                            <div class="table-header"></div>
-                            <div class="table-row"></div>
-                            <div class="table-row"></div>
-                            <div class="table-row"></div>
-                        </div>
-                        <div class="invoice-total">
-                            <div class="total-line"></div>
+                            <div class="invoice-info">
+                                <p><strong>Invoice #:</strong> INV-0001</p>
+                                <p><strong>Date:</strong> Today</p>
+                            </div>
+                            <div class="invoice-items">
+                                <div class="item">
+                                    <span>Web Design</span>
+                                    <span>$500.00</span>
+                                </div>
+                                <div class="item">
+                                    <span>Development</span>
+                                    <span>$800.00</span>
+                                </div>
+                                <div class="total">
+                                    <span><strong>Total: $1,300.00</strong></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -97,50 +96,56 @@
     <section id="features" class="features">
         <div class="container">
             <div class="section-header">
-                <h2>Everything You Need to Run Your Business</h2>
-                <p>Powerful features designed for modern entrepreneurs</p>
+                <h2>Everything You Need to Bill Like a Pro</h2>
+                <p>Powerful features designed to streamline your invoicing process and grow your business</p>
             </div>
+            
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-magic"></i>
+                        <i class="fas fa-robot"></i>
                     </div>
                     <h3>AI-Powered Generation</h3>
-                    <p>Describe your sale naturally and let AI generate professional invoices instantly. No more manual data entry.</p>
+                    <p>Describe your sale in plain English and let our AI automatically generate itemized invoices with accurate pricing.</p>
                 </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-palette"></i>
                     </div>
                     <h3>Custom Branding</h3>
-                    <p>Add your logo, choose colors, and create branded invoices that reflect your business identity.</p>
+                    <p>Upload your logo, choose your colors, and create invoices that perfectly match your brand identity.</p>
                 </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-boxes"></i>
+                        <i class="fas fa-file-pdf"></i>
                     </div>
-                    <h3>Smart Inventory</h3>
-                    <p>Track stock levels, get low inventory alerts, and manage your products with intelligent automation.</p>
+                    <h3>Instant PDF Download</h3>
+                    <p>Generate professional PDF invoices instantly with one click. Perfect formatting every time.</p>
                 </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h3>Sales Analytics</h3>
-                    <p>Understand your business performance with detailed sales reports and revenue insights.</p>
+                    <p>Track your revenue, monitor payment status, and get insights into your business performance.</p>
                 </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">
-                        <i class="fas fa-robot"></i>
+                        <i class="fas fa-boxes"></i>
                     </div>
-                    <h3>AI Assistant</h3>
-                    <p>Get instant answers about your inventory, prices, and business data from your personal AI assistant.</p>
+                    <h3>Inventory Management</h3>
+                    <p>Manage your products and services with built-in inventory tracking and automatic pricing.</p>
                 </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">
                         <i class="fas fa-mobile-alt"></i>
                     </div>
-                    <h3>Mobile Ready</h3>
+                    <h3>Mobile Optimized</h3>
                     <p>Create and send invoices from anywhere with our fully responsive mobile-friendly interface.</p>
                 </div>
             </div>
@@ -152,9 +157,11 @@
         <div class="container">
             <div class="section-header">
                 <h2>Simple, Transparent Pricing</h2>
-                <p>Start free, upgrade when you're ready</p>
+                <p>Choose the plan that fits your business needs. No hidden fees, cancel anytime.</p>
             </div>
-            <div class="pricing-cards">
+            
+            <div class="pricing-grid">
+                <!-- Free Plan -->
                 <div class="pricing-card">
                     <div class="pricing-header">
                         <h3>Free</h3>
@@ -163,18 +170,20 @@
                             <span class="amount">0</span>
                             <span class="period">/month</span>
                         </div>
+                        <p>Perfect for getting started</p>
                     </div>
                     <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> 10 invoices per month</li>
-                        <li><i class="fas fa-check"></i> Basic templates</li>
-                        <li><i class="fas fa-check"></i> PDF downloads</li>
-                        <li><i class="fas fa-check"></i> Inventory tracking</li>
-                        <li><i class="fas fa-check"></i> AI assistant</li>
-                        <li><i class="fas fa-times text-muted"></i> Custom branding</li>
-                        <li><i class="fas fa-times text-muted"></i> Premium templates</li>
+                        <li><i class="fas fa-check"></i> Up to 5 invoices per month</li>
+                        <li><i class="fas fa-check"></i> Basic invoice templates</li>
+                        <li><i class="fas fa-check"></i> PDF download</li>
+                        <li><i class="fas fa-check"></i> Email support</li>
+                        <li><i class="fas fa-times"></i> Custom branding</li>
+                        <li><i class="fas fa-times"></i> AI invoice generation</li>
                     </ul>
-                    <a href="app.html" class="btn-outline">Get Started</a>
+                    <a href="app.html" class="pricing-btn btn-secondary">Get Started Free</a>
                 </div>
+                
+                <!-- Pro Plan -->
                 <div class="pricing-card featured">
                     <div class="pricing-badge">Most Popular</div>
                     <div class="pricing-header">
@@ -184,18 +193,20 @@
                             <span class="amount">7.99</span>
                             <span class="period">/month</span>
                         </div>
+                        <p>For growing businesses</p>
                     </div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Unlimited invoices</li>
-                        <li><i class="fas fa-check"></i> Custom branding (logo & colors)</li>
-                        <li><i class="fas fa-check"></i> Premium templates</li>
-                        <li><i class="fas fa-check"></i> Inventory management</li>
+                        <li><i class="fas fa-check"></i> All premium templates</li>
+                        <li><i class="fas fa-check"></i> Custom branding & logo</li>
+                        <li><i class="fas fa-check"></i> AI invoice generation</li>
                         <li><i class="fas fa-check"></i> Sales analytics</li>
-                        <li><i class="fas fa-check"></i> Data export/import</li>
                         <li><i class="fas fa-check"></i> Priority support</li>
                     </ul>
-                    <a href="payment.html" class="btn-primary">Upgrade to Pro</a>
+                    <a href="payment.html" class="pricing-btn btn-primary">Upgrade to Pro</a>
                 </div>
+                
+                <!-- Enterprise Plan -->
                 <div class="pricing-card">
                     <div class="pricing-header">
                         <h3>Enterprise</h3>
@@ -204,99 +215,95 @@
                             <span class="amount">29</span>
                             <span class="period">/month</span>
                         </div>
+                        <p>For established businesses</p>
                     </div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> Everything in Pro</li>
-                        <li><i class="fas fa-check"></i> Multi-user access (5 users)</li>
+                        <li><i class="fas fa-check"></i> Multi-user access (5 users )</li>
                         <li><i class="fas fa-check"></i> API access</li>
+                        <li><i class="fas fa-check"></i> Advanced analytics</li>
                         <li><i class="fas fa-check"></i> Custom integrations</li>
                         <li><i class="fas fa-check"></i> Dedicated support</li>
-                        <li><i class="fas fa-check"></i> Advanced analytics</li>
-                        <li><i class="fas fa-check"></i> White-label options</li>
                     </ul>
-                    <a href="payment.html" class="btn-primary">Contact Sales</a>
+                    <a href="payment.html" class="pricing-btn btn-primary">Upgrade to Enterprise</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Blog Section -->
-    <section id="blog" class="blog-preview">
+    <!-- Latest Blog Posts -->
+    <section class="blog-preview">
         <div class="container">
             <div class="section-header">
                 <h2>Latest from Our Blog</h2>
-                <p>Tips, insights, and updates for small business owners</p>
+                <p>Tips, insights, and best practices for small business success</p>
             </div>
+            
             <div class="blog-grid">
                 <article class="blog-card">
                     <div class="blog-image">
-                        <i class="fas fa-lightbulb"></i>
+                        <i class="fas fa-file-invoice-dollar"></i>
                     </div>
                     <div class="blog-content">
+                        <h3><a href="blog.html">Free Invoice Templates: Create Professional Invoices in Minutes</a></h3>
+                        <p>Discover how to use free invoice templates to create professional-looking invoices that get you paid faster...</p>
                         <div class="blog-meta">
-                            <span class="blog-category">Tips</span>
-                            <span class="blog-date">Jan 15, 2025</span>
+                            <span class="blog-date">January 15, 2025</span>
+                            <span class="blog-category">Templates</span>
                         </div>
-                        <h3>10 Invoice Best Practices for Small Businesses</h3>
-                        <p>Learn how to create professional invoices that get paid faster and improve your cash flow.</p>
-                        <a href="blog.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </article>
-                <article class="blog-card">
-                    <div class="blog-image">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div class="blog-content">
-                        <div class="blog-meta">
-                            <span class="blog-category">Analytics</span>
-                            <span class="blog-date">Jan 12, 2025</span>
-                        </div>
-                        <h3>Understanding Your Business Metrics</h3>
-                        <p>Key performance indicators every small business owner should track for success.</p>
-                        <a href="blog.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </article>
+                
                 <article class="blog-card">
                     <div class="blog-image">
                         <i class="fas fa-robot"></i>
                     </div>
                     <div class="blog-content">
+                        <h3><a href="blog.html">Invoice Generator: The Ultimate Guide to Automated Billing</a></h3>
+                        <p>Learn how modern invoice generators can streamline your billing process and improve cash flow...</p>
                         <div class="blog-meta">
-                            <span class="blog-category">AI</span>
-                            <span class="blog-date">Jan 10, 2025</span>
+                            <span class="blog-date">January 12, 2025</span>
+                            <span class="blog-category">AI Tools</span>
                         </div>
-                        <h3>How AI is Transforming Small Business Operations</h3>
-                        <p>Discover how artificial intelligence can streamline your business processes and save time.</p>
-                        <a href="blog.html" class="read-more">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </article>
+                
+                <article class="blog-card">
+                    <div class="blog-image">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h3><a href="blog.html">Invoice Your Customers in Seconds: Speed Up Your Business</a></h3>
+                        <p>Time is money in business. Discover how to create and send invoices in seconds, not hours...</p>
+                        <div class="blog-meta">
+                            <span class="blog-date">January 10, 2025</span>
+                            <span class="blog-category">Business Tips</span>
+                        </div>
                     </div>
                 </article>
             </div>
+            
             <div class="blog-cta">
-                <a href="blog.html" class="btn-secondary">
-                    <i class="fas fa-newspaper"></i>
-                    View All Articles
-                </a>
+                <a href="blog.html" class="btn-secondary">View All Articles</a>
             </div>
         </div>
     </section>
 
-    <!-- Waitlist Section -->
-    <section class="waitlist" id="waitlist">
+    <!-- Newsletter Section -->
+    <section class="newsletter">
         <div class="container">
-            <div class="waitlist-content">
-                <h2>Join the FanyaBill Community</h2>
-                <p>Be the first to know about new features, updates, and exclusive offers</p>
-                <form class="waitlist-form" id="emailForm">
-                    <div class="form-group">
+            <div class="newsletter-content">
+                <div class="newsletter-text">
+                    <h2>Stay Updated with FanyaBill</h2>
+                    <p>Get the latest features, tips, and business insights delivered to your inbox</p>
+                </div>
+                <div class="newsletter-form">
+                    <form id="newsletterForm">
                         <input type="email" id="email" placeholder="Enter your email address" required>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-paper-plane"></i>
-                            Join Waitlist
-                        </button>
-                    </div>
-                    <p class="form-note">We respect your privacy. Unsubscribe at any time.</p>
-                </form>
-                <div id="emailStatus" class="email-status"></div>
+                        <button type="submit" class="btn-primary">Subscribe</button>
+                    </form>
+                    <div id="emailStatus" class="email-status" style="display: none;"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -322,10 +329,9 @@
                     </div>
                     <div class="footer-column">
                         <h4>Support</h4>
-                        <a href="#help">Help Center</a>
+                        <a href="blog.html">Help Center</a>
                         <a href="#contact">Contact</a>
                         <a href="#privacy">Privacy</a>
-                        <a href="#terms">Terms</a>
                     </div>
                 </div>
             </div>
@@ -336,19 +342,12 @@
     </footer>
 
     <script>
-        // Smooth scrolling
-        function scrollToWaitlist() {
-            document.getElementById('waitlist').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Email form submission
-        document.getElementById('emailForm').addEventListener('submit', async function(e) {
+        // Newsletter form handling
+        document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('email').value;
             const statusDiv = document.getElementById('emailStatus');
-            
-            // Show loading state
+            statusDiv.style.display = 'block';
             statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Joining waitlist...';
             statusDiv.className = 'email-status loading';
             
@@ -382,4 +381,3 @@
     </script>
 </body>
 </html>
-
