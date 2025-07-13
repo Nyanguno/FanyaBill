@@ -3,495 +3,2080 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FanyaBill - AI-Powered Invoice Generator</title>
-    <link rel="stylesheet" href="app-style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>FanyaBill Pro - AI Business Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- PDF Generation Libraries -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AVetgrGryV2vI9648Mi4ht0JhoOn599N4W706O0yxuo33KaC0dJFa_U2xxSUt1aqelv3QnHwpNs_4hU5&currency=USD"></script>
+    <!-- Client-side PDF generation libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Enhanced App-Specific Styles with Poppins Font */
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--gray-900);
+            color: var(--gray-50);
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 99;
+            transition: width 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar.collapsed .sidebar-header h2,
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .pro-status,
+        .sidebar.collapsed .sidebar-footer .user-info {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-700);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+        }
+
+        .logo-badge {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--secondary-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7em;
+            font-weight: bold;
+            border: 2px solid var(--gray-900);
+        }
+
+        .sidebar-header h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: var(--white);
+            margin: 0;
+            line-height: 1;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-header h2 span {
+            color: var(--primary-color);
+        }
+
+        .pro-status {
+            font-size: 0.8rem;
+            background-color: var(--secondary-color);
+            color: var(--gray-900);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-300);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            background: var(--primary-dark);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-item:hover:not(.active) {
+            background: var(--gray-800);
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-700);
+            text-align: center;
+        }
+
+        .user-info {
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .user-name {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            color: var(--gray-400);
+            font-size: 0.8rem;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-collapsed {
+            margin-left: 80px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .content-header h1 {
+            font-size: 2.2rem;
+            color: var(--gray-800);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            padding: 0.75rem 1rem;
+            padding-left: 2.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            color: var(--gray-400);
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Dashboard Specific Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            padding: 0.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card.sales .icon {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+        }
+
+        .stat-card.inventory .icon {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+        }
+
+        .stat-card.invoices .icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .stat-card .info h3 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--gray-900);
+            font-weight: 700;
+        }
+
+        .stat-card .info p {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--gray-800);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .form-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* AI Description Input */
+        .ai-input-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .ai-input-section h3 {
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .ai-input-section .description {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .ai-input-container textarea {
+            flex: 1;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        /* Item Input Grid */
+        .item-input-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1rem;
+        }
+
+        /* Invoice Items Table */
+        .invoice-items-table {
+            margin-top: 1rem;
+        }
+
+        .invoice-items-table tfoot td {
+            font-weight: 600;
+            background: var(--gray-50);
+        }
+
+        .total-row {
+            background: var(--primary-color) !important;
+            color: var(--white) !important;
+            font-size: 1.1rem;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            margin: auto;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .large-modal-content {
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .close-button {
+            color: var(--gray-500);
+            font-size: 1.8rem;
+            font-weight: bold;
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-button:hover {
+            color: var(--gray-800);
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        /* Invoice Preview */
+        .invoice-document-wrapper {
+            max-height: 60vh;
+            overflow-y: auto;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        /* Invoice Document Styles - Matching the provided image */
+        .invoice-document {
+            width: 210mm;
+            margin: 0 auto;
+            padding: 20mm;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            color: #333;
+            line-height: 1.4;
+            --custom-primary-color: #3b82f6;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--custom-primary-color, #3b82f6);
+            padding-bottom: 20px;
+        }
+
+        .company-info {
+            flex: 1;
+        }
+
+        .company-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--custom-primary-color, #3b82f6);
+        }
+
+        .company-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .company-logo {
+            max-width: 80px;
+            max-height: 80px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .invoice-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--custom-primary-color, #3b82f6);
+            text-align: right;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .invoice-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .invoice-details {
+            display: flex;
+            gap: 40px;
+        }
+
+        .invoice-detail {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .invoice-detail strong {
+            font-weight: 600;
+        }
+
+        .billing-shipping {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .bill-to, .ship-to {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--custom-primary-color, #3b82f6);
+            border-bottom: 2px solid var(--custom-primary-color, #3b82f6);
+            padding-bottom: 5px;
+        }
+
+        .address-info {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .address-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Invoice Table */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .invoice-table th {
+            background: var(--custom-primary-color, #3b82f6);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .invoice-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .invoice-table .qty-col {
+            width: 10%;
+            text-align: center;
+        }
+
+        .invoice-table .desc-col {
+            width: 50%;
+        }
+
+        .invoice-table .price-col {
+            width: 20%;
+            text-align: right;
+        }
+
+        .invoice-table .total-col {
+            width: 20%;
+            text-align: right;
+        }
+
+        /* Invoice Footer */
+        .invoice-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 40px;
+        }
+
+        .thank-you {
+            font-family: 'Dancing Script', cursive;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--custom-primary-color, #3b82f6);
+            margin: 0;
+        }
+
+        .totals-section {
+            text-align: right;
+            min-width: 300px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .total-row.subtotal {
+            border-top: 1px solid #ddd;
+            font-weight: 600;
+        }
+
+        .total-row.tax {
+            font-weight: 600;
+        }
+
+        .total-row.grand-total {
+            border-top: 2px solid var(--custom-primary-color, #3b82f6);
+            padding-top: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--custom-primary-color, #3b82f6);
+        }
+
+        .powered-by {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            font-size: 12px;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* AI Chat */
+        .ai-chat-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .chat-message .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 0.75rem;
+        }
+
+        .chat-message.ai .avatar {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .chat-message.user .avatar {
+            background: var(--gray-300);
+            color: var(--gray-800);
+            order: 2;
+            margin-left: 0.75rem;
+            margin-right: 0;
+        }
+
+        .chat-bubble {
+            background: var(--gray-100);
+            padding: 0.8rem 1.2rem;
+            border-radius: 1rem;
+            max-width: 70%;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .chat-message.user .chat-bubble {
+            background: var(--primary-color);
+            color: var(--white);
+            border-bottom-right-radius: 0;
+        }
+
+        .chat-message.ai .chat-bubble {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border-bottom-left-radius: 0;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 1rem;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--border-radius);
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1.2rem;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Sales Breakdown */
+        .breakdown-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .breakdown-content {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        /* Alerts */
+        .alert-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: auto;
+            max-width: 400px;
+            z-index: 1500;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInRight 0.5s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert-banner.success {
+            background-color: var(--success-color);
+            color: var(--white);
+        }
+
+        .alert-banner.warning {
+            background-color: var(--secondary-color);
+            color: var(--gray-900);
+        }
+
+        .alert-banner.danger {
+            background-color: var(--danger-color);
+            color: var(--white);
+        }
+
+        /* CSV Import/Export */
+        .csv-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            padding: 0.75rem 1.5rem;
+            background: var(--secondary-color);
+            color: var(--white);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: #d97706;
+        }
+
+        /* Settings */
+        .settings-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 1.5rem;
+            color: var(--gray-800);
+            border-bottom: 1px dashed var(--gray-200);
+            padding-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* Custom Branding Styles */
+        .branding-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .pro-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-upload-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-preview-container {
+            width: 100px;
+            height: 100px;
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-50);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-preview {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .logo-placeholder {
+            color: var(--gray-400);
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        .logo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .color-picker-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-300);
+            background: #3b82f6;
+        }
+
+        .color-input {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .data-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .disabled-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius);
+            z-index: 10;
+        }
+
+        .upgrade-message {
+            text-align: center;
+            padding: 2rem;
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            border: 2px dashed var(--gray-300);
+        }
+
+        .upgrade-message h4 {
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .upgrade-message p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+                border-bottom: 1px solid var(--gray-700);
+                padding: 1rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .search-bar input {
+                width: 100%;
+            }
+
+            .item-input-grid {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .chat-bubble {
+                max-width: 85%;
+            }
+
+            .invoice-document {
+                width: 100%;
+                padding: 10mm;
+            }
+
+            .invoice-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .invoice-title {
+                text-align: left;
+                font-size: 36px;
+            }
+
+            .billing-shipping {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .invoice-footer {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .thank-you {
+                font-size: 36px;
+            }
+
+            .logo-upload-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .color-picker-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .data-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Template Selector Styles */
+        .template-selector {
+            margin-top: 1rem;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .template-option {
+            border: 2px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .template-option:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .template-option.active {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .template-preview {
+            background: var(--gray-50);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            min-height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .template-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+
+        .classic-preview {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .modern-preview {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            color: white;
+        }
+
+        .minimal-preview {
+            background: var(--white);
+            border-bottom: 1px solid #059669;
+        }
+
+        .preview-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+
+        .classic-preview .preview-title {
+            color: #2563eb;
+        }
+
+        .minimal-preview .preview-title {
+            color: #6b7280;
+            font-weight: 300;
+        }
+
+        .preview-company {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .classic-preview .preview-company {
+            color: #2563eb;
+        }
+
+        .minimal-preview .preview-company {
+            color: #059669;
+        }
+
+        .template-preview-body {
+            padding: 0.5rem;
+        }
+
+        .preview-line {
+            height: 3px;
+            background: var(--gray-300);
+            border-radius: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-line.short {
+            width: 60%;
+        }
+
+        .preview-table {
+            margin-top: 0.5rem;
+        }
+
+        .preview-table-header {
+            height: 8px;
+            background: var(--gray-400);
+            border-radius: 2px;
+            margin-bottom: 0.25rem;
+        }
+
+        .classic-preview + .template-preview-body .preview-table-header {
+            background: #2563eb;
+        }
+
+        .modern-preview + .template-preview-body .preview-table-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+        }
+
+        .minimal-preview + .template-preview-body .preview-table-header {
+            background: #f0fdf4;
+        }
+
+        .preview-table-row {
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            margin-bottom: 0.125rem;
+        }
+
+        .template-info h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--gray-800);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .template-info p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-muted { color: var(--gray-500); font-size: 0.85rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .btn-sm { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+        .btn-block { width: 100%; }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <i class="fas fa-receipt"></i>
-                    <span>FanyaBill</span>
+                <div class="logo-container">
+                    <img src="assets/images/logo.png.jpg" alt="FanyaBill Logo" class="logo-image">
+                    <span class="logo-badge" id="invoiceCountBadge">0</span>
                 </div>
+                <h2>Fanya<span>Bill</span></h2>
+                <span class="pro-status" id="proStatus">Free Tier</span>
             </div>
-            
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#" class="nav-link active" data-section="dashboard"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
-                    <li><a href="#" class="nav-link" data-section="inventory"><i class="fas fa-boxes"></i> Inventory</a></li>
-                    <li><a href="#" class="nav-link" data-section="invoice"><i class="fas fa-file-invoice"></i> Invoice</a></li>
-                    <li><a href="#" class="nav-link" data-section="sales"><i class="fas fa-chart-line"></i> Sales History</a></li>
-                    <li><a href="#" class="nav-link" data-section="ai-assistant"><i class="fas fa-robot"></i> AI Assistant</a></li>
-                    <li><a href="#" class="nav-link" data-section="settings"><i class="fas fa-cog"></i> Settings</a></li>
-                </ul>
-            </nav>
-            
+            <ul class="nav-list">
+                <li class="nav-item active" onclick="showSection('dashboard')"><i class="fas fa-home"></i> <span class="nav-text">Dashboard</span></li>
+                <li class="nav-item" onclick="showSection('inventory')"><i class="fas fa-boxes"></i> <span class="nav-text">Inventory</span></li>
+                <li class="nav-item" onclick="showSection('invoice')"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">Invoice</span></li>
+                <li class="nav-item" onclick="showSection('sales-history')"><i class="fas fa-chart-line"></i> <span class="nav-text">Sales History</span></li>
+                <li class="nav-item" onclick="showSection('fanyabot')"><i class="fas fa-robot"></i> <span class="nav-text">AI Assistant</span></li>
+                <li class="nav-item" onclick="showSection('settings')"><i class="fas fa-cog"></i> <span class="nav-text">Settings</span></li>
+            </ul>
             <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <span class="user-name">Business Owner</span>
-                        <span class="user-plan">Free Plan</span>
-                    </div>
-                </div>
-                <a href="payment.html" class="upgrade-btn">
-                    <i class="fas fa-crown"></i>
-                    Upgrade to Pro
-                </a>
+                <div class="invoice-status-section" id="invoiceStatusSection"></div>
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" id="mainContent">
             <!-- Dashboard Section -->
             <section id="dashboard" class="content-section active">
-                <div class="section-header">
+                <div class="content-header">
                     <h1>Dashboard</h1>
-                    <p>Welcome back! Here's what's happening with your business.</p>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3 id="totalInvoices">0</h3>
-                            <p>Total Invoices</p>
-                        </div>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search..." id="dashboardSearch">
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-dollar-sign"></i>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="stat-card sales">
+                        <div class="icon">
+                            <i class="fas fa-chart-line"></i>
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalRevenue">$0</h3>
+                        <div class="info">
+                            <h3 id="dashboardRevenue">$0.00</h3>
                             <p>Total Revenue</p>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
+                    <div class="stat-card inventory">
+                        <div class="icon">
                             <i class="fas fa-boxes"></i>
                         </div>
-                        <div class="stat-content">
-                            <h3 id="totalProducts">0</h3>
+                        <div class="info">
+                            <h3 id="dashboardProducts">0</h3>
                             <p>Products</p>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-chart-line"></i>
+                    <div class="stat-card invoices">
+                        <div class="icon">
+                            <i class="fas fa-file-invoice"></i>
                         </div>
-                        <div class="stat-content">
-                            <h3 id="monthlyGrowth">0%</h3>
-                            <p>Monthly Growth</p>
+                        <div class="info">
+                            <h3 id="dashboardInvoiceCount">0</h3>
+                            <p>Invoices Generated</p>
+                        </div>
+                    </div>
+                    <div class="stat-card inventory">
+                        <div class="icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="info">
+                            <h3 id="dashboardLowStock">0</h3>
+                            <p>Low Stock Items</p>
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Inventory Section -->
-            <section id="inventory" class="content-section">
-                <div class="section-header">
-                    <h1>Inventory Management</h1>
-                    <button class="btn-primary" onclick="showAddProductModal( )">
-                        <i class="fas fa-plus"></i> Add Product
-                    </button>
-                </div>
-                
-                <div class="inventory-grid" id="inventoryGrid">
-                    <!-- Products will be loaded here -->
-                </div>
-            </section>
-
-            <!-- Invoice Section -->
-            <section id="invoice" class="content-section">
-                <div class="section-header">
-                    <h1>Create Invoice</h1>
-                    <div class="invoice-actions">
-                        <button class="btn-secondary" onclick="clearInvoice()">
-                            <i class="fas fa-trash"></i> Clear
-                        </button>
-                        <button class="btn-primary" onclick="previewInvoice()">
-                            <i class="fas fa-eye"></i> Preview Invoice
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="invoice-form">
-                    <!-- Customer Information -->
-                    <div class="form-section">
-                        <h3>Customer Information</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="customerName">Customer Name</label>
-                                <input type="text" id="customerName" placeholder="Enter customer name">
-                            </div>
-                            <div class="form-group">
-                                <label for="customerEmail">Email</label>
-                                <input type="email" id="customerEmail" placeholder="customer@email.com">
-                            </div>
-                            <div class="form-group">
-                                <label for="customerAddress">Address</label>
-                                <textarea id="customerAddress" placeholder="Enter customer address"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="customerPhone">Phone</label>
-                                <input type="tel" id="customerPhone" placeholder="Enter phone number">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Invoice Details -->
-                    <div class="form-section">
-                        <h3>Invoice Details</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="invoiceNumber">Invoice Number</label>
-                                <input type="text" id="invoiceNumber" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label for="invoiceDate">Invoice Date</label>
-                                <input type="date" id="invoiceDate">
-                            </div>
-                            <div class="form-group">
-                                <label for="dueDate">Due Date</label>
-                                <input type="date" id="dueDate">
-                            </div>
-                            <div class="form-group">
-                                <label for="invoiceTemplate">Template</label>
-                                <select id="invoiceTemplate">
-                                    <option value="classic">Classic Professional</option>
-                                    <option value="modern">Modern Gradient</option>
-                                    <option value="minimal">Minimal Clean</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Items Section -->
-                    <div class="form-section">
-                        <h3>Items</h3>
-                        <div class="items-header">
-                            <button class="btn-secondary" onclick="showAddItemModal()">
-                                <i class="fas fa-plus"></i> Add Item
-                            </button>
-                            <button class="btn-secondary" onclick="showAIItemModal()">
-                                <i class="fas fa-robot"></i> Generate with AI
-                            </button>
-                        </div>
-                        <div class="items-table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Qty</th>
-                                        <th>Unit</th>
-                                        <th>Price</th>
-                                        <th>Total</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="itemsTableBody">
-                                    <!-- Items will be added here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="invoice-totals">
-                            <div class="totals-row">
-                                <span>Subtotal:</span>
-                                <span id="subtotal">$0.00</span>
-                            </div>
-                            <div class="totals-row">
-                                <span>Tax (0%):</span>
-                                <span id="tax">$0.00</span>
-                            </div>
-                            <div class="totals-row total">
-                                <span>Total:</span>
-                                <span id="total">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Sales History Section -->
-            <section id="sales" class="content-section">
-                <div class="section-header">
-                    <h1>Sales History</h1>
-                    <div class="sales-filters">
-                        <select id="salesFilter">
-                            <option value="all">All Time</option>
-                            <option value="today">Today</option>
-                            <option value="week">This Week</option>
-                            <option value="month">This Month</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="sales-table">
-                    <table>
+                <div class="card">
+                    <h3>Recent Sales</h3>
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Invoice #</th>
-                                <th>Customer</th>
                                 <th>Date</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
-                        <tbody id="salesTableBody">
-                            <!-- Sales will be loaded here -->
+                        <tbody id="recentSalesBody">
+                            <tr>
+                                <td colspan="4" class="text-center">No recent sales. Generate an invoice to see data here.</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
 
-            <!-- AI Assistant Section -->
-            <section id="ai-assistant" class="content-section">
-                <div class="section-header">
-                    <h1>FanyaBot - AI Assistant</h1>
-                    <p>Ask me anything about your business, inventory, or invoicing!</p>
+            <!-- Inventory Section -->
+            <section id="inventory" class="content-section">
+                <div class="content-header">
+                    <h1>📦 Smart Inventory Tracker</h1>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search inventory..." id="inventorySearch">
+                    </div>
                 </div>
-                
-                <div class="chat-container">
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message bot-message">
-                            <div class="message-avatar">
-                                <i class="fas fa-robot"></i>
+
+                <!-- CSV Import/Export -->
+                <div class="card">
+                    <h3><i class="fas fa-file-csv"></i> Import/Export Inventory</h3>
+                    <div class="csv-actions">
+                        <button class="btn btn-primary" onclick="exportInventoryCSV()">
+                            <i class="fas fa-download"></i> Export CSV
+                        </button>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="csvFileInput" accept=".csv" onchange="importInventoryCSV(event)">
+                            <label for="csvFileInput" class="file-input-label">
+                                <i class="fas fa-upload"></i> Import CSV
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add/Edit Inventory Form -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Item Name</label>
+                        <input type="text" id="productName" placeholder="e.g., Sugar 2kg">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Price</label>
+                        <input type="number" id="productPrice" min="0" step="0.01" placeholder="e.g., 120">
+                    </div>
+                    <div class="form-group">
+                        <label for="productStock">Stock Quantity</label>
+                        <input type="number" id="productStock" min="0" step="1" placeholder="e.g., 50">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemCategory">Category</label>
+                        <input type="text" id="itemCategory" placeholder="e.g., Food Items">
+                    </div>
+                    <div class="form-group">
+                        <label for="itemDescription">Description</label>
+                        <textarea id="itemDescription" placeholder="Brief description of the item..."></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="addInventoryItem()"><i class="fas fa-plus-circle"></i> Add Item</button>
+                        <button class="btn btn-secondary" onclick="clearInventoryForm()"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+
+                <!-- Inventory Table -->
+                <div class="table-container">
+                    <h3>Current Stock</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Invoice Section -->
+            <section id="invoice" class="content-section">
+                <div class="content-header">
+                    <h1>🧾 AI Invoice Generator</h1>
+                    <button class="btn btn-primary" onclick="prepareInvoiceForPreview()">
+                        <i class="fas fa-eye"></i> Preview Invoice
+                    </button>
+                </div>
+
+                <!-- AI Description Input -->
+                <div class="ai-input-section">
+                    <h3><i class="fas fa-magic"></i> Natural Language Invoice Generation</h3>
+                    <p class="description">
+                        Describe your sale naturally and let AI generate the invoice items. 
+                        Example: "3 sugar at 120, 2 kg maize flour at 180, 1 cooking oil at 350"
+                    </p>
+                    <div class="ai-input-container">
+                        <textarea id="aiDescription" placeholder="Describe your sale for AI generation..." rows="3"></textarea>
+                        <button class="btn btn-secondary" onclick="generateItemsFromAI()">
+                            <i class="fas fa-robot"></i> Generate Items
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Invoice Template Selector -->
+                <div class="settings-section">
+                    <h3><i class="fas fa-palette"></i> Invoice Template</h3>
+                    <p class="text-muted">Choose a design template for your invoice</p>
+                    
+                    <div class="template-selector">
+                        <div class="template-grid">
+                            <div class="template-option active" data-template="classic" onclick="selectTemplate('classic')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header classic-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Classic Professional</h4>
+                                    <p>Traditional business invoice with clean lines</p>
+                                </div>
                             </div>
-                            <div class="message-content">
-                                <p>Hello! I'm FanyaBot, your AI business assistant. How can I help you today?</p>
+
+                            <div class="template-option" data-template="modern" onclick="selectTemplate('modern')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header modern-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Modern Gradient</h4>
+                                    <p>Contemporary design with gradients and modern typography</p>
+                                </div>
+                            </div>
+
+                            <div class="template-option" data-template="minimal" onclick="selectTemplate('minimal')">
+                                <div class="template-preview">
+                                    <div class="template-preview-header minimal-preview">
+                                        <div class="preview-title">INVOICE</div>
+                                        <div class="preview-company">Your Business</div>
+                                    </div>
+                                    <div class="template-preview-body">
+                                        <div class="preview-line"></div>
+                                        <div class="preview-line short"></div>
+                                        <div class="preview-table">
+                                            <div class="preview-table-header"></div>
+                                            <div class="preview-table-row"></div>
+                                            <div class="preview-table-row"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="template-info">
+                                    <h4>Minimal Clean</h4>
+                                    <p>Clean and simple design focusing on content</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="chat-input">
-                        <input type="text" id="chatInput" placeholder="Ask me about your business...">
-                        <button onclick="sendMessage()">
-                            <i class="fas fa-paper-plane"></i>
+                </div>
+
+                <!-- Customer Information -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name</label>
+                        <input type="text" id="customerName" placeholder="e.g., Jane Doe" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">Customer Email</label>
+                        <input type="email" id="customerEmail" placeholder="e.g., jane@example.com" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="customerAddress">Customer Address</label>
+                        <input type="text" id="customerAddress" placeholder="e.g., 456 Main St, Anytown" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDate">Invoice Date</label>
+                        <input type="date" id="invoiceDate" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="dueDate">Due Date</label>
+                        <input type="date" id="dueDate" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceNotes">Notes/Terms</label>
+                        <textarea id="invoiceNotes" placeholder="e.g., Payment due within 30 days." oninput="renderInvoicePreview()"></textarea>
+                    </div>
+                </div>
+
+                <!-- Manual Item Addition -->
+                <div class="table-container">
+                    <h3>Invoice Items</h3>
+                    <div class="item-input-grid">
+                        <input type="text" id="itemName" placeholder="Item Name">
+                        <input type="number" id="itemQuantity" placeholder="Qty" min="1">
+                        <input type="number" id="itemPrice" placeholder="Price" step="0.01" min="0">
+                        <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fas fa-plus"></i> Add Item</button>
+                    </div>
+
+                    <table class="table invoice-items-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceItemsBody">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-right">Subtotal</td>
+                                <td id="invoiceSubtotal">$0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-right">Tax (<span id="invoiceTaxRateDisplay">0</span>%)</td>
+                                <td id="invoiceTaxAmount">$0.00</td>
+                                <td></td>
+                            </tr>
+                            <tr class="total-row">
+                                <td colspan="3" class="text-right">Grand Total</td>
+                                <td id="invoiceGrandTotal">$0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    
+                    <div class="form-actions" style="justify-content: flex-start;">
+                        <button class="btn btn-secondary" onclick="openAddItemModal()">
+                            <i class="fas fa-cart-plus"></i> Add Item from Inventory
                         </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sales History Section -->
+            <section id="sales-history" class="content-section">
+                <div class="content-header">
+                    <h1>📊 Sales Summary Agent</h1>
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search sales..." id="salesSearch">
+                    </div>
+                </div>
+
+                <div class="breakdown-options">
+                    <button id="monthlyBreakdownBtn" class="btn btn-secondary active" onclick="displaySalesBreakdown('monthly')">Monthly Breakdown</button>
+                    <button id="yearlyBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('yearly')">Yearly Breakdown</button>
+                    <button id="productBreakdownBtn" class="btn btn-secondary" onclick="displaySalesBreakdown('product')">Product Breakdown</button>
+                </div>
+
+                <div class="breakdown-content" id="monthlyBreakdownContent">
+                    <h3>Monthly Sales Data</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Month</th>
+                                    <th>Total Sales</th>
+                                    <th>Number of Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthlySalesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="breakdown-content" id="yearlyBreakdownContent" style="display: none;">
+                    <h3>Yearly Sales Data</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Total Sales</th>
+                                    <th>Number of Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody id="yearlySalesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="breakdown-content" id="productBreakdownContent" style="display: none;">
+                    <h3>Product Sales Data</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Quantity Sold</th>
+                                    <th>Total Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productSalesTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h3>All Sales Transactions</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Invoice ID</th>
+                                <th>Date</th>
+                                <th>Customer</th>
+                                <th>Total Amount</th>
+                                <th>Items</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesHistoryTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- FanyaBot AI Assistant Section -->
+            <section id="fanyabot" class="content-section">
+                <div class="content-header">
+                    <h1>💬 FanyaBot: AI Customer Chat Assistant</h1>
+                    <button class="btn btn-primary" onclick="clearChat()"><i class="fas fa-sync-alt"></i> Clear Chat</button>
+                </div>
+                
+                <div class="ai-chat-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message ai">
+                            <div class="avatar">AI</div>
+                            <div class="chat-bubble">Hello! I'm FanyaBot, your AI assistant. I can help customers check your inventory, prices, and availability. Ask me anything like "Do you have BlueBand?" or "How much is 1kg rice?"</div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me about your inventory, prices, or business...">
+                        <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i> Send</button>
                     </div>
                 </div>
             </section>
 
             <!-- Settings Section -->
             <section id="settings" class="content-section">
-                <div class="section-header">
-                    <h1>Settings</h1>
-                    <p>Customize your business information and preferences</p>
-                </div>
-                
-                <div class="settings-tabs">
-                    <button class="tab-btn active" data-tab="business">Business Info</button>
-                    <button class="tab-btn" data-tab="branding">Branding</button>
-                    <button class="tab-btn" data-tab="preferences">Preferences</button>
+                <div class="content-header">
+                    <h1>🧑‍💼 Custom Shop Info & Settings</h1>
                 </div>
 
-                <!-- Business Info Tab -->
-                <div id="business-tab" class="tab-content active">
-                    <div class="form-section">
-                        <h3>Business Information</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="businessName">Business Name</label>
-                                <input type="text" id="businessName" placeholder="Enter your business name">
-                            </div>
-                            <div class="form-group">
-                                <label for="businessAddress">Business Address</label>
-                                <textarea id="businessAddress" placeholder="Enter your business address"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="businessCity">City</label>
-                                <input type="text" id="businessCity" placeholder="Enter city">
-                            </div>
-                            <div class="form-group">
-                                <label for="businessPhone">Phone Number</label>
-                                <input type="tel" id="businessPhone" placeholder="Enter phone number">
-                            </div>
-                            <div class="form-group">
-                                <label for="businessEmail">Business Email</label>
-                                <input type="email" id="businessEmail" placeholder="Enter business email">
-                            </div>
+                <div class="settings-section">
+                    <h3>Business Information</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="businessName">Business Name</label>
+                            <input type="text" id="businessName" placeholder="e.g., My Awesome Shop">
                         </div>
-                        <button class="btn-primary" onclick="saveBusinessInfo()">
-                            <i class="fas fa-save"></i> Save Business Info
-                        </button>
+                        <div class="form-group">
+                            <label for="businessAddress">Business Address</label>
+                            <input type="text" id="businessAddress" placeholder="e.g., P.O Box 1234-00100">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessCity">City</label>
+                            <input type="text" id="businessCity" placeholder="e.g., Nairobi">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessPhone">Phone Number</label>
+                            <input type="text" id="businessPhone" placeholder="e.g., +254 700 123 456">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessEmail">Business Email</label>
+                            <input type="email" id="businessEmail" placeholder="e.g., info@mybusiness.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency Symbol</label>
+                            <input type="text" id="currency" placeholder="e.g., KES" maxlength="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="taxRate">Default Tax Rate (%)</label>
+                            <input type="number" id="taxRate" placeholder="e.g., 16" min="0" max="100" step="0.01">
+                        </div>
                     </div>
+                    <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
                 </div>
 
-                <!-- Branding Tab -->
-                <div id="branding-tab" class="tab-content">
-                    <div class="form-section">
-                        <h3>Custom Branding</h3>
-                        <div class="branding-options">
-                            <div class="form-group">
-                                <label for="logoUpload">Business Logo</label>
-                                <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
-                                <div class="logo-preview" id="logoPreview">
+                <!-- Custom Branding Section (Pro Feature) -->
+                <div class="branding-section">
+                    <div class="pro-badge">PRO</div>
+                    <h3><i class="fas fa-palette"></i> Custom Branding</h3>
+                    
+                    <div id="brandingContent">
+                        <!-- Logo Upload -->
+                        <div class="logo-upload-section">
+                            <div class="logo-preview-container">
+                                <img id="logoPreview" class="logo-preview" alt="Logo Preview">
+                                <div class="logo-placeholder">
                                     <i class="fas fa-image"></i>
-                                    <span>Upload your logo</span>
+                                    <div>Logo Preview</div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label for="brandColor">Brand Color</label>
-                                <input type="color" id="brandColor" value="#6366f1" onchange="updateBrandColor(this.value)">
-                                <div class="color-preview" id="colorPreview"></div>
+                            <div class="logo-actions">
+                                <button class="btn btn-primary" onclick="uploadLogo()">
+                                    <i class="fas fa-upload"></i> Upload Logo
+                                </button>
+                                <button class="btn btn-secondary" onclick="removeLogo()">
+                                    <i class="fas fa-trash"></i> Remove Logo
+                                </button>
+                                <input type="file" id="logoUpload" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
                             </div>
                         </div>
-                        <button class="btn-primary" onclick="saveBrandingSettings()">
-                            <i class="fas fa-save"></i> Save Branding
-                        </button>
+
+                        <!-- Color Picker -->
+                        <div class="color-picker-section">
+                            <label for="invoiceColor">Invoice Color Theme:</label>
+                            <div class="color-preview" id="colorPreview"></div>
+                            <input type="color" id="invoiceColor" class="color-input" value="#3b82f6" onchange="updateInvoiceColor()">
+                            <span class="text-muted">Choose a primary color for your invoices</span>
+                        </div>
+
+                        <p class="text-muted">
+                            <i class="fas fa-info-circle"></i> 
+                            Custom branding allows you to add your business logo and choose custom colors for your invoices.
+                        </p>
+                    </div>
+
+                    <!-- Upgrade overlay for free users -->
+                    <div id="brandingUpgradeOverlay" class="disabled-overlay" style="display: none;">
+                        <div class="upgrade-message">
+                            <h4><i class="fas fa-crown"></i> Upgrade to Pro</h4>
+                            <p>Custom branding is available for Pro users only</p>
+                            <a href="payment-pro.html" class="btn btn-primary">
+                                <i class="fas fa-crown"></i> Upgrade to Pro
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Preferences Tab -->
-                <div id="preferences-tab" class="tab-content">
-                    <div class="form-section">
-                        <h3>Preferences</h3>
-                        <div class="form-group">
-                            <label for="defaultTemplate">Default Invoice Template</label>
-                            <select id="defaultTemplate">
-                                <option value="classic">Classic Professional</option>
-                                <option value="modern">Modern Gradient</option>
-                                <option value="minimal">Minimal Clean</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="currency">Currency</label>
-                            <select id="currency">
-                                <option value="USD">USD ($)</option>
-                                <option value="EUR">EUR (€)</option>
-                                <option value="GBP">GBP (£)</option>
-                                <option value="KES">KES (KSh)</option>
-                            </select>
-                        </div>
-                        <button class="btn-primary" onclick="savePreferences()">
-                            <i class="fas fa-save"></i> Save Preferences
+                <!-- Data Management Section -->
+                <div class="data-section">
+                    <h3><i class="fas fa-database"></i> Data Management</h3>
+                    <p class="text-muted">Export your data for backup or import data from another device.</p>
+                    
+                    <div class="data-actions">
+                        <button class="btn btn-primary" onclick="exportData()">
+                            <i class="fas fa-download"></i> Export Data
                         </button>
+                        <button class="btn btn-secondary" onclick="importData()">
+                            <i class="fas fa-upload"></i> Import Data
+                        </button>
+                        <input type="file" id="dataImport" accept=".json" style="display: none;" onchange="handleDataImport(event)">
                     </div>
+                    
+                    <p class="text-muted mt-4">
+                        <i class="fas fa-info-circle"></i> 
+                        Export creates a backup file with all your business data. Import allows you to restore data from a backup file.
+                    </p>
+                </div>
+
+                <div class="settings-section">
+                    <h3>📧 Email Collection</h3>
+                    <p class="text-muted">Collect customer emails for future marketing and communication.</p>
+                    <div class="form-group">
+                        <label for="googleSheetsUrl">Google Sheets URL (Optional)</label>
+                        <input type="url" id="googleSheetsUrl" placeholder="https://docs.google.com/spreadsheets/...">
+                    </div>
+                    <button class="btn btn-secondary" onclick="testEmailCollection()"><i class="fas fa-test-tube"></i> Test Email Collection</button>
                 </div>
             </section>
         </main>
     </div>
 
     <!-- Modals -->
-    <!-- Add Product Modal -->
-    <div id="addProductModal" class="modal">
+    
+    <!-- Message Modal -->
+    <div id="messageModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add Product</h3>
-                <span class="close" onclick="closeModal('addProductModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="productName">Product Name</label>
-                    <input type="text" id="productName" placeholder="Enter product name">
-                </div>
-                <div class="form-group">
-                    <label for="productPrice">Price</label>
-                    <input type="number" id="productPrice" step="0.01" placeholder="0.00">
-                </div>
-                <div class="form-group">
-                    <label for="productStock">Stock Quantity</label>
-                    <input type="number" id="productStock" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label for="productDescription">Description</label>
-                    <textarea id="productDescription" placeholder="Product description"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('addProductModal')">Cancel</button>
-                <button class="btn-primary" onclick="addProduct()">Add Product</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add Item Modal -->
-    <div id="addItemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Add Item to Invoice</h3>
-                <span class="close" onclick="closeModal('addItemModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="itemName">Item Name</label>
-                    <input type="text" id="itemName" placeholder="Enter item name">
-                </div>
-                <div class="form-group">
-                    <label for="itemQuantity">Quantity</label>
-                    <input type="number" id="itemQuantity" placeholder="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label for="itemUnit">Unit (optional)</label>
-                    <input type="text" id="itemUnit" placeholder="e.g., kg, litre, pcs">
-                </div>
-                <div class="form-group">
-                    <label for="itemPrice">Unit Price</label>
-                    <input type="number" id="itemPrice" step="0.01" placeholder="0.00">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('addItemModal')">Cancel</button>
-                <button class="btn-primary" onclick="addInvoiceItem()">Add Item</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Item Generation Modal -->
-    <div id="aiItemModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Generate Items with AI</h3>
-                <span class="close" onclick="closeModal('aiItemModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="aiItemDescription">Describe your sale</label>
-                    <textarea id="aiItemDescription" placeholder="e.g., 'Sold 2 bags of sugar and 3 bottles of cooking oil'"></textarea>
-                </div>
-                <div id="aiItemStatus" class="ai-status"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('aiItemModal')">Cancel</button>
-                <button class="btn-primary" onclick="generateItemsWithAI()">Generate Items</button>
-            </div>
+            <span class="close-button" onclick="hideMessageModal()">&times;</span>
+            <h3 id="messageTitle"></h3>
+            <p id="messageText"></p>
+            <button class="btn btn-primary" onclick="hideMessageModal()">OK</button>
         </div>
     </div>
 
     <!-- Invoice Preview Modal -->
-    <div id="invoicePreviewModal" class="modal large">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-file-invoice"></i> Invoice Preview</h3>
-                <span class="close" onclick="closeModal('invoicePreviewModal')">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="invoicePreview" class="invoice-preview">
-                    <!-- Invoice content will be generated here -->
+    <div id="invoicePreviewModal" class="modal">
+        <div class="modal-content large-modal-content">
+            <span class="close-button" onclick="hideInvoicePreviewModal()">&times;</span>
+            <h2 class="modal-title">📥 Invoice Preview</h2>
+            <div class="invoice-document-wrapper">
+                <div id="invoiceDocument" class="invoice-document">
+                    <!-- Invoice Header -->
+                    <div class="invoice-header">
+                        <div class="company-info">
+                            <img id="previewBusinessLogo" class="company-logo" style="display: none;" alt="Business Logo">
+                            <div class="company-name" id="previewBusinessName">Company Name</div>
+                            <div class="company-details">
+                                <div id="previewBusinessAddress">Company Address</div>
+                                <div id="previewBusinessCity">City, State, Zip</div>
+                                <div><span id="previewBusinessPhone">Phone</span> - <span id="previewBusinessEmail">Email</span></div>
+                            </div>
+                        </div>
+                        <h1 class="invoice-title">INVOICE</h1>
+                    </div>
+
+                    <!-- Invoice Meta Information -->
+                    <div class="invoice-meta">
+                        <div class="invoice-details">
+                            <div class="invoice-detail">
+                                <strong>Invoice No :</strong> <span id="previewInvoiceNumber">1234</span>
+                            </div>
+                            <div class="invoice-detail">
+                                <strong>Invoice Date :</strong> <span id="previewInvoiceDate">02/10/21</span>
+                            </div>
+                            <div class="invoice-detail">
+                                <strong>Due Date :</strong> <span id="previewDueDate">02/10/21</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing and Shipping Information -->
+                    <div class="billing-shipping">
+                        <div class="bill-to">
+                            <div class="section-title">BILL TO</div>
+                            <div class="address-info">
+                                <div class="address-name" id="previewCustomerName">Company Name 1</div>
+                                <div id="previewCustomerAddress">Address 1</div>
+                                <div id="previewCustomerCity">City, State, Zip 1</div>
+                            </div>
+                        </div>
+                        <div class="ship-to">
+                            <div class="section-title">SHIP TO</div>
+                            <div class="address-info">
+                                <div class="address-name" id="previewShipToName">Company Name 2</div>
+                                <div id="previewShipToAddress">Address 2</div>
+                                <div id="previewShipToCity">City, State, Zip 2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Items Table -->
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th class="qty-col">QTY</th>
+                                <th class="desc-col">DESCRIPTION</th>
+                                <th class="price-col">UNIT PRICE</th>
+                                <th class="total-col">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoicePdfItemsBody">
+                            <!-- Items will be populated here -->
+                        </tbody>
+                    </table>
+
+                    <!-- Invoice Footer -->
+                    <div class="invoice-footer">
+                        <div class="thank-you">Thank You</div>
+                        <div class="totals-section">
+                            <div class="total-row subtotal">
+                                <span>SUB TOTAL</span>
+                                <span id="pdfInvoiceSubtotal">$0.00</span>
+                            </div>
+                            <div class="total-row tax">
+                                <span>TAX <span id="pdfInvoiceTaxRate">0.00</span> %</span>
+                                <span id="pdfInvoiceTax">$0.00</span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span>GRAND TOTAL</span>
+                                <span id="pdfInvoiceTotal">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="powered-by">Powered by FanyaBill</div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('invoicePreviewModal')">Cancel</button>
-                <button class="btn-primary" onclick="generateAndDownloadInvoice()">
+                <button class="btn btn-primary" onclick="generateAndDownloadInvoice()">
                     <i class="fas fa-download"></i> Download PDF
                 </button>
+                <button class="btn btn-secondary" onclick="hideInvoicePreviewModal()">Cancel</button>
             </div>
         </div>
     </div>
 
+    <!-- Add Item from Inventory Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeAddItemModal()">&times;</span>
+            <h3 class="modal-title">Add Item to Invoice</h3>
+            <div class="form-group">
+                <label for="selectInvoiceItem">Select Item</label>
+                <select id="selectInvoiceItem" onchange="populateInvoiceItemDetails()"></select>
+            </div>
+            <div class="form-group">
+                <label for="invoiceItemQuantity">Quantity</label>
+                <input type="number" id="invoiceItemQuantity" min="1" value="1">
+            </div>
+            <button class="btn btn-primary" onclick="addSelectedItemToInvoice()">
+                <i class="fas fa-plus"></i> Add to Invoice
+            </button>
+        </div>
+    </div>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="hideUpgradeModal()">&times;</span>
+            <h3 class="modal-title">💳 Upgrade to FanyaBill Pro!</h3>
+            <p>You've reached your free invoice limit. Upgrade to Pro for unlimited invoices and premium features!</p>
+            <div style="text-align: center; margin: 1.5rem 0;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">$7.99/month</div>
+                <div style="color: var(--gray-600);">Unlimited everything + Pro badge</div>
+            </div>
+            <div id="paypal-button-container" style="margin-top: 1rem;"></div>
+            <p class="text-muted text-center mt-3">Your payment is securely processed by PayPal. Accepts cards or PayPal.</p>
+        </div>
+    </div>
+
+    <!-- Low Stock Alert -->
+    <div id="lowStockAlert" class="alert-banner" style="display: none;">
+        <span id="lowStockMessage"></span>
+        <button class="close-button" onclick="hideLowStockAlert()">&times;</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="templates/invoice-templates.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
+
