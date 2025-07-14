@@ -7,7 +7,9 @@ let salesData = [];
 let businessInfo = {
     name: "Your Business",
     address: "Business Address",
-    city: "City, Country"
+    city: "City, Country",
+    phone: "",
+    email: ""
 };
 let currency = "$";
 
@@ -694,11 +696,17 @@ function renderInvoicePreview() {
     const customColor = localStorage.getItem("fanyabill_custom_color") || "#3b82f6";
     
     // Update business information
-    document.getElementById("previewBusinessName").textContent = businessInfo.name || "Your Business";
-    document.getElementById("previewBusinessAddress").textContent = businessInfo.address || "Business Address";
-    document.getElementById("previewBusinessCity").textContent = businessInfo.city || "City, Country";
-    document.getElementById("previewBusinessPhone").textContent = businessInfo.phone || "+254 700 123 456";
-    document.getElementById("previewBusinessEmail").textContent = businessInfo.email || "info@yourbusiness.com";
+    const businessName = document.getElementById("businessName").value.trim() || "Your Business Name";
+    const businessAddress = document.getElementById("businessAddress").value.trim() || "Your Business Address";
+    const businessCity = document.getElementById("businessCity").value.trim() || "City, State, ZIP";
+    const businessPhone = document.getElementById("businessPhone").value.trim() || "Phone Number";
+    const businessEmail = document.getElementById("businessEmail").value.trim() || "email@business.com";
+
+    document.getElementById("previewBusinessName").textContent = businessName;
+    document.getElementById("previewBusinessAddress").textContent = businessAddress;
+    document.getElementById("previewBusinessCity").textContent = businessCity;
+    document.getElementById("previewBusinessPhone").textContent = businessPhone;
+    document.getElementById("previewBusinessEmail").textContent = businessEmail;
 
     // Update custom logo if available
     const logoElement = document.getElementById("previewBusinessLogo");
@@ -727,17 +735,20 @@ function renderInvoicePreview() {
     document.getElementById("previewDueDate").textContent = formatDate(dueDate);
 
     // Update customer information
-    const customerName = document.getElementById("customerName").value || "Walk-in Customer";
+    const customerName = document.getElementById("customerName").value || "Customer Name";
     const customerAddress = document.getElementById("customerAddress").value || "Customer Address";
+    const customerEmail = document.getElementById("customerEmail").value || "Customer Email";
+    const invoiceNotes = document.getElementById("invoiceNotes").value || "";
     
     document.getElementById("previewCustomerName").textContent = customerName;
     document.getElementById("previewCustomerAddress").textContent = customerAddress;
-    document.getElementById("previewCustomerCity").textContent = customerAddress;
+    document.getElementById("previewCustomerEmail").textContent = customerEmail;
+    document.getElementById("pdfInvoiceNotes").textContent = invoiceNotes;
     
     // Ship to same as bill to
     document.getElementById("previewShipToName").textContent = customerName;
     document.getElementById("previewShipToAddress").textContent = customerAddress;
-    document.getElementById("previewShipToCity").textContent = customerAddress;
+    document.getElementById("previewShipToEmail").textContent = customerEmail;
 
     // Update invoice items
     const itemsBody = document.getElementById("invoicePdfItemsBody");
@@ -981,8 +992,8 @@ function saveSettings() {
     businessInfo.name = document.getElementById("businessName").value.trim() || "Your Business";
     businessInfo.address = document.getElementById("businessAddress").value.trim() || "Business Address";
     businessInfo.city = document.getElementById("businessCity").value.trim() || "City, Country";
-    businessInfo.phone = document.getElementById("businessPhone").value.trim() || "+254 700 123 456";
-    businessInfo.email = document.getElementById("businessEmail").value.trim() || "info@yourbusiness.com";
+    businessInfo.phone = document.getElementById("businessPhone").value.trim() || "";
+    businessInfo.email = document.getElementById("businessEmail").value.trim() || "";
     
     // Save to localStorage
     saveData();
@@ -1639,11 +1650,11 @@ function renderInvoicePreview() {
     }
     
     // Update business information
-    const businessName = localStorage.getItem("fanyabill_business_name") || "Your Business Name";
-    const businessAddress = localStorage.getItem("fanyabill_business_address") || "Your Business Address";
-    const businessCity = localStorage.getItem("fanyabill_business_city") || "City, State, ZIP";
-    const businessPhone = localStorage.getItem("fanyabill_business_phone") || "Phone Number";
-    const businessEmail = localStorage.getItem("fanyabill_business_email") || "email@business.com";
+    const businessName = document.getElementById("businessName").value.trim() || "Your Business Name";
+    const businessAddress = document.getElementById("businessAddress").value.trim() || "Your Business Address";
+    const businessCity = document.getElementById("businessCity").value.trim() || "City, State, ZIP";
+    const businessPhone = document.getElementById("businessPhone").value.trim() || "Phone Number";
+    const businessEmail = document.getElementById("businessEmail").value.trim() || "email@business.com";
     const currency = localStorage.getItem("fanyabill_currency") || "$";
     
     // Update preview elements
@@ -1655,13 +1666,14 @@ function renderInvoicePreview() {
         'previewBusinessEmail': businessEmail,
         'previewCustomerName': document.getElementById('customerName')?.value || 'Customer Name',
         'previewCustomerAddress': document.getElementById('customerAddress')?.value || 'Customer Address',
-        'previewCustomerCity': document.getElementById('customerAddress')?.value || 'Customer City',
+        'previewCustomerEmail': document.getElementById('customerEmail')?.value || 'Customer Email',
         'previewShipToName': document.getElementById('customerName')?.value || 'Customer Name',
         'previewShipToAddress': document.getElementById('customerAddress')?.value || 'Customer Address',
-        'previewShipToCity': document.getElementById('customerAddress')?.value || 'Customer City',
+        'previewShipToEmail': document.getElementById('customerEmail')?.value || 'Customer Email',
         'previewInvoiceDate': document.getElementById('invoiceDate')?.value || new Date().toLocaleDateString(),
         'previewDueDate': document.getElementById('dueDate')?.value || new Date().toLocaleDateString(),
-        'previewInvoiceNumber': `INV-${String(invoiceCount + 1).padStart(4, '0')}`
+        'previewInvoiceNumber': `INV-${String(invoiceCount + 1).padStart(4, '0')}`,
+        'pdfInvoiceNotes': document.getElementById('invoiceNotes')?.value || ''
     };
     
     // Update all preview elements
@@ -1762,4 +1774,5 @@ function prepareInvoiceForPreview() {
         modal.style.display = 'flex';
     }
 }
+
 
