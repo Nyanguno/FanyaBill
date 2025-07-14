@@ -54,9 +54,11 @@
                             <li><i class="fas fa-check"></i> Advanced Analytics & Reporting</li>
                         </ul>
                         <div class="payment-methods">
-                            <div id="paypal-container-YOUR_ENTERPRISE_BUTTON_ID"></div>
-                            <form action="https://www.paypal.com/ncp/payment/YOUR_ENTERPRISE_BUTTON_ID" method="post" target="_blank">
-                                <input class="pp-YOUR_ENTERPRISE_BUTTON_ID" type="submit" value="Pay Now" />
+                            <div id="paypal-container-PJ65HFJGYKG34"></div>
+                            <form action="https://www.paypal.com/ncp/payment/PJ65HFJGYKG34" method="post" target="_blank" style="display:inline-grid;justify-items:center;align-content:start;gap:0.5rem;">
+                                <input class="pp-PJ65HFJGYKG34" type="submit" value="Buy Now" />
+                                <img src=https://www.paypalobjects.com/images/Debit_Credit.svg alt="cards" />
+                                <section style="font-size: 0.75rem;"> Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="paypal" style="height:0.875rem;vertical-align:middle;"/></section>
                             </form>
                         </div>
                     </div>
@@ -209,7 +211,7 @@
             margin-top: 1.5rem;
         }
 
-        .pp-YOUR_ENTERPRISE_BUTTON_ID {
+        .pp-PJ65HFJGYKG34 {
             text-align: center;
             border: none;
             border-radius: 0.25rem;
@@ -228,7 +230,7 @@
             margin-top: 1rem;
         }
 
-        .pp-YOUR_ENTERPRISE_BUTTON_ID:hover {
+        .pp-PJ65HFJGYKG34:hover {
             background-color: #e6bc00;
         }
 
@@ -324,8 +326,8 @@
     <script>
         // Initialize PayPal hosted button for Enterprise Plan
         paypal.HostedButtons({
-            hostedButtonId: "YOUR_ENTERPRISE_BUTTON_ID", // Replace with your actual Enterprise Plan button ID
-        }).render("#paypal-container-YOUR_ENTERPRISE_BUTTON_ID");
+            hostedButtonId: "PJ65HFJGYKG34", // Replace with your actual Enterprise Plan button ID
+        }).render("#paypal-container-PJ65HFJGYKG34");
 
         // Handle successful payment (this would be called from PayPal)
         function handlePaymentSuccess() {
@@ -335,5 +337,3 @@
     </script>
 </body>
 </html>
-
-
