@@ -20,8 +20,8 @@
                 <span>FanyaBill</span>
             </div>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="app.html">Back to App</a>
+                <a href="index.html" class="nav-link-button">Home</a>
+                <a href="app.html" class="nav-link-button">Back to App</a>
             </div>
         </div>
     </nav>
@@ -62,11 +62,11 @@
                     </div>
 
                     <div class="pricing-card">
-                        <h2>Annual Plan</h2>
+                        <h2>Enterprise Plan</h2>
                         <div class="price-display">
                             <span class="currency">$</span>
                             <span class="amount">29.00</span>
-                            <span class="period">/year</span>
+                            <span class="period">/month</span>
                         </div>
                         <ul>
                             <li><i class="fas fa-check"></i> All Monthly Plan features</li>
@@ -76,9 +76,9 @@
                             <li><i class="fas fa-check"></i> Premium Support</li>
                         </ul>
                         <div class="payment-methods">
-                            <div id="paypal-container-YOUR_ANNUAL_BUTTON_ID"></div>
-                            <form action="https://www.paypal.com/ncp/payment/YOUR_ANNUAL_BUTTON_ID" method="post" target="_blank">
-                                <input class="pp-YOUR_ANNUAL_BUTTON_ID" type="submit" value="Pay Now" />
+                            <div id="paypal-container-YOUR_ENTERPRISE_BUTTON_ID"></div>
+                            <form action="https://www.paypal.com/ncp/payment/YOUR_ENTERPRISE_BUTTON_ID" method="post" target="_blank">
+                                <input class="pp-YOUR_ENTERPRISE_BUTTON_ID" type="submit" value="Pay Now" />
                             </form>
                         </div>
                     </div>
@@ -231,7 +231,7 @@
             margin-top: 1.5rem;
         }
 
-        .pp-MVK35P3ZKYQLY, .pp-YOUR_ANNUAL_BUTTON_ID {
+        .pp-MVK35P3ZKYQLY, .pp-YOUR_ENTERPRISE_BUTTON_ID {
             text-align: center;
             border: none;
             border-radius: 0.25rem;
@@ -250,7 +250,7 @@
             margin-top: 1rem;
         }
 
-        .pp-MVK35P3ZKYQLY:hover, .pp-YOUR_ANNUAL_BUTTON_ID:hover {
+        .pp-MVK35P3ZKYQLY:hover, .pp-YOUR_ENTERPRISE_BUTTON_ID:hover {
             background-color: #e6bc00;
         }
 
@@ -293,6 +293,26 @@
             margin-bottom: 0.5rem;
         }
 
+        /* Navigation Button Styling */
+        .nav-links {
+            display: flex;
+            gap: 1rem; /* Space between buttons */
+        }
+
+        .nav-link-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--white);
+            background-color: var(--primary-color); /* Example background */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .nav-link-button:hover {
+            background-color: var(--primary-dark); /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+
         @media (max-width: 768px) {
             .payment-container {
                 margin: 1rem;
@@ -329,10 +349,10 @@
             hostedButtonId: "MVK35P3ZKYQLY", // Replace with your actual Monthly Plan button ID
         }).render("#paypal-container-MVK35P3ZKYQLY");
 
-        // Initialize PayPal hosted button for Annual Plan
+        // Initialize PayPal hosted button for Enterprise Plan
         paypal.HostedButtons({
-            hostedButtonId: "YOUR_ANNUAL_BUTTON_ID", // Replace with your actual Annual Plan button ID
-        }).render("#paypal-container-YOUR_ANNUAL_BUTTON_ID");
+            hostedButtonId: "YOUR_ENTERPRISE_BUTTON_ID", // Replace with your actual Enterprise Plan button ID
+        }).render("#paypal-container-YOUR_ENTERPRISE_BUTTON_ID");
 
         // Handle successful payment (this would be called from PayPal)
         function handlePaymentSuccess() {
@@ -342,4 +362,5 @@
     </script>
 </body>
 </html>
+
 
