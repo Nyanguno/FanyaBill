@@ -635,15 +635,16 @@ function renderInvoicePreview() {
     // Update customer information
     const customerName = document.getElementById("customerName").value || "Walk-in Customer";
     const customerAddress = document.getElementById("customerAddress").value || "Customer Address";
+    const customerEmail = document.getElementById("customerEmail").value || "";
+    const customerPhone = document.getElementById("customerPhone").value || "";
     
     document.getElementById("previewCustomerName").textContent = customerName;
     document.getElementById("previewCustomerAddress").textContent = customerAddress;
     document.getElementById("previewCustomerCity").textContent = customerAddress;
+    document.getElementById("previewCustomerEmail").textContent = customerEmail;
+    document.getElementById("previewCustomerPhone").textContent = customerPhone;
     
-    // Ship to same as bill to
-    document.getElementById("previewShipToName").textContent = customerName;
-    document.getElementById("previewShipToAddress").textContent = customerAddress;
-    document.getElementById("previewShipToCity").textContent = customerAddress;
+
 
     // Update invoice items
     const itemsBody = document.getElementById("invoicePdfItemsBody");
