@@ -235,7 +235,7 @@ function showSection(sectionId) {
     const navItems = document.querySelectorAll(".nav-item");
     navItems.forEach(item => item.classList.remove("active"));
     
-    const activeNavItem = document.querySelector(`[onclick="showSection('${sectionId}')"]`);
+    const activeNavItem = document.querySelector(`[onclick="showSection(\'${sectionId}\')"]`);
     if (activeNavItem) activeNavItem.classList.add("active");
 
     // Update content based on section
@@ -298,7 +298,7 @@ function hideLowStockAlert() {
 function generateAndDownloadInvoice() {
     try {
         // Show loading state
-        const downloadBtn = document.querySelector('[onclick="generateAndDownloadInvoice()"]');
+        const downloadBtn = document.querySelector(\"[onclick=\"generateAndDownloadInvoice()\"]\");
         const originalText = downloadBtn.innerHTML;
         downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
         downloadBtn.disabled = true;
@@ -434,7 +434,7 @@ function generateAndDownloadInvoice() {
         showAlert('Failed to generate PDF: ' + error.message, 'danger');
         
         // Restore button state if button exists
-        const downloadBtn = document.querySelector('[onclick="generateAndDownloadInvoice()"]');
+        const downloadBtn = document.querySelector(\"[onclick=\"generateAndDownloadInvoice()\"]\");
         if (downloadBtn) {
             downloadBtn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
             downloadBtn.disabled = false;
@@ -929,7 +929,7 @@ async function generateItemsFromAI() {
         return;
     }
 
-    const button = document.querySelector('[onclick="generateItemsFromAI()"]');
+    const button = document.querySelector(\"[onclick=\"generateItemsFromAI()\"]\");
     const originalText = button.innerHTML;
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
     button.disabled = true;
@@ -1862,3 +1862,5 @@ function prepareInvoiceForPreview() {
         modal.style.display = "flex";
     }
 }
+
+
