@@ -1678,6 +1678,10 @@
                         <input type="text" id="customerAddress" placeholder="e.g., 456 Main St, Anytown" oninput="renderInvoicePreview()">
                     </div>
                     <div class="form-group">
+                        <label for="customerPhone">Customer Phone Number</label>
+                        <input type="tel" id="customerPhone" placeholder="e.g., +1 555 123 4567" oninput="renderInvoicePreview()">
+                    </div>
+                    <div class="form-group">
                         <label for="invoiceDate">Invoice Date</label>
                         <input type="date" id="invoiceDate" oninput="renderInvoicePreview()">
                     </div>
@@ -2030,16 +2034,11 @@
                                 <div class="address-name" id="previewCustomerName">Company Name 1</div>
                                 <div id="previewCustomerAddress">Address 1</div>
                                 <div id="previewCustomerCity">City, State, Zip 1</div>
+                                <div id="previewCustomerEmail">Email</div>
+                                <div id="previewCustomerPhone">Phone</div>
                             </div>
                         </div>
-                        <div class="ship-to">
-                            <div class="section-title">SHIP TO</div>
-                            <div class="address-info">
-                                <div class="address-name" id="previewShipToName">Company Name 2</div>
-                                <div id="previewShipToAddress">Address 2</div>
-                                <div id="previewShipToCity">City, State, Zip 2</div>
-                            </div>
-                        </div>
+
                     </div>
 
                     <!-- Invoice Items Table -->
