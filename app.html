@@ -16,11 +16,6 @@
         /* Enhanced App-Specific Styles with Poppins Font */
         * {
             font-family: 'Poppins', sans-serif;
-            box-sizing: border-box; /* Add this for better box model handling */
-        }
-
-        body {
-            overflow-x: hidden; /* Prevent horizontal scrolling on the body */
         }
 
         .app-container {
@@ -200,7 +195,6 @@
             margin-left: 250px;
             padding: 2rem;
             transition: margin-left 0.3s ease;
-            overflow-x: hidden; /* Prevent horizontal scrolling within main content */
         }
 
         .main-content.sidebar-collapsed {
@@ -341,7 +335,7 @@
             padding: 1.5rem;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            overflow-x: auto; /* Keep this for tables if content can exceed width */
+            overflow-x: auto;
             margin-bottom: 2rem;
         }
 
@@ -459,14 +453,10 @@
         /* Item Input Grid */
         .item-input-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto; /* Adjusted for 3 inputs + button */
+            grid-template-columns: 2fr 1fr 1fr auto;
             gap: 1rem;
             align-items: end;
             margin-bottom: 1rem;
-        }
-
-        .item-input-grid input {
-            padding: 0.75rem 1rem; /* Slightly larger padding */
         }
 
         /* Invoice Items Table */
@@ -666,21 +656,18 @@
             margin-bottom: 30px;
         }
 
-        .invoice-table th,
-        .invoice-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
         .invoice-table th {
             background: var(--custom-primary-color, #3b82f6);
             color: white;
+            padding: 12px;
+            text-align: left;
             font-weight: 700;
             font-size: 14px;
         }
 
         .invoice-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
             font-size: 14px;
             color: #333;
         }
@@ -692,11 +679,6 @@
 
         .invoice-table .desc-col {
             width: 50%;
-        }
-
-        .invoice-table .unit-col {
-            width: 10%;
-            text-align: center;
         }
 
         .invoice-table .price-col {
@@ -1141,7 +1123,7 @@
             }
 
             .item-input-grid {
-                grid-template-columns: 1fr; /* Ensure single column on small screens */
+                grid-template-columns: 1fr;
                 gap: 0.5rem;
             }
 
@@ -1357,6 +1339,61 @@
         .mb-4 { margin-bottom: 1rem; }
         .btn-sm { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
         .btn-block { width: 100%; }
+
+        /* Custom styles for invoice item input grid */
+        .item-input-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto; /* Adjusted for 3 inputs + button */
+            gap: 1rem;
+            align-items: end;
+            margin-bottom: 1rem;
+        }
+
+        .item-input-grid input {
+            padding: 0.75rem 1rem; /* Slightly enlarged padding */
+            font-size: 1rem; /* Maintain font size */
+        }
+
+        /* Responsive adjustments for horizontal scrolling */
+        @media (max-width: 1200px) {
+            .main-content {
+                padding: 1rem; /* Reduce padding on smaller screens */
+            }
+            .table-container {
+                overflow-x: auto; /* Allow horizontal scroll for tables if content overflows */
+            }
+            .invoice-document {
+                width: 100%; /* Make invoice document responsive */
+                padding: 10mm; /* Adjust padding for smaller screens */
+            }
+            .invoice-header,
+            .invoice-meta,
+            .billing-shipping,
+            .invoice-footer {
+                flex-wrap: wrap; /* Allow wrapping of content */
+                gap: 1rem; /* Adjust gap */
+            }
+            .invoice-details,
+            .bill-to,
+            .ship-to,
+            .totals-section {
+                flex-basis: 100%; /* Make sections take full width on smaller screens */
+                margin-right: 0; /* Remove right margin */
+            }
+            .invoice-title {
+                font-size: 36px; /* Adjust font size */
+            }
+            .thank-you {
+                font-size: 36px; /* Adjust font size */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .item-input-grid {
+                grid-template-columns: 1fr; /* Stack inputs on very small screens */
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1659,7 +1696,7 @@
                     <h3>Invoice Items</h3>
                     <div class="item-input-grid">
                         <input type="text" id="itemName" placeholder="Item Name">
-                        <input type="text" id="itemQuantity" placeholder="Qty (e.g., 1 bottle, 2 kg)">
+                        <input type="text" id="itemQuantity" placeholder="Qty (e.g., 5 kg)">
                         <input type="number" id="itemPrice" placeholder="Price" step="0.01" min="0">
                         <button class="btn btn-primary" onclick="addInvoiceItem()"><i class="fas fa-plus"></i> Add Item</button>
                     </div>
@@ -1728,7 +1765,6 @@
                                     <th>Month</th>
                                     <th>Total Sales</th>
                                     <th>Number of Sales</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="monthlySalesTableBody">
@@ -1746,7 +1782,6 @@
                                     <th>Year</th>
                                     <th>Total Sales</th>
                                     <th>Number of Sales</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="yearlySalesTableBody">
@@ -1764,7 +1799,6 @@
                                     <th>Product Name</th>
                                     <th>Quantity Sold</th>
                                     <th>Total Revenue</th>
-                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody id="productSalesTableBody">
@@ -2002,7 +2036,8 @@
                             <div class="section-title">SHIP TO</div>
                             <div class="address-info">
                                 <div class="address-name" id="previewShipToName">Company Name 2</div>
-                                <div class="address-name" id="previewCustomerEmail"></div>
+                                <div id="previewShipToAddress">Address 2</div>
+                                <div id="previewShipToCity">City, State, Zip 2</div>
                             </div>
                         </div>
                     </div>
@@ -2021,12 +2056,6 @@
                             <!-- Items will be populated here -->
                         </tbody>
                     </table>
-
-                    <!-- Invoice Notes/Terms -->
-                    <div class="invoice-notes-section" style="margin-top: 30px;">
-                        <div class="section-title">NOTES / TERMS</div>
-                        <p id="pdfInvoiceNotes" style="font-size: 14px; color: #333; line-height: 1.6;"></p>
-                    </div>
 
                     <!-- Invoice Footer -->
                     <div class="invoice-footer">
@@ -2070,7 +2099,7 @@
             </div>
             <div class="form-group">
                 <label for="invoiceItemQuantity">Quantity</label>
-                <input type="text" id="invoiceItemQuantity" placeholder="e.g., 1 bottle, 2 kg">
+                <input type="number" id="invoiceItemQuantity" min="1" value="1">
             </div>
             <button class="btn btn-primary" onclick="addSelectedItemToInvoice()">
                 <i class="fas fa-plus"></i> Add to Invoice
