@@ -1,6 +1,6 @@
 // Global Variables
 let invoiceCount = 0;
-let invoiceLimit = 3;
+let invoiceLimit = 10;
 let currentInvoiceNumber = 1;
 let inventory = [];
 let salesData = [];
