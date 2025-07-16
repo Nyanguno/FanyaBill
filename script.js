@@ -454,23 +454,20 @@ function renderInvoicePreview() {
     // --- Customer Info (Corrected Logic) ---
     const customerName = document.getElementById("customerName").value || "Customer Name";
     const customerAddress = document.getElementById("customerAddress").value || "Customer Address";
-    const customerEmail = document.getElementById("customerEmail").value || "customer@email.com";
-
+    
     // Populate "BILL TO" section
     document.getElementById("previewCustomerName").textContent = customerName;
     document.getElementById("previewCustomerAddress").textContent = customerAddress;
-    // You might want to add an element for email in the "BILL TO" section if needed
+    document.getElementById("previewCustomerEmail").textContent = document.getElementById("customerEmail").value || "Customer Email";
 
-    // Populate "SHIP TO" section with the same customer info
-    // This assumes you want BILL TO and SHIP TO to be the same.
-    // If they can be different, you'll need separate input fields.
+    // Populate "SHIP TO" section with the same customer info, and hide placeholders
     const shipToName = document.getElementById("previewShipToName");
     const shipToAddress = document.getElementById("previewShipToAddress");
     const shipToCity = document.getElementById("previewShipToCity");
 
     if (shipToName) shipToName.textContent = customerName;
     if (shipToAddress) shipToAddress.textContent = customerAddress;
-    if (shipToCity) shipToCity.textContent = ""; // Clear the placeholder city if not used
+    if (shipToCity) shipToCity.style.display = 'none'; // Hide the static placeholder
 
     // --- Invoice Dates ---
     document.getElementById("previewInvoiceDate").textContent = document.getElementById("invoiceDate").value || "N/A";
@@ -813,5 +810,4 @@ async function sendMessage() {
 
     // Display user message
     const userBubble = document.createElement("div");
-    userBubble.classList.add("chat-message", "user");
-    userBubble.innerHTML = `<div class="avatar">You</div>
+    userBubble.classList.add("chat-message", "
