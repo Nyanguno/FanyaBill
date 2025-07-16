@@ -429,17 +429,20 @@ function hideInvoicePreviewModal() {
     document.getElementById("invoicePreviewModal").style.display = "none";
 }
 
+// ==================================================================
+// == THIS IS THE CORRECTED FUNCTION FOR YOUR INVOICE PREVIEW ==
+// ==================================================================
 function renderInvoicePreview() {
     const currencySymbol = getCurrencySymbol();
 
-    // Business Info
+    // --- Business Info ---
     document.getElementById("previewBusinessName").textContent = businessSettings.businessName || "Your Business Name";
     document.getElementById("previewBusinessAddress").textContent = businessSettings.businessAddress || "Your Business Address";
     document.getElementById("previewBusinessCity").textContent = businessSettings.businessCity || "City, State, ZIP";
     document.getElementById("previewBusinessPhone").textContent = businessSettings.businessPhone || "Phone Number";
     document.getElementById("previewBusinessEmail").textContent = businessSettings.businessEmail || "email@business.com";
 
-    // Logo
+    // --- Logo ---
     const previewBusinessLogo = document.getElementById("previewBusinessLogo");
     if (businessSettings.logoData) {
         previewBusinessLogo.src = businessSettings.logoData;
@@ -448,36 +451,60 @@ function renderInvoicePreview() {
         previewBusinessLogo.style.display = "none";
     }
 
-    // Customer Info
-    document.getElementById("previewCustomerName").textContent = document.getElementById("customerName").value || "Customer Name";
-    document.getElementById("previewCustomerAddress").textContent = document.getElementById("customerAddress").value || "Customer Address";
-    document.getElementById("previewCustomerEmail").textContent = document.getElementById("customerEmail").value || "Customer Email";
+    // --- Customer Info (Corrected Logic) ---
+    const customerName = document.getElementById("customerName").value || "Customer Name";
+    const customerAddress = document.getElementById("customerAddress").value || "Customer Address";
+    const customerEmail = document.getElementById("customerEmail").value || "customer@email.com";
 
-    // Invoice Dates
+    // Populate "BILL TO" section
+    document.getElementById("previewCustomerName").textContent = customerName;
+    document.getElementById("previewCustomerAddress").textContent = customerAddress;
+    // You might want to add an element for email in the "BILL TO" section if needed
+
+    // Populate "SHIP TO" section with the same customer info
+    // This assumes you want BILL TO and SHIP TO to be the same.
+    // If they can be different, you'll need separate input fields.
+    const shipToName = document.getElementById("previewShipToName");
+    const shipToAddress = document.getElementById("previewShipToAddress");
+    const shipToCity = document.getElementById("previewShipToCity");
+
+    if (shipToName) shipToName.textContent = customerName;
+    if (shipToAddress) shipToAddress.textContent = customerAddress;
+    if (shipToCity) shipToCity.textContent = ""; // Clear the placeholder city if not used
+
+    // --- Invoice Dates ---
     document.getElementById("previewInvoiceDate").textContent = document.getElementById("invoiceDate").value || "N/A";
     document.getElementById("previewDueDate").textContent = document.getElementById("dueDate").value || "N/A";
 
-    // Notes/Terms
-    document.getElementById("pdfInvoiceNotes").textContent = document.getElementById("invoiceNotes").value || "No specific notes or terms.";
+    // --- Notes/Terms ---
+    const notesElement = document.getElementById("pdfInvoiceNotes");
+    if (notesElement) {
+        notesElement.textContent = document.getElementById("invoiceNotes").value || "No specific notes or terms.";
+    }
 
-    // Invoice Items Table
+    // --- Invoice Items Table ---
     const invoicePdfItemsBody = document.getElementById("invoicePdfItemsBody");
-    invoicePdfItemsBody.innerHTML = "";
+    invoicePdfItemsBody.innerHTML = ""; // Clear previous items
     let subtotal = 0;
 
-    currentInvoiceItems.forEach(item => {
-        const total = item.quantity * item.price;
-        subtotal += total;
+    if (currentInvoiceItems.length === 0) {
         const row = invoicePdfItemsBody.insertRow();
-        row.innerHTML = `
-            <td class="qty-col">${item.quantity} ${item.unit}</td>
-            <td class="desc-col">${item.name}</td>
-            <td class="price-col">${currencySymbol}${item.price.toFixed(2)}</td>
-            <td class="total-col">${currencySymbol}${total.toFixed(2)}</td>
-        `;
-    });
+        row.innerHTML = `<td colspan="4" style="text-align:center; padding: 20px;">No items have been added to the invoice.</td>`;
+    } else {
+        currentInvoiceItems.forEach(item => {
+            const total = item.quantity * item.price;
+            subtotal += total;
+            const row = invoicePdfItemsBody.insertRow();
+            row.innerHTML = `
+                <td class="qty-col">${item.quantity} ${item.unit || ''}</td>
+                <td class="desc-col">${item.name}</td>
+                <td class="price-col">${currencySymbol}${item.price.toFixed(2)}</td>
+                <td class="total-col">${currencySymbol}${total.toFixed(2)}</td>
+            `;
+        });
+    }
 
-    // Totals
+    // --- Totals ---
     const taxRate = parseFloat(businessSettings.taxRate) || 0;
     const taxAmount = subtotal * (taxRate / 100);
     const grandTotal = subtotal + taxAmount;
@@ -487,12 +514,10 @@ function renderInvoicePreview() {
     document.getElementById("pdfInvoiceTax").textContent = `${currencySymbol}${taxAmount.toFixed(2)}`;
     document.getElementById("pdfInvoiceTotal").textContent = `${currencySymbol}${grandTotal.toFixed(2)}`;
 
-    // Apply selected template color to the invoice document
+    // --- Apply Template Color and Class ---
     const invoiceDocument = document.getElementById("invoiceDocument");
     const customPrimaryColor = businessSettings.invoiceColor || "#3b82f6";
     invoiceDocument.style.setProperty("--custom-primary-color", customPrimaryColor);
-
-    // Apply selected template class
     invoiceDocument.className = `invoice-document ${businessSettings.currentTemplate || 'classic'}-template`;
 }
 
@@ -547,7 +572,7 @@ async function generateAndDownloadInvoice() {
     showAlert("Invoice downloaded successfully!", "success");
     hideInvoicePreviewModal();
     incrementInvoiceCount();
-    saveSalesTransaction(invoiceNumber, customerName, parseFloat(document.getElementById("invoiceGrandTotal").textContent.replace(currencySymbol, "")));
+    saveSalesTransaction(invoiceNumber, customerName, parseFloat(document.getElementById("invoiceGrandTotal").textContent.replace(getCurrencySymbol(), "")));
 }
 
 // Invoice Count
@@ -789,377 +814,4 @@ async function sendMessage() {
     // Display user message
     const userBubble = document.createElement("div");
     userBubble.classList.add("chat-message", "user");
-    userBubble.innerHTML = `<div class="avatar">You</div><div class="chat-bubble">${userMessage}</div>`;
-    chatMessages.appendChild(userBubble);
-    chatInput.value = "";
-    chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
-
-    // Simulate AI typing
-    const aiBubble = document.createElement("div");
-    aiBubble.classList.add("chat-message", "ai");
-    aiBubble.innerHTML = `<div class="avatar">AI</div><div class="chat-bubble">Typing...</div>`;
-    chatMessages.appendChild(aiBubble);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-
-    try {
-        const response = await fetch("/.netlify/functions/gemini-proxy", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ prompt: userMessage, inventory: inventoryItems }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Failed to get response from AI.");
-        }
-
-        const data = await response.json();
-        aiBubble.querySelector(".chat-bubble").textContent = data.response;
-    } catch (error) {
-        console.error("AI Error:", error);
-        aiBubble.querySelector(".chat-bubble").textContent = `AI Error: ${error.message}. Please try again.`;
-        showAlert(`AI Error: ${error.message}`, "danger");
-    }
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function clearChat() {
-    document.getElementById("chatMessages").innerHTML = `
-        <div class="chat-message ai">
-            <div class="avatar">AI</div>
-            <div class="chat-bubble">Hello! I\'m FanyaBot, your AI assistant. I can help customers check your inventory, prices, and availability. Ask me anything like "Do you have BlueBand?" or "How much is 1kg rice?"</div>
-        </div>
-    `;
-}
-
-async function generateItemsFromAI() {
-    const aiDescription = document.getElementById("aiDescription").value.trim();
-    if (!aiDescription) {
-        showAlert("Please provide a description for AI generation.", "danger");
-        return;
-    }
-
-    showAlert("Generating items using AI...", "info");
-
-    try {
-        const response = await fetch("/.netlify/functions/gemini-proxy", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ prompt: `Generate a list of invoice items (name, quantity, unit, price) from this description: \"${aiDescription}\". Respond only with a JSON array of objects, e.g., [{ \"name\": \"Item A\", \"quantity\": 2, \"unit\": \"pcs\", \"price\": 10.50 }]. Do not include any other text.`, inventory: inventoryItems }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Failed to generate items using AI.");
-        }
-
-        const data = await response.json();
-        const generatedItems = JSON.parse(data.response);
-
-        if (Array.isArray(generatedItems)) {
-            currentInvoiceItems = [...currentInvoiceItems, ...generatedItems];
-            localStorage.setItem("currentInvoiceItems", JSON.stringify(currentInvoiceItems));
-            renderInvoiceItemsTable();
-            showAlert("Items generated and added to invoice!", "success");
-        } else {
-            throw new Error("AI did not return a valid JSON array of items.");
-        }
-
-    } catch (error) {
-        console.error("AI Error:", error);
-        showAlert(`AI Error: ${error.message}. Please try again or add manually.`, "danger");
-    }
-}
-
-// Data Management
-function exportData() {
-    const data = {
-        settings: localStorage.getItem("fanyabillSettings"),
-        inventoryItems: localStorage.getItem("inventoryItems"),
-        salesHistory: localStorage.getItem("salesHistory"),
-        invoiceCount: localStorage.getItem("invoiceCount")
-    };
-    const dataStr = JSON.stringify(data, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "fanyabill_data_backup.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showAlert("Data exported successfully!", "success");
-}
-
-function importData() {
-    document.getElementById("dataImport").click();
-}
-
-function handleDataImport(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.settings) {
-                    localStorage.setItem("fanyabillSettings", importedData.settings);
-                }
-                if (importedData.inventoryItems) {
-                    inventoryItems = JSON.parse(importedData.inventoryItems);
-                    localStorage.setItem("inventoryItems", importedData.inventoryItems);
-                }
-                if (importedData.salesHistory) {
-                    salesHistory = JSON.parse(importedData.salesHistory);
-                    localStorage.setItem("salesHistory", importedData.salesHistory);
-                }
-                if (importedData.invoiceCount) {
-                    localStorage.setItem("invoiceCount", importedData.invoiceCount);
-                }
-                loadSettings();
-                renderInventoryTable();
-                updateDashboardStats();
-                loadInvoiceCount();
-                displaySalesBreakdown("monthly");
-                showAlert("Data imported successfully!", "success");
-            } catch (error) {
-                showAlert("Failed to import data: Invalid JSON file.", "danger");
-                console.error("Import error:", error);
-            }
-        };
-        reader.readAsText(file);
-    }
-}
-
-// Add Item from Inventory Modal
-function openAddItemModal() {
-    const selectInvoiceItem = document.getElementById("selectInvoiceItem");
-    selectInvoiceItem.innerHTML = ""; // Clear previous options
-
-    if (inventoryItems.length === 0) {
-        const option = document.createElement("option");
-        option.value = "";
-        option.textContent = "No items in inventory";
-        selectInvoiceItem.appendChild(option);
-        selectInvoiceItem.disabled = true;
-        document.getElementById("invoiceItemQuantity").disabled = true;
-        document.querySelector("#addItemModal .btn-primary").disabled = true;
-        return;
-    }
-
-    selectInvoiceItem.disabled = false;
-    document.getElementById("invoiceItemQuantity").disabled = false;
-    document.querySelector("#addItemModal .btn-primary").disabled = false;
-
-    inventoryItems.forEach(item => {
-        const option = document.createElement("option");
-        option.value = item.id;
-        option.textContent = `${item.name} (${getCurrencySymbol()}${item.price.toFixed(2)}) - Stock: ${item.stock}`;
-        selectInvoiceItem.appendChild(option);
-    });
-    populateInvoiceItemDetails(); // Populate details for the first item by default
-    document.getElementById("addItemModal").style.display = "flex";
-}
-
-function closeAddItemModal() {
-    document.getElementById("addItemModal").style.display = "none";
-}
-
-function populateInvoiceItemDetails() {
-    const selectInvoiceItem = document.getElementById("selectInvoiceItem");
-    const selectedItemId = selectInvoiceItem.value;
-    const item = inventoryItems.find(i => i.id == selectedItemId);
-    if (item) {
-        document.getElementById("invoiceItemQuantity").max = item.stock; // Set max quantity to stock
-        document.getElementById("invoiceItemQuantity").value = 1; // Default to 1
-    }
-}
-
-function addSelectedItemToInvoice() {
-    const selectInvoiceItem = document.getElementById("selectInvoiceItem");
-    const selectedItemId = selectInvoiceItem.value;
-    const quantity = parseInt(document.getElementById("invoiceItemQuantity").value);
-
-    const item = inventoryItems.find(i => i.id == selectedItemId);
-
-    if (item && quantity > 0 && quantity <= item.stock) {
-        currentInvoiceItems.push({
-            name: item.name,
-            quantity: quantity,
-            unit: "pcs", // Default unit for inventory items, can be made dynamic if needed
-            price: item.price
-        });
-        localStorage.setItem("currentInvoiceItems", JSON.stringify(currentInvoiceItems));
-        item.stock -= quantity; // Deduct from inventory stock
-        saveInventory(); // Save updated inventory
-        renderInvoiceItemsTable();
-        closeAddItemModal();
-        showAlert("Item added from inventory to invoice!", "success");
-    } else if (item && quantity > item.stock) {
-        showAlert(`Not enough stock for ${item.name}. Available: ${item.stock}`, "danger");
-    } else {
-        showAlert("Please select an item and valid quantity.", "danger");
-    }
-}
-
-// Template Selection
-function selectTemplate(templateName) {
-    businessSettings.currentTemplate = templateName; // Store selected template in settings
-    localStorage.setItem("fanyabillSettings", JSON.stringify(businessSettings)); // Save settings
-
-    const templateOptions = document.querySelectorAll(".template-option");
-    templateOptions.forEach(option => {
-        option.classList.remove("active");
-        if (option.dataset.template === templateName) {
-            option.classList.add("active");
-        }
-    });
-    // Update the invoice document's class to apply template-specific styles
-    const invoiceDocument = document.getElementById("invoiceDocument");
-    invoiceDocument.className = `invoice-document ${templateName}-template`;
-    renderInvoicePreview(); // Re-render to apply template styles
-}
-
-// Initial calls
-renderInventoryTable();
-updateDashboardStats();
-displaySalesBreakdown("monthly");
-renderInvoiceItemsTable();
-
-// Add event listeners for navigation buttons after DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-    const navLinks = document.querySelectorAll(".nav-item");
-    const sections = document.querySelectorAll(".content-section");
-
-    navLinks.forEach(link => {
-        link.addEventListener("click", function(e) {
-            e.preventDefault();
-            
-            // Remove active class from all links and sections
-            navLinks.forEach(l => l.classList.remove("active"));
-            sections.forEach(s => s.classList.remove("active"));
-            
-            // Add active class to clicked link
-            this.classList.add("active");
-            
-            // Show corresponding section
-            const sectionId = this.dataset.section; // Assuming data-section attribute is used
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.classList.add("active");
-            }
-        });
-    });
-
-    // Settings tabs functionality (if applicable)
-    const tabBtns = document.querySelectorAll(".tab-btn");
-    const tabContents = document.querySelectorAll(".tab-content");
-    
-    tabBtns.forEach(btn => {
-        btn.addEventListener("click", function() {
-            tabBtns.forEach(b => b.classList.remove("active"));
-            tabContents.forEach(c => c.classList.remove("active"));
-            
-            this.classList.add("active");
-            document.getElementById(this.dataset.tab).classList.add("active");
-        });
-    });
-});
-
-// Ensure the correct template is applied on load
-document.addEventListener("DOMContentLoaded", () => {
-    loadSettings(); // Ensure businessSettings is loaded
-    if (businessSettings.currentTemplate) {
-        selectTemplate(businessSettings.currentTemplate);
-    } else {
-        selectTemplate("classic"); // Default if not set
-    }
-});
-
-// Update the app.html to remove the 'itemUnit' input field and adjust CSS for horizontal scrolling
-// This part would typically be done by directly modifying the app.html file.
-// For example, in app.html, change:
-// <input type="number" id="itemQuantity" placeholder="Qty" min="1">
-// <input type="text" id="itemUnit" placeholder="Unit"> // REMOVE THIS LINE
-// To:
-// <input type="text" id="itemQuantity" placeholder="Qty (e.g., 5 kg)">
-
-// And adjust the item-input-grid CSS in app-style.css or app.html's style block:
-// .item-input-grid {
-//     grid-template-columns: 2fr 1fr 1fr auto; /* Original with unit */
-//     grid-template-columns: 2fr 1fr 1fr auto; /* Adjusted to remove unit column */
-//     /* Consider using flexbox or adjusting column widths to prevent horizontal scroll */
-//     /* Example for wider input fields and no horizontal scroll: */
-//     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust as needed */
-//     gap: 1rem;
-//     align-items: end;
-//     margin-bottom: 1rem;
-// }
-
-// For the payment-pro.html and payment-enterprise.html, ensure the PayPal button IDs are correct.
-// This script doesn't directly modify those HTML files, but it relies on them having the correct IDs.
-// The previous `fixed_payment-pro.html` and `payment-enterprise.html` should contain the correct PayPal button forms.
-
-// The navigation buttons in app.html should have `data-section` attributes for `showSection` to work.
-// Example: <li class="nav-item" onclick="showSection(\'dashboard\')" data-section="dashboard">...</li>
-
-// Ensure the item input boxes are slightly enlarged. This is a CSS change.
-// In app-style.css or app.html's style block, for .form-group input, textarea, select and .item-input-grid input:
-// Add/adjust padding or width properties.
-// Example:
-// .form-group input, .form-group textarea, .form-group select,
-// .item-input-grid input {
-//     width: 100%;
-//     padding: 0.85rem 1.1rem; /* Slightly increased padding */
-//     border: 1px solid var(--gray-300);
-//     border-radius: var(--border-radius);
-//     font-size: 1rem;
-//     color: var(--gray-800);
-//     transition: border-color 0.2s ease, box-shadow 0.2s ease;
-// }
-
-// For the horizontal scrolling issue, it's primarily a CSS layout problem.
-// You might need to adjust the width of the main-content or specific tables/grids.
-// For example, in app-style.css or app.html's style block:
-// .main-content {
-//     flex-grow: 1;
-//     margin-left: 250px;
-//     padding: 2rem;
-//     transition: margin-left 0.3s ease;
-//     overflow-x: hidden; /* Add this to prevent horizontal scroll on main content */
-// }
-// And for tables:
-// .table-container {
-//     overflow-x: auto; /* Keep this for tables that might still be wide */
-// }
-// Or specifically target the invoice items table:
-// .invoice-items-table {
-//     width: 100%;
-//     table-layout: fixed; /* Helps with column width distribution */
-// }
-// .invoice-items-table th, .invoice-items-table td {
-//     white-space: nowrap; /* Prevents text wrapping in cells */
-//     overflow: hidden;
-//     text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
-// }
-// You might need to adjust column widths for the invoice items table to fit.
-// For example, in app.html's style block or app-style.css:
-// .invoice-table .qty-col { width: 15%; }
-// .invoice-table .desc-col { width: 45%; }
-// .invoice-table .price-col { width: 20%; }
-// .invoice-table .total-col { width: 20%; }
-
-// The Notes/Terms section in the invoice preview is already handled by `pdfInvoiceNotes` in `renderInvoicePreview`.
-// Ensure your `app.html` has an element with `id="pdfInvoiceNotes"` within the invoice preview structure.
-
-// The currency symbol is handled by `getCurrencySymbol()` which reads from `businessSettings.currency`.
-// Ensure your settings are saved correctly and the currency input field in settings is working.
-
-// The invoice template color is handled by `updateInvoiceColor()` and `renderInvoicePreview()`.
-// It sets a CSS variable `--custom-primary-color` and applies a class to `invoiceDocument`.
-// Ensure your CSS uses this variable and has styles for `.classic-template`, `.modern-template`, `.minimal-template`.
+    userBubble.innerHTML = `<div class="avatar">You</div>
